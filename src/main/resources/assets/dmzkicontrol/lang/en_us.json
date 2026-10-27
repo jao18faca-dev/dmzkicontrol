@@ -1,0 +1,42 @@
+{
+  "key.categories.dmzkicontrol": "DMZ Ki Control",
+  "key.dmzkicontrol.toggle_seal": "Seal / Release Aura",
+
+  "menu.dmzkicontrol.seal": "Seal Aura",
+  "menu.dmzkicontrol.on": "SEALED",
+  "menu.dmzkicontrol.off": "Free",
+
+  "hud.dmzkicontrol.sealed": "◆ AURA SEALED",
+  "hud.dmzkicontrol.free": "◇ Aura free  [G to seal]",
+  "hud.dmzkicontrol.need_skill": "◇ Requires the Ki Control skill",
+  "hud.dmzkicontrol.stats": "Mastery %s%%  ·  Ki -%s%%  ·  Power +%s%%",
+  "hud.dmzkicontrol.burst": "KI RELEASE! %ss",
+  "hud.dmzkicontrol.perfect": "✦ Perfect control",
+
+  "message.dmzkicontrol.sealed": "Aura sealed inside your body - mastery %s%% (ki saved %s%%, power +%s%%)",
+  "message.dmzkicontrol.released": "Aura released.",
+  "message.dmzkicontrol.burst": "Your contained ki bursts out! Power +%s%% for %ss",
+  "message.dmzkicontrol.need_form": "You need to be transformed to seal your aura.",
+  "message.dmzkicontrol.need_skill": "You need the %s skill (learn it from a master) to seal your aura.",
+  "message.dmzkicontrol.lost_form": "Seal ended: you returned to base form.",
+  "message.dmzkicontrol.lost_skill": "Seal ended: you no longer have the required skill.",
+  "message.dmzkicontrol.aura_expanded": "You expanded your aura - the seal was released.",
+  "message.dmzkicontrol.charged": "Charging ki expanded your aura - the seal was released.",
+  "message.dmzkicontrol.strain_warning": "Your body starts trembling with the contained ki...",
+  "message.dmzkicontrol.strain": "Internal strain! The trapped ki is hurting your body.",
+  "message.dmzkicontrol.strain_break": "You lost control - your aura burst out!",
+  "message.dmzkicontrol.perfect": "Perfect Control reached in %s! Not a drop of ki is wasted.",
+  "message.dmzkicontrol.no_more_strain": "Your body got used to the contained ki in %s: no more internal strain.",
+  "message.dmzkicontrol.status": "Form: %s | Seal: %s | Mastery: %s%% | Ki saved: %s%% | Power: +%s%% | Crit: +%s%% | Tolerance: %s",
+  "message.dmzkicontrol.status_base": "You are in base form. Transform and press G (Seal Aura).",
+  "message.dmzkicontrol.strain_none": "unlimited",
+  "message.dmzkicontrol.list_header": "Aura Seal mastery:",
+  "message.dmzkicontrol.list_empty": "You haven't trained the seal in any form yet.",
+  "message.dmzkicontrol.mastery_set": "Mastery set for %s player(s).",
+  "message.dmzkicontrol.mastery_reset": "Mastery reset for %s player(s).",
+  "message.dmzkicontrol.reloaded": "DMZ Ki Control config reloaded.",
+
+  "race.dragonminez.saiyan.group.godforms": "God Forms",
+  "race.dragonminez.saiyan.form.godforms.supersaiyangod": "Super Saiyan God",
+  "race.dragonminez.saiyan.form.godforms.supersaiyanblue": "Super Saiyan Blue"
+}

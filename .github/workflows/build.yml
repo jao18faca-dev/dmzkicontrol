@@ -1,0 +1,61 @@
+name: Build add-on jar
+
+# Gera o dmzkicontrol-<versao>.jar automaticamente no GitHub (sem precisar de IDE).
+# Suba esta pasta para um repositorio seu no GitHub -> aba "Actions" -> "Build add-on jar" -> "Run workflow".
+# O jar aparece em "Artifacts" no fim da execucao.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Baixar o jar do DragonMineZ (se libs/ estiver vazia)
+        run: |
+          set -euo pipefail
+          DMZ_VERSION=$(grep '^dmz_version=' gradle.properties | cut -d= -f2 | tr -d '\r')
+          TARGET="libs/dragonminez-${DMZ_VERSION}.jar"
+          mkdir -p libs
+          if [ -f "$TARGET" ]; then
+            echo "Usando $TARGET do repositorio."
+            exit 0
+          fi
+          API='https://api.modrinth.com/v2/project/dragonminez/version?loaders=%5B%22forge%22%5D&game_versions=%5B%221.20.1%22%5D'
+          curl -fsSL -A "dmzkicontrol-build (github actions)" "$API" -o versions.json
+          URL=$(jq -r --arg v "$DMZ_VERSION" '
+            ([.[] | select(.version_number | contains($v))] + .)[0].files
+            | (map(select(.primary)) + .)[0].url' versions.json)
+          NAME=$(jq -r --arg v "$DMZ_VERSION" '([.[] | select(.version_number | contains($v))] + .)[0].version_number' versions.json)
+          echo "Baixando DragonMineZ $NAME -> $TARGET"
+          curl -fsSL "$URL" -o "$TARGET"
+          case "$NAME" in *"$DMZ_VERSION"*) ;; *) echo "::warning::Versao $DMZ_VERSION nao encontrada no Modrinth; usei $NAME. Ajuste dmz_version em gradle.properties.";; esac
+
+      - name: Build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build --no-daemon
+
+      - name: Publicar jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: dmzkicontrol-jar
+          path: |
+            build/libs/dmzkicontrol-*.jar
+            !build/libs/*-sources.jar

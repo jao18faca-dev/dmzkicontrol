@@ -1,0 +1,4 @@
+Coloque aqui o jar do DragonMineZ (o normal, NAO o "-slim"), renomeado para:
+  dragonminez-2.2.1.jar
+O numero tem que bater com dmz_version em gradle.properties.
+(No build pelo GitHub Actions o jar e baixado do Modrinth automaticamente se esta pasta estiver vazia.)

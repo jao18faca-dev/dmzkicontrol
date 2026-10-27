@@ -1,0 +1,38 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="GPL-3.0-or-later"
+issueTrackerURL=""
+
+[[mods]]
+modId="dmzkicontrol"
+version="${version}"
+displayName="DMZ Ki Control - Controle Perfeito de Aura"
+authors="jaqkcson"
+description='''
+Add-on para DragonMineZ inspirado no Goku da saga Black: prenda a aura dentro do corpo
+(Selamento de Aura) para gastar muito menos ki mantendo uma transformacao (principalmente
+o Super Saiyajin Blue), ganhar precisao e um pouco mais de poder.
+O dominio cresce por forma com o tempo de pratica. Sem dominio, segurar o ki por tempo demais
+causa tensao interna e a aura explode para fora.
+'''
+
+[[dependencies.dmzkicontrol]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.dmzkicontrol]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.dmzkicontrol]]
+    modId="dragonminez"
+    mandatory=true
+    versionRange="[2.2-alpha,)"
+    ordering="AFTER"
+    side="BOTH"

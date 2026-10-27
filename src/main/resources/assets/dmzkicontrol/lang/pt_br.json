@@ -1,0 +1,42 @@
+{
+  "key.categories.dmzkicontrol": "DMZ Ki Control",
+  "key.dmzkicontrol.toggle_seal": "Selar / Liberar Aura",
+
+  "menu.dmzkicontrol.seal": "Selar Aura",
+  "menu.dmzkicontrol.on": "SELADA",
+  "menu.dmzkicontrol.off": "Livre",
+
+  "hud.dmzkicontrol.sealed": "◆ AURA SELADA",
+  "hud.dmzkicontrol.free": "◇ Aura livre  [G para selar]",
+  "hud.dmzkicontrol.need_skill": "◇ Requer a skill Controle de Ki",
+  "hud.dmzkicontrol.stats": "Domínio %s%%  ·  Ki -%s%%  ·  Poder +%s%%",
+  "hud.dmzkicontrol.burst": "LIBERAÇÃO DE KI! %ss",
+  "hud.dmzkicontrol.perfect": "✦ Controle perfeito",
+
+  "message.dmzkicontrol.sealed": "Aura selada dentro do corpo - domínio %s%% (ki poupado %s%%, poder +%s%%)",
+  "message.dmzkicontrol.released": "Aura liberada.",
+  "message.dmzkicontrol.burst": "O ki contido explode para fora! Poder +%s%% por %ss",
+  "message.dmzkicontrol.need_form": "Você precisa estar transformado para selar a aura.",
+  "message.dmzkicontrol.need_skill": "Você precisa da skill %s (aprenda com um mestre) para selar a aura.",
+  "message.dmzkicontrol.lost_form": "Selo encerrado: você voltou à forma base.",
+  "message.dmzkicontrol.lost_skill": "Selo encerrado: você não tem mais a skill exigida.",
+  "message.dmzkicontrol.aura_expanded": "Você expandiu a aura - o selo foi liberado.",
+  "message.dmzkicontrol.charged": "Carregar ki expandiu sua aura - o selo foi liberado.",
+  "message.dmzkicontrol.strain_warning": "Seu corpo começa a tremer com o ki contido...",
+  "message.dmzkicontrol.strain": "Tensão interna! O ki preso está ferindo seu corpo.",
+  "message.dmzkicontrol.strain_break": "Você perdeu o controle - a aura explodiu para fora!",
+  "message.dmzkicontrol.perfect": "Controle Perfeito alcançado em %s! Nenhuma gota de ki é desperdiçada.",
+  "message.dmzkicontrol.no_more_strain": "Seu corpo se acostumou ao ki contido em %s: sem mais tensão interna.",
+  "message.dmzkicontrol.status": "Forma: %s | Selo: %s | Domínio: %s%% | Ki poupado: %s%% | Poder: +%s%% | Crítico: +%s%% | Tolerância: %s",
+  "message.dmzkicontrol.status_base": "Você está na forma base. Transforme-se e aperte G (Selar Aura).",
+  "message.dmzkicontrol.strain_none": "ilimitada",
+  "message.dmzkicontrol.list_header": "Domínio do Selamento de Aura:",
+  "message.dmzkicontrol.list_empty": "Você ainda não treinou o selo em nenhuma forma.",
+  "message.dmzkicontrol.mastery_set": "Domínio definido para %s jogador(es).",
+  "message.dmzkicontrol.mastery_reset": "Domínio zerado para %s jogador(es).",
+  "message.dmzkicontrol.reloaded": "Config do DMZ Ki Control recarregada.",
+
+  "race.dragonminez.saiyan.group.godforms": "Formas Divinas",
+  "race.dragonminez.saiyan.form.godforms.supersaiyangod": "Super Saiyajin God",
+  "race.dragonminez.saiyan.form.godforms.supersaiyanblue": "Super Saiyajin Blue"
+}
