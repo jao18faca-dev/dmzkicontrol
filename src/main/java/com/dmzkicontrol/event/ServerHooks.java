@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -72,6 +73,25 @@ public final class ServerHooks {
     @SubscribeEvent
     public static void onKiFire(DMZEvent.KiAttackFireEvent event) {
         AuraSealManager.markBusy(event.getPlayer(), 2);
+        AuraSealManager.markCombat(event.getPlayer());
+        if (event.getPlayer() instanceof ServerPlayer sp) {
+            AuraSealManager.addStrainFromEvent(sp, KiControlConfig.get().strain.perKiAttackPercent);
+        }
+    }
+
+    // ------------------------------------------------------------ combate (treino rende mais lutando)
+
+    @SubscribeEvent
+    public static void onDamageDealt(DMZEvent.DamageDealtEvent event) {
+        if (event.getAttacker() != null) AuraSealManager.markCombat(event.getAttacker());
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onHurt(LivingHurtEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer sp) || event.getAmount() <= 0) return;
+        AuraSealManager.markCombat(sp);
+        if (event.getSource().getEntity() instanceof Player attacker) AuraSealManager.markCombat(attacker);
+        AuraSealManager.addStrainFromEvent(sp, KiControlConfig.get().strain.perHitTakenPercent);
     }
 
     @SubscribeEvent

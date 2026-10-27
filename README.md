@@ -14,7 +14,9 @@ O add-on segue as regras da [wiki de Add-on Development](https://wiki.dragonmine
 
 1. Aprenda a skill **Controle de Ki** (`kicontrol`) com um mestre (Roshi, Goku, Kaioh, Vegeta…).
 2. Transforme-se em qualquer forma.
-3. Aperte **G** (dá para trocar em *Controles → DMZ Ki Control*) ou use o botão **Selar Aura** no Menu Utilitário do DMZ.
+3. Aperte **N** (dá para trocar em *Controles → DMZ Ki Control*; o G é a tecla de transformação do DMZ) ou use o botão **Selar Aura** no Menu Utilitário do DMZ.
+   - Com a **cutscene** ligada, a câmera contorna o personagem enquanto ele leva a mão ao peito e puxa a aura para dentro. Aperte N de novo para pular.
+   - Com a cutscene desligada, ele só leva a mão ao peito e sela. Para alternar, clique com o **botão direito** em *Selar Aura* no Menu Utilitário ou mude `cutscene.mode` em `config/dmzkicontrol-client.toml` (`ALWAYS`, `ONCE_PER_SESSION` ou `OFF`).
 4. Com a aura selada:
    | Efeito | Como funciona |
    |---|---|
@@ -22,19 +24,26 @@ O add-on segue as regras da [wiki de Add-on Development](https://wiki.dragonmine
    | **Aura escondida** | A aura permanente some enquanto o selo está ativo e volta quando você libera. |
    | **Um pouco mais forte** | Ganha bônus de dano (melee, strike e ki) e de chance de crítico. |
    | **Ki não vaza** | A regeneração de ki fica um pouco maior (+15% com domínio total). |
-   | **Domínio por forma** | Cada forma tem o próprio domínio, que sobe com o tempo selado. Ter domínio alto da forma no DMZ acelera esse treino. |
-5. **Tensão interna:** sem domínio, segurar o ki por tempo demais machuca (perde vida e estamina, mas a tensão sozinha não mata). Em 2× o limite, a aura **explode para fora** e o selo quebra. A partir de 90% de domínio a tensão some: é o controle perfeito.
+   | **Domínio por forma** | Cada forma tem o próprio domínio. A curva é orgânica: sobe rápido no começo e fica cada vez mais lenta perto da perfeição. O treino rende **1,75×** lutando, **1,5×** forçando o limite (tensão entre 40% e 90%) e menos perdendo o controle. Ter domínio alto da forma no DMZ também acelera. |
+5. **Tensão (cansaço):** um medidor no estilo dos medidores laterais do DMZ, do lado direito da tela, enche enquanto a aura está selada. Quanto maior o domínio, mais devagar ele enche, e formas fortes como o Blue cansam o dobro. Golpes recebidos e técnicas de ki também enchem o medidor.
+   - **50%:** cansaço, a estamina vai caindo.
+   - **75%:** o corpo pesa (Lentidão I).
+   - **90%:** dor, perde um pouco de vida a cada 2 s (a tensão sozinha nunca mata).
+   - **100%:** a aura explode para fora, o selo quebra e você perde 15% do ki atual.
+   - Com a aura livre, a tensão desce. Só dá para selar de novo abaixo de 60%.
+   - A partir de 90% de domínio a tensão some: é o controle perfeito, e o medidor fica roxo com "MAX".
 6. **Liberação de Ki:** soltar o selo de propósito depois de 20 s ou mais dá um pico de poder por 6 s. A recarga é de 30 s.
 7. Voltar à forma base, morrer ou deslogar encerra o selo. Trocar de forma mantém o selo, mas reinicia a contagem de tensão.
 
-O HUD acima da hotbar mostra o estado, o domínio, o ki poupado, o poder, a barra de tensão e a Liberação.
-Você pode desligar ou mover o HUD em `config/dmzkicontrol-client.toml`.
+O medidor mostra a tensão, as marcas de 50% e 90%, o domínio e a Liberação. Ele usa as texturas e a fonte do próprio DMZ.
+Enquanto o selo está ativo, as bordas da tela ganham um brilho suave, que fica vermelho com a tensão alta.
+Lado, posição, escala e brilho ficam em `config/dmzkicontrol-client.toml`.
 
 ## Comandos
 | Comando | O que faz |
 |---|---|
 | `/auracontrol` | Mostra a forma atual (id `grupo:forma`), o selo, o domínio, o ki poupado, o poder, o crítico e a tolerância |
-| `/auracontrol toggle` | Igual à tecla G |
+| `/auracontrol toggle` | Igual à tecla N |
 | `/auracontrol list` | Domínio em todas as formas treinadas |
 | `/auracontrol reload` | Recarrega `config/dmzkicontrol.json` (op) |
 | `/auracontrol mastery set <alvos> <0-100>` | Define o domínio na forma atual (op) |

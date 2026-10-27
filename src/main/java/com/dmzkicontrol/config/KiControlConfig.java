@@ -58,25 +58,55 @@ public class KiControlConfig {
         }
     }
 
+    /**
+     * Tensao interna ("cansaco" de segurar o ki dentro do corpo), em PORCENTAGEM (0-100).
+     * Enche enquanto a aura esta selada (mais devagar quanto maior o dominio), esvazia quando livre.
+     */
     public static class Strain {
-        /** Liga a tensao interna (segurar o ki sem dominio machuca). */
+        /** Liga a tensao interna. */
         public boolean enabled = true;
-        /** Segundos que voce aguenta selado com 0% de dominio. */
-        public double baseSeconds = 45.0;
-        /** Segundos extras de tolerancia ganhos com 100% de dominio (escala linear). */
-        public double extraSecondsAtFullMastery = 900.0;
-        /** A partir deste dominio (0..1) nao ha mais tensao: controle perfeito. */
+        /** % de tensao por segundo selado com 0% de dominio (x trainTimeMultiplier do tier: o Blue cansa o dobro). */
+        public double fillPercentPerSecond = 1.6;
+        /** Curva do alivio pelo dominio: taxa = fill x (1 - dominio/strainFreeMastery)^curve. */
+        public double curve = 1.5;
+        /** A partir deste dominio (0..1) o selo nao cansa mais: controle perfeito. */
         public double strainFreeMastery = 0.90;
-        /** A cada quantos ticks a tensao pulsa depois de passar do limite. */
+        /** % recuperada por segundo com a aura livre (x (1 + dominio)). */
+        public double recoverPercentPerSecond = 5.0;
+        /** Nao da para selar de novo enquanto a tensao estiver acima disto (%): corpo exausto. */
+        public double resealLockoutPercent = 60.0;
+        /** % extra por golpe recebido selado (x (1 - dominio)). */
+        public double perHitTakenPercent = 3.0;
+        /** % extra por tecnica de ki disparada selado (x (1 - dominio)). */
+        public double perKiAttackPercent = 2.0;
+        /** A partir desta %: cansaco, perde estamina continuamente. */
+        public double fatiguePercent = 50.0;
+        /** Estamina perdida por segundo no cansaco (% da estamina maxima). */
+        public double staminaPercentPerSecond = 2.0;
+        /** A partir desta %: o corpo pesa (Lentidao I). */
+        public double slownessPercent = 75.0;
+        /** A partir desta %: o ki preso fere o corpo. */
+        public double hurtPercent = 90.0;
+        /** Ticks entre cada pulso de dano. */
         public int pulseTicks = 40;
-        /** Fracao da vida maxima perdida por pulso. */
-        public double healthPercentPerPulse = 0.03;
-        /** Fracao da estamina maxima perdida por pulso. */
-        public double staminaPercentPerPulse = 0.05;
-        /** Depois de limite x este valor, a aura explode para fora e o selo quebra. */
-        public double breakAtLimitMultiplier = 2.0;
-        /** Fracao do ki atual perdida quando o selo quebra a forca. */
-        public double kiLossOnBreak = 0.15;
+        /** Vida perdida por pulso (% da vida maxima). A tensao sozinha nunca mata. */
+        public double healthPercentPerPulse = 3.0;
+        /** Ki atual perdido quando a aura explode a 100% (%). */
+        public double kiLossOnBreakPercent = 15.0;
+    }
+
+    /** Como o dominio cresce: rapido no comeco, cada vez mais lento perto da perfeicao. */
+    public static class Mastery {
+        /** Inclinacao da curva: dominio = inicial + (1-inicial) x (1 - e^(-k x pratica/trainSeconds)). */
+        public double curveSteepness = 3.0;
+        /** Treino rende mais lutando (golpe dado/recebido nos ultimos segundos). */
+        public double combatMultiplier = 1.75;
+        /** Janela de combate, em segundos. */
+        public double combatWindowSeconds = 5.0;
+        /** Treino rende mais forcando o limite (tensao entre 40% e 90%). */
+        public double pushingLimitMultiplier = 1.5;
+        /** Treino rende menos perdendo o controle (tensao acima de 90%). */
+        public double overstrainMultiplier = 0.6;
     }
 
     public static class Burst {
@@ -96,7 +126,9 @@ public class KiControlConfig {
 
     /** Skill do DMZ exigida para usar o selo ("kicontrol", vendida pelos mestres). Vazio = sem exigencia. */
     public String requiredSkill = "kicontrol";
-    /** Segundos selado numa forma para chegar a 100% de dominio (antes do trainTimeMultiplier do tier). */
+    /** Versao do formato do arquivo. */
+    public int configVersion = 3;
+    /** Escala do treino: com este tanto de segundos de pratica efetiva numa forma voce chega a ~95% (antes do trainTimeMultiplier). */
     public double trainSeconds = 900.0;
     /** Dominio inicial (0..1) numa forma que voce nunca treinou. */
     public double startingMastery = 0.05;
@@ -114,12 +146,17 @@ public class KiControlConfig {
     public boolean auraToggleReleasesSeal = true;
     /** Carregar ki enquanto selado libera o selo (carregar = expandir a aura). */
     public boolean chargingReleasesSeal = false;
+    /** Ticks entre apertar a tecla e o selo valer, sem cutscene (o tempo da mao chegar ao peito). */
+    public int quickSealDelayTicks = 8;
+    /** Ticks entre apertar a tecla e o selo valer, com cutscene (o momento do pulso na cena). */
+    public int cutsceneSealDelayTicks = 44;
     /** Toca sons ao selar, liberar e quando a aura explode. */
     public boolean playSounds = true;
     /** A cada quantos ticks o estado e enviado ao HUD do jogador. */
     public int hudSyncTicks = 10;
 
     public Strain strain = new Strain();
+    public Mastery mastery = new Mastery();
     public Burst burst = new Burst();
 
     public Tier defaultTier = new Tier(0.35, 0.04, 0.02, 1.0);
@@ -189,6 +226,7 @@ public class KiControlConfig {
     private void fillMissing() {
         if (requiredSkill == null) requiredSkill = "";
         if (strain == null) strain = new Strain();
+        if (mastery == null) mastery = new Mastery();
         if (burst == null) burst = new Burst();
         if (defaultTier == null) defaultTier = new Tier(0.35, 0.04, 0.02, 1.0);
         if (rules == null) rules = new ArrayList<>();

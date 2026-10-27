@@ -48,9 +48,27 @@ jobs:
           case "$NAME" in *"$DMZ_VERSION"*) ;; *) echo "::warning::Versao $DMZ_VERSION nao encontrada no Modrinth; usei $NAME. Ajuste dmz_version em gradle.properties.";; esac
 
       - name: Build
+        shell: bash
         run: |
           chmod +x ./gradlew
-          ./gradlew build --no-daemon
+          set -o pipefail
+          ./gradlew build --no-daemon 2>&1 | tee /tmp/build.log
+
+      - name: Publicar log se falhar (branch build-logs)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cp /tmp/build.log /tmp/build-log.txt 2>/dev/null || echo "sem log" > /tmp/build-log.txt
+          git checkout --orphan logs-tmp
+          git rm -rf -q . || true
+          git clean -fdxq
+          cp /tmp/build-log.txt build.log
+          git add build.log
+          git commit -q -m "log de falha ($GITHUB_SHA)"
+          git push -f origin logs-tmp:build-logs
 
       - name: Publicar jar
         uses: actions/upload-artifact@v4

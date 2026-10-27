@@ -1,41 +1,69 @@
 package com.dmzkicontrol.client;
 
 import com.dmzkicontrol.KiControlMod;
+import com.dmzkicontrol.config.KiControlClientConfig;
 import com.dmzkicontrol.network.KiControlNetwork;
 import com.dmzkicontrol.network.ToggleSealC2S;
 import com.dragonminez.client.gui.UtilityMenuScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
 
-/** Tudo que so existe no cliente: tecla, HUD e o botao no menu utilitario do DMZ. */
+/** Tudo que so existe no cliente: tecla, HUD, cutscene e o botao no menu utilitario do DMZ. */
 public final class ClientSetup {
 
-    /** Padrao: G (rebindavel em Opcoes > Controles > DMZ Ki Control). */
-    public static final KeyMapping TOGGLE_SEAL = new KeyMapping(
-            "key.dmzkicontrol.toggle_seal",
+    /**
+     * Padrao: N. O G e a tecla de acao/transformacao do DMZ, entao saimos dela.
+     * (Id novo de proposito: quem tinha o G salvo da versao anterior ganha o N automaticamente.)
+     */
+    public static final KeyMapping SEAL_KEY = new KeyMapping(
+            "key.dmzkicontrol.seal_aura",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_G,
+            GLFW.GLFW_KEY_N,
             "key.categories.dmzkicontrol");
+
+    private static final ResourceLocation CUTSCENE_OVERLAY = new ResourceLocation(KiControlMod.MODID, "aura_cutscene");
+    private static boolean wasDown;
 
     private ClientSetup() {}
 
-    public static void requestToggle() {
-        if (Minecraft.getInstance().player != null) {
-            KiControlNetwork.CHANNEL.sendToServer(new ToggleSealC2S());
+    public static boolean cutsceneEnabled() {
+        return switch (KiControlClientConfig.INSTANCE.cutscene.get()) {
+            case ALWAYS -> true;
+            case ONCE_PER_SESSION -> !CutsceneController.playedThisSession();
+            case OFF -> false;
+        };
+    }
+
+    /** Uma acao por aperto (segurar a tecla nao fica alternando). */
+    public static void onSealPressed() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return;
+        if (CutsceneController.isActive()) {          // pular a cena: o selo vale na hora
+            CutsceneController.stop();
+            KiControlNetwork.CHANNEL.sendToServer(new ToggleSealC2S(false));
+            return;
         }
+        boolean cinematic = !ClientSealState.sealed && !ClientSealState.pending && cutsceneEnabled();
+        KiControlNetwork.CHANNEL.sendToServer(new ToggleSealC2S(cinematic));
     }
 
     @Mod.EventBusSubscriber(modid = KiControlMod.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -44,18 +72,18 @@ public final class ClientSetup {
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            // Hook oficial para add-ons no cliente: slot extra no menu utilitario (radial) do DMZ
             event.enqueueWork(() -> UtilityMenuScreen.addMenuSlot(new SealMenuSlot()));
         }
 
         @SubscribeEvent
         public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
-            event.register(TOGGLE_SEAL);
+            event.register(SEAL_KEY);
         }
 
         @SubscribeEvent
         public static void onRegisterOverlays(RegisterGuiOverlaysEvent event) {
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "aura_seal", SealHudOverlay.INSTANCE);
+            event.registerAboveAll("aura_cutscene", CutsceneOverlay.INSTANCE);
         }
     }
 
@@ -66,12 +94,60 @@ public final class ClientSetup {
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {
             if (event.phase != TickEvent.Phase.END) return;
-            while (TOGGLE_SEAL.consumeClick()) requestToggle();
+            Minecraft mc = Minecraft.getInstance();
+            boolean down = SEAL_KEY.isDown();
+            if (down && !wasDown && mc.screen == null && mc.player != null) onSealPressed();
+            wasDown = down;
+            while (SEAL_KEY.consumeClick()) { /* descarta repeticoes do teclado */ }
+
+            CutsceneController.clientTick();
+            SealAnimations.clientTick();
+        }
+
+        @SubscribeEvent
+        public static void onRenderTick(TickEvent.RenderTickEvent event) {
+            CutsceneController.lockRotation();
+        }
+
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onCamera(ViewportEvent.ComputeCameraAngles event) {
+            CutsceneController.onCameraAngles(event);
+        }
+
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onFov(ViewportEvent.ComputeFov event) {
+            CutsceneController.onFov(event);
+        }
+
+        /** Durante a cena o personagem fica parado. */
+        @SubscribeEvent
+        public static void onMovement(MovementInputUpdateEvent event) {
+            if (!CutsceneController.isActive()) return;
+            var in = event.getInput();
+            in.forwardImpulse = 0f;
+            in.leftImpulse = 0f;
+            in.up = in.down = in.left = in.right = false;
+            in.jumping = false;
+            in.shiftKeyDown = false;
+        }
+
+        @SubscribeEvent
+        public static void onInteract(InputEvent.InteractionKeyMappingTriggered event) {
+            if (!CutsceneController.isActive()) return;
+            event.setCanceled(true);
+            event.setSwingHand(false);
+        }
+
+        /** Esconde o resto do HUD (vanilla e DMZ) durante a cena. */
+        @SubscribeEvent
+        public static void onOverlay(RenderGuiOverlayEvent.Pre event) {
+            if (CutsceneController.isActive() && !CUTSCENE_OVERLAY.equals(event.getOverlay().id())) event.setCanceled(true);
         }
 
         @SubscribeEvent
         public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
             ClientSealState.reset();
+            CutsceneController.resetSession();
         }
     }
 }

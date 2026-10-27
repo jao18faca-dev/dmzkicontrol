@@ -42,7 +42,7 @@ public final class AuraControlCommand {
         d.register(Commands.literal("auracontrol")
                 .executes(ctx -> status(ctx.getSource()))
                 .then(Commands.literal("toggle").executes(ctx -> {
-                    AuraSealManager.toggle(ctx.getSource().getPlayerOrException());
+                    AuraSealManager.requestToggle(ctx.getSource().getPlayerOrException(), false);
                     return 1;
                 }))
                 .then(Commands.literal("list").executes(ctx -> list(ctx.getSource())))
@@ -83,10 +83,10 @@ public final class AuraControlCommand {
             return 0;
         }
         boolean stack = AuraSealManager.hasStackOnTop(data);
-        int limit = AuraSealManager.strainLimitTicks(sp, key);
-        Component strain = limit < 0
+        double perSec = AuraSealManager.strainPerSecond(sp, key);
+        Component strain = perSec <= 0
                 ? Component.translatable("message.dmzkicontrol.strain_none").withStyle(ChatFormatting.LIGHT_PURPLE)
-                : Component.literal((limit / 20) + "s");
+                : Component.literal(String.format(java.util.Locale.ROOT, "%.1f%%/s", perSec * 100.0));
         Component msg = Component.translatable("message.dmzkicontrol.status",
                 key,
                 Component.translatable(AuraSealManager.isSealed(sp) ? "menu.dmzkicontrol.on" : "menu.dmzkicontrol.off"),

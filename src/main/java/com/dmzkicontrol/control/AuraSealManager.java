@@ -2,6 +2,7 @@ package com.dmzkicontrol.control;
 
 import com.dmzkicontrol.config.KiControlConfig;
 import com.dmzkicontrol.network.KiControlNetwork;
+import com.dmzkicontrol.network.SealAnimS2C;
 import com.dmzkicontrol.network.SealStateS2C;
 import com.dragonminez.common.config.FormConfig;
 import com.dragonminez.common.network.StatsDeltaSync;
@@ -14,6 +15,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -24,27 +27,34 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Logica de servidor do Selamento de Aura ("Controle Perfeito de Ki").
  *
- * <h2>Como o desconto funciona</h2>
- * O DMZ cobra o upkeep da forma uma vez por segundo ({@code TickHandler.handleActiveFormDrains}),
- * usando {@link StatsData#getEffectiveEnergyDrain()} e {@link StatsData#getEffectiveStaminaDrain()}.
- * Esses metodos sao publicos, entao sabemos exatamente quanto o DMZ vai cobrar. Todo tick comparamos
- * o ki/estamina com o tick anterior: quando aparece a queda do upkeep, devolvemos
- * {@code reducao x upkeep}. Efeito liquido: manter a forma custa menos, sem tocar em codigo interno
- * do DMZ nem em mixins (como a wiki recomenda).
+ * <h2>Desconto de ki</h2>
+ * O DMZ cobra o upkeep da forma uma vez por segundo, usando {@link StatsData#getEffectiveEnergyDrain()}
+ * e {@link StatsData#getEffectiveStaminaDrain()} (publicos). Todo tick comparamos ki/estamina com o tick
+ * anterior (descontando a regen do mesmo tick); quando aparece a queda do upkeep, devolvemos
+ * {@code reducao x upkeep}. Sem mixins e sem tocar em codigo interno do DMZ.
+ *
+ * <h2>Tensao (cansaco)</h2>
+ * Medidor 0..1 por jogador. Enche enquanto selado, com velocidade que cai com o dominio
+ * ({@code (1 - dominio/strainFree)^curva}); golpes recebidos e tecnicas de ki tambem enchem.
+ * Efeitos progressivos: cansaco (estamina), corpo pesado (lentidao), dor (vida) e, a 100%,
+ * a aura explode para fora. Esvazia com a aura livre.
  */
 public final class AuraSealManager {
 
-    /** Uma queda so conta como upkeep se for pelo menos esta fracao do upkeep esperado. */
     private static final double UPKEEP_MATCH = 0.5;
-    /** Intervalo minimo entre dois reembolsos (o DMZ cobra a cada 20 ticks). */
     private static final int REFUND_COOLDOWN = 18;
-    private static final int TOGGLE_COOLDOWN = 10;
+    private static final int TOGGLE_COOLDOWN = 6;
 
     private static final Map<UUID, Session> SESSIONS = new ConcurrentHashMap<>();
 
     public static final class Session {
         public boolean sealed;
+        /** Tick em que o selo pedido passa a valer (0 = nada pendente). */
+        public long pendingAt;
+        public boolean pendingCinematic;
         public int sealedTicks;
+        /** Tensao 0..1. */
+        public double strain;
         public float prevEnergy = Float.NaN;
         public float prevStamina = Float.NaN;
         public long lastKiRefund = Long.MIN_VALUE / 2;
@@ -53,15 +63,13 @@ public final class AuraSealManager {
         public long lastToggle = Long.MIN_VALUE / 2;
         public long burstUntil;
         public long burstCooldownUntil;
+        public long lastCombat = Long.MIN_VALUE / 2;
         public boolean hidAura;
         public boolean auraWasOn;
-        public boolean strainWarned;
-        public boolean strainActive;
+        public boolean warnedFatigue;
         public int trainTicker;
         public int hudTicker;
         public String lastKey;
-        public double savedKi;
-        /** Regen do DMZ aplicada no mesmo tick do upkeep (o DMZ faz os dois no mesmo tick). */
         public double pendingKiRegen;
         public long kiRegenTick = Long.MIN_VALUE / 2;
         public double pendingStaminaRegen;
@@ -81,11 +89,6 @@ public final class AuraSealManager {
         return s != null && s.sealed;
     }
 
-    public static boolean isBursting(Player p) {
-        Session s = SESSIONS.get(p.getUUID());
-        return s != null && p.level().getGameTime() < s.burstUntil;
-    }
-
     public static void forget(UUID id) {
         SESSIONS.remove(id);
     }
@@ -100,7 +103,23 @@ public final class AuraSealManager {
         if (s != null && s.sealed) s.busyUntil = Math.max(s.busyUntil, p.level().getGameTime() + ticks);
     }
 
-    /** Registra a regen final do DMZ deste segundo (chamado pelo EnergyRegenEvent, prioridade LOWEST). */
+    public static void markCombat(Player p) {
+        Session s = SESSIONS.get(p.getUUID());
+        if (s != null) s.lastCombat = p.level().getGameTime();
+    }
+
+    /** Golpe recebido / tecnica disparada enquanto selado: segurar o ki fica mais dificil. */
+    public static void addStrainFromEvent(ServerPlayer sp, double percent) {
+        Session s = SESSIONS.get(sp.getUUID());
+        if (s == null || !s.sealed || !KiControlConfig.get().strain.enabled) return;
+        StatsData data = stats(sp);
+        String key = data == null ? null : formKey(data);
+        if (key == null) return;
+        double m = MasteryStore.mastery(sp, key);
+        if (m >= KiControlConfig.get().strain.strainFreeMastery) return;
+        s.strain = Math.min(1.0, s.strain + percent / 100.0 * (1.0 - m));
+    }
+
     public static void noteKiRegen(Player p, double amount) {
         Session s = SESSIONS.get(p.getUUID());
         if (s == null || !s.sealed) return;
@@ -183,6 +202,24 @@ public final class AuraSealManager {
         return Math.max(0.0, KiControlConfig.get().tierFor(key).maxCritBonus * MasteryStore.mastery(p, key));
     }
 
+    public static boolean isPerfect(Player p, String key) {
+        KiControlConfig.Strain st = KiControlConfig.get().strain;
+        return !st.enabled || MasteryStore.mastery(p, key) >= st.strainFreeMastery;
+    }
+
+    /** Tensao por segundo selado nesta forma (fracao 0..1). */
+    public static double strainPerSecond(Player p, String key) {
+        KiControlConfig c = KiControlConfig.get();
+        KiControlConfig.Strain st = c.strain;
+        if (!st.enabled) return 0.0;
+        double m = MasteryStore.mastery(p, key);
+        double free = Math.max(0.01, st.strainFreeMastery);
+        if (m >= free) return 0.0;
+        double relief = Math.pow(1.0 - m / free, Math.max(0.1, st.curve));
+        double formMul = Math.max(0.1, c.tierFor(key).trainTimeMultiplier);
+        return st.fillPercentPerSecond / 100.0 * formMul * relief;
+    }
+
     /** Bonus de dano total agora (selo + pico de liberacao). */
     public static double currentDamageBonus(ServerPlayer sp) {
         Session s = SESSIONS.get(sp.getUUID());
@@ -198,49 +235,74 @@ public final class AuraSealManager {
         return bonus;
     }
 
-    /** Ticks que o jogador aguenta selado nesta forma; -1 = sem limite (controle perfeito). */
-    public static int strainLimitTicks(Player p, String key) {
-        KiControlConfig.Strain st = KiControlConfig.get().strain;
-        if (!st.enabled) return -1;
-        double m = MasteryStore.mastery(p, key);
-        if (m >= st.strainFreeMastery) return -1;
-        return (int) Math.max(20, (st.baseSeconds + st.extraSecondsAtFullMastery * m) * 20.0);
-    }
-
     // ================================================================== acoes
 
-    public static void toggle(ServerPlayer sp) {
+    /** Tecla / botao do menu / comando. {@code cinematic} = o cliente vai mostrar a cutscene. */
+    public static void requestToggle(ServerPlayer sp, boolean cinematic) {
         Session s = session(sp);
         long now = sp.level().getGameTime();
+        if (s.pendingAt > 0) {           // apertou de novo durante a cutscene: pula direto para o selo
+            finishSeal(sp);
+            return;
+        }
         if (now - s.lastToggle < TOGGLE_COOLDOWN) return;
         s.lastToggle = now;
-        if (s.sealed) release(sp, ReleaseReason.VOLUNTARY);
-        else seal(sp);
+        if (s.sealed) {
+            release(sp, ReleaseReason.VOLUNTARY);
+            return;
+        }
+        StatsData data = stats(sp);
+        if (data == null || !canSeal(sp, data, s, true)) return;
+
+        KiControlConfig c = KiControlConfig.get();
+        int delay = Math.max(1, cinematic ? c.cutsceneSealDelayTicks : c.quickSealDelayTicks);
+        s.pendingAt = now + delay;
+        s.pendingCinematic = cinematic;
+        broadcastAnim(sp, cinematic ? SealAnimS2C.CUTSCENE : SealAnimS2C.QUICK);
+        if (!cinematic) sound(sp, SoundEvents.BEACON_POWER_SELECT, 0.5f, 1.8f);
+        sendHud(sp, data);
     }
 
-    public static boolean seal(ServerPlayer sp) {
-        Session s = session(sp);
-        if (s.sealed) return true;
-        StatsData data = stats(sp);
-        if (data == null) return false;
-
+    private static boolean canSeal(ServerPlayer sp, StatsData data, Session s, boolean tellPlayer) {
+        KiControlConfig c = KiControlConfig.get();
         if (!hasRequiredSkill(data)) {
-            sp.displayClientMessage(Component.translatable("message.dmzkicontrol.need_skill",
-                    Component.translatable("skill.dragonminez." + KiControlConfig.get().requiredSkill)), true);
+            if (tellPlayer) sp.displayClientMessage(Component.translatable("message.dmzkicontrol.need_skill",
+                    Component.translatable("skill.dragonminez." + c.requiredSkill)), true);
             return false;
         }
-        String key = formKey(data);
-        if (key == null) {
-            sp.displayClientMessage(Component.translatable("message.dmzkicontrol.need_form"), true);
+        if (formKey(data) == null) {
+            if (tellPlayer) sp.displayClientMessage(Component.translatable("message.dmzkicontrol.need_form"), true);
             return false;
         }
+        if (c.strain.enabled && s.strain * 100.0 >= c.strain.resealLockoutPercent) {
+            if (tellPlayer) sp.displayClientMessage(Component.translatable("message.dmzkicontrol.exhausted",
+                    pct(s.strain)).withStyle(ChatFormatting.RED), true);
+            return false;
+        }
+        return true;
+    }
 
+    /** Conclui um selo pendente (fim da animacao/cutscene). */
+    public static void finishSeal(ServerPlayer sp) {
+        Session s = SESSIONS.get(sp.getUUID());
+        if (s == null || s.pendingAt <= 0) return;
+        s.pendingAt = 0;
+        StatsData data = stats(sp);
+        if (data == null || !canSeal(sp, data, s, true)) {
+            broadcastAnim(sp, SealAnimS2C.CANCEL);
+            if (data != null) sendHud(sp, data);
+            return;
+        }
+        seal(sp, data, s);
+    }
+
+    private static void seal(ServerPlayer sp, StatsData data, Session s) {
+        String key = formKey(data);
         s.sealed = true;
         s.sealedTicks = 0;
         s.prevEnergy = Float.NaN;
         s.prevStamina = Float.NaN;
-        s.strainWarned = false;
-        s.strainActive = false;
+        s.warnedFatigue = false;
         s.trainTicker = 0;
         s.lastKey = key;
         s.busyUntil = sp.level().getGameTime() + 2;
@@ -254,20 +316,24 @@ public final class AuraSealManager {
             StatsDeltaSync.markDirty(sp);
         }
 
-        boolean stack = hasStackOnTop(data);
         sp.displayClientMessage(Component.translatable("message.dmzkicontrol.sealed",
-                pct(MasteryStore.mastery(sp, key)), pct(kiReduction(sp, key, stack)), pct(powerBonus(sp, key)))
+                pct(MasteryStore.mastery(sp, key)), pct(kiReduction(sp, key, hasStackOnTop(data))), pct(powerBonus(sp, key)))
                 .withStyle(ChatFormatting.AQUA), true);
         sound(sp, SoundEvents.BEACON_DEACTIVATE, 0.8f, 1.6f);
         sendHud(sp, data);
-        return true;
     }
 
     public enum ReleaseReason { VOLUNTARY, LOST_FORM, NO_SKILL, AURA_EXPANDED, CHARGED, STRAIN_BREAK, DEATH, SILENT }
 
     public static void release(ServerPlayer sp, ReleaseReason reason) {
         Session s = SESSIONS.get(sp.getUUID());
-        if (s == null || !s.sealed) return;
+        if (s == null) return;
+        if (s.pendingAt > 0 && !s.sealed) {     // cancelou durante a animacao
+            s.pendingAt = 0;
+            if (reason != ReleaseReason.SILENT && reason != ReleaseReason.DEATH) broadcastAnim(sp, SealAnimS2C.CANCEL);
+            return;
+        }
+        if (!s.sealed) return;
         KiControlConfig c = KiControlConfig.get();
         StatsData data = stats(sp);
         long now = sp.level().getGameTime();
@@ -278,9 +344,7 @@ public final class AuraSealManager {
         s.sealedTicks = 0;
         s.prevEnergy = Float.NaN;
         s.prevStamina = Float.NaN;
-        s.strainActive = false;
 
-        // devolve a aura permanente que escondemos (se o jogador a usava)
         if (data != null && s.hidAura && s.auraWasOn && reason != ReleaseReason.DEATH) {
             data.getStatus().setPermanentAura(true);
             StatsDeltaSync.markDirty(sp);
@@ -302,19 +366,26 @@ public final class AuraSealManager {
                     sp.displayClientMessage(Component.translatable("message.dmzkicontrol.released"), true);
                 }
                 sound(sp, SoundEvents.BEACON_ACTIVATE, 0.8f, 1.4f);
+                broadcastAnim(sp, SealAnimS2C.RELEASE);
             }
             case LOST_FORM -> sp.displayClientMessage(Component.translatable("message.dmzkicontrol.lost_form"), true);
             case NO_SKILL -> sp.displayClientMessage(Component.translatable("message.dmzkicontrol.lost_skill"), true);
-            case AURA_EXPANDED -> sp.displayClientMessage(Component.translatable("message.dmzkicontrol.aura_expanded"), true);
+            case AURA_EXPANDED -> {
+                sp.displayClientMessage(Component.translatable("message.dmzkicontrol.aura_expanded"), true);
+                broadcastAnim(sp, SealAnimS2C.RELEASE);
+            }
             case CHARGED -> sp.displayClientMessage(Component.translatable("message.dmzkicontrol.charged"), true);
             case STRAIN_BREAK -> {
                 if (data != null) {
                     var res = data.getResources();
-                    res.setCurrentEnergy((float) (res.getCurrentEnergy() * (1.0 - MasteryStore.clamp01(c.strain.kiLossOnBreak))));
+                    double loss = MasteryStore.clamp01(c.strain.kiLossOnBreakPercent / 100.0);
+                    res.setCurrentEnergy((float) (res.getCurrentEnergy() * (1.0 - loss)));
                 }
                 sp.displayClientMessage(Component.translatable("message.dmzkicontrol.strain_break")
                         .withStyle(ChatFormatting.RED), true);
+                sound(sp, SoundEvents.GENERIC_EXPLODE, 0.7f, 1.2f);
                 sound(sp, SoundEvents.FIRECHARGE_USE, 1.0f, 0.7f);
+                broadcastAnim(sp, SealAnimS2C.BREAK);
             }
             case DEATH, SILENT -> { }
         }
@@ -327,7 +398,6 @@ public final class AuraSealManager {
     public static void tick(ServerPlayer sp) {
         Session s = SESSIONS.get(sp.getUUID());
         if (s == null) {
-            // HUD "ocioso": mostra o dominio da forma atual de vez em quando
             if (sp.tickCount % 40 == 0) {
                 StatsData data = stats(sp);
                 if (data != null && formKey(data) != null) {
@@ -341,9 +411,23 @@ public final class AuraSealManager {
         StatsData data = stats(sp);
         if (data == null) return;
         KiControlConfig c = KiControlConfig.get();
+        long now = sp.level().getGameTime();
+
+        // ---- selo pedido (animacao / cutscene em andamento)
+        if (s.pendingAt > 0) {
+            if (formKey(data) == null) { release(sp, ReleaseReason.LOST_FORM); }
+            else if (now >= s.pendingAt) { finishSeal(sp); }
+        }
 
         if (!s.sealed) {
-            if (++s.hudTicker >= 40) {
+            // aura livre: o corpo se recupera
+            if (s.strain > 0) {
+                String key = formKey(data);
+                double m = key == null ? 0.0 : MasteryStore.mastery(sp, key);
+                s.strain = Math.max(0.0, s.strain - c.strain.recoverPercentPerSecond / 100.0 * (1.0 + m) / 20.0);
+            }
+            int interval = s.strain > 0 || s.pendingAt > 0 ? Math.max(1, c.hudSyncTicks) : 40;
+            if (++s.hudTicker >= interval) {
                 s.hudTicker = 0;
                 sendHud(sp, data);
             }
@@ -355,16 +439,12 @@ public final class AuraSealManager {
         if (!hasRequiredSkill(data)) { release(sp, ReleaseReason.NO_SKILL); return; }
 
         if (!key.equals(s.lastKey)) {
-            // trocou de forma sem sair do selo: recomeca a contagem de tensao, ignora o custo da troca
             s.lastKey = key;
-            s.sealedTicks = 0;
-            s.strainWarned = false;
             s.prevEnergy = Float.NaN;
             s.prevStamina = Float.NaN;
-            s.busyUntil = sp.level().getGameTime() + 5;
+            s.busyUntil = now + 5;
         }
 
-        // aura: o ki fica preso dentro do corpo
         if (c.hideAura && data.getStatus().isPermanentAura()) {
             if (c.auraToggleReleasesSeal) { release(sp, ReleaseReason.AURA_EXPANDED); return; }
             data.getStatus().setPermanentAura(false);
@@ -373,39 +453,32 @@ public final class AuraSealManager {
             StatsDeltaSync.markDirty(sp);
         }
 
-        long now = sp.level().getGameTime();
         boolean stack = hasStackOnTop(data);
         double reduction = kiReduction(sp, key, stack);
         var res = data.getResources();
         float energy = res.getCurrentEnergy();
         float stamina = res.getCurrentStamina();
-        boolean drainsApply = !sp.isCreative() && !sp.isSpectator();
-        // regen do DMZ deste segundo (registrada no mesmo tick ou no anterior); consumida uma unica vez
+        boolean survival = !sp.isCreative() && !sp.isSpectator();
         double kiRegenAdj = now - s.kiRegenTick <= 1 ? s.pendingKiRegen : 0.0;
         double stRegenAdj = now - s.staminaRegenTick <= 1 ? s.pendingStaminaRegen : 0.0;
         s.kiRegenTick = Long.MIN_VALUE / 2;
         s.staminaRegenTick = Long.MIN_VALUE / 2;
 
-        if (drainsApply && now >= s.busyUntil) {
-            // ---- ki
+        // ---- desconto do upkeep
+        if (survival && now >= s.busyUntil) {
             long expectedKi = Math.round(data.getEffectiveEnergyDrain());
             if (expectedKi > 0 && reduction > 0 && !Float.isNaN(s.prevEnergy)) {
-                float drop = s.prevEnergy - energy;
-                drop += (float) kiRegenAdj; // desconta a regen aplicada junto com o upkeep
+                float drop = s.prevEnergy - energy + (float) kiRegenAdj;
                 if (drop >= expectedKi * UPKEEP_MATCH && now - s.lastKiRefund >= REFUND_COOLDOWN) {
-                    float refund = (float) (Math.min(drop, expectedKi) * reduction);
-                    res.setCurrentEnergy(energy + refund);   // o DMZ ja limita ao maximo
+                    res.setCurrentEnergy(energy + (float) (Math.min(drop, expectedKi) * reduction));
                     energy = res.getCurrentEnergy();
                     s.lastKiRefund = now;
-                    s.savedKi += refund;
                 }
             }
-            // ---- estamina
             double stRed = reduction * MasteryStore.clamp01(c.staminaReductionShare);
             long expectedSt = Math.round(data.getEffectiveStaminaDrain());
             if (expectedSt > 0 && stRed > 0 && !Float.isNaN(s.prevStamina)) {
-                float drop = s.prevStamina - stamina;
-                drop += (float) stRegenAdj;
+                float drop = s.prevStamina - stamina + (float) stRegenAdj;
                 if (drop >= expectedSt * UPKEEP_MATCH && now - s.lastStaminaRefund >= REFUND_COOLDOWN) {
                     res.setCurrentStamina(stamina + (float) (Math.min(drop, expectedSt) * stRed));
                     stamina = res.getCurrentStamina();
@@ -413,53 +486,54 @@ public final class AuraSealManager {
                 }
             }
         }
-        s.prevEnergy = energy;
-        s.prevStamina = stamina;
 
-        // ---- treino: 1 s de pratica por segundo selado, acelerado pelo dominio de forma do DMZ
+        // ---- tensao: enche selado; com controle perfeito, alivia mesmo selado
+        double perSecond = strainPerSecond(sp, key);
+        if (perSecond > 0) s.strain = Math.min(1.0, s.strain + perSecond / 20.0);
+        else if (s.strain > 0) s.strain = Math.max(0.0, s.strain - c.strain.recoverPercentPerSecond / 100.0 / 20.0);
+
+        // ---- treino organico (uma vez por segundo)
         if (++s.trainTicker >= 20) {
             s.trainTicker = 0;
-            double speed = 1.0 + dmzFormMastery(data) * Math.max(0.0, c.dmzMasteryTrainBoost);
-            double before = MasteryStore.mastery(sp, key);
-            MasteryStore.addTrained(sp, key, speed);
-            double after = MasteryStore.mastery(sp, key);
-            if (before < 1.0 && after >= 1.0) {
-                sp.displayClientMessage(Component.translatable("message.dmzkicontrol.perfect", key)
-                        .withStyle(ChatFormatting.LIGHT_PURPLE), false);
-                sound(sp, SoundEvents.PLAYER_LEVELUP, 0.7f, 1.2f);
-            } else if (c.strain.enabled && before < c.strain.strainFreeMastery && after >= c.strain.strainFreeMastery) {
-                sp.displayClientMessage(Component.translatable("message.dmzkicontrol.no_more_strain", key)
-                        .withStyle(ChatFormatting.AQUA), false);
-            }
+            train(sp, data, s, key, c);
         }
 
-        // ---- tensao interna
+        // ---- efeitos da tensao
         s.sealedTicks++;
-        int limit = strainLimitTicks(sp, key);
-        if (limit > 0) {
-            if (!s.strainWarned && s.sealedTicks >= limit * 0.8) {
-                s.strainWarned = true;
-                sp.displayClientMessage(Component.translatable("message.dmzkicontrol.strain_warning")
-                        .withStyle(ChatFormatting.YELLOW), true);
+        if (c.strain.enabled) {
+            KiControlConfig.Strain st = c.strain;
+            double pctStrain = s.strain * 100.0;
+            if (s.strain >= 1.0) {
+                release(sp, ReleaseReason.STRAIN_BREAK);
+                return;
             }
-            if (s.sealedTicks > limit) {
-                s.strainActive = true;
-                KiControlConfig.Strain st = c.strain;
-                if (s.sealedTicks >= limit * Math.max(1.0, st.breakAtLimitMultiplier)) {
-                    release(sp, ReleaseReason.STRAIN_BREAK);
-                    return;
+            if (pctStrain >= st.fatiguePercent) {
+                if (!s.warnedFatigue) {
+                    s.warnedFatigue = true;
+                    sp.displayClientMessage(Component.translatable("message.dmzkicontrol.strain_warning")
+                            .withStyle(ChatFormatting.YELLOW), true);
                 }
-                if ((s.sealedTicks - limit) % Math.max(1, st.pulseTicks) == 0 && drainsApply) {
-                    float hpLoss = (float) (sp.getMaxHealth() * MasteryStore.clamp01(st.healthPercentPerPulse));
-                    sp.setHealth(Math.max(1.0f, sp.getHealth() - hpLoss)); // tensao nao mata sozinha
-                    res.setCurrentStamina((float) (res.getCurrentStamina() - data.getMaxStamina() * MasteryStore.clamp01(st.staminaPercentPerPulse)));
-                    s.prevStamina = res.getCurrentStamina();
-                    sp.displayClientMessage(Component.translatable("message.dmzkicontrol.strain")
-                            .withStyle(ChatFormatting.RED), true);
-                    sound(sp, SoundEvents.PLAYER_HURT, 0.6f, 0.6f);
+                if (survival && sp.tickCount % 20 == 0) {
+                    res.setCurrentStamina((float) (res.getCurrentStamina()
+                            - data.getMaxStamina() * MasteryStore.clamp01(st.staminaPercentPerSecond / 100.0)));
+                    stamina = res.getCurrentStamina();
                 }
+            } else if (pctStrain < st.fatiguePercent - 10.0) {
+                s.warnedFatigue = false;
+            }
+            if (survival && pctStrain >= st.slownessPercent && sp.tickCount % 10 == 0) {
+                sp.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 0, true, false, true));
+            }
+            if (survival && pctStrain >= st.hurtPercent && sp.tickCount % Math.max(1, st.pulseTicks) == 0) {
+                float hpLoss = (float) (sp.getMaxHealth() * MasteryStore.clamp01(st.healthPercentPerPulse / 100.0));
+                sp.setHealth(Math.max(1.0f, sp.getHealth() - hpLoss));
+                sp.displayClientMessage(Component.translatable("message.dmzkicontrol.strain")
+                        .withStyle(ChatFormatting.RED), true);
+                sound(sp, SoundEvents.PLAYER_HURT, 0.6f, 0.6f);
             }
         }
+        s.prevEnergy = energy;
+        s.prevStamina = stamina;
 
         if (++s.hudTicker >= Math.max(1, c.hudSyncTicks)) {
             s.hudTicker = 0;
@@ -467,24 +541,65 @@ public final class AuraSealManager {
         }
     }
 
-    // ================================================================== HUD / util
+    /** 1 s de pratica, ponderado pela situacao. */
+    private static void train(ServerPlayer sp, StatsData data, Session s, String key, KiControlConfig c) {
+        KiControlConfig.Mastery mc = c.mastery;
+        long now = sp.level().getGameTime();
+        double gain = 1.0 + dmzFormMastery(data) * Math.max(0.0, c.dmzMasteryTrainBoost);
+        if (now - s.lastCombat <= mc.combatWindowSeconds * 20.0) gain *= Math.max(0.0, mc.combatMultiplier);
+        double pctStrain = s.strain * 100.0;
+        if (pctStrain >= c.strain.hurtPercent) gain *= Math.max(0.0, mc.overstrainMultiplier);
+        else if (pctStrain >= 40.0) gain *= Math.max(0.0, mc.pushingLimitMultiplier);
+
+        double before = MasteryStore.mastery(sp, key);
+        MasteryStore.addTrained(sp, key, gain);
+        double after = MasteryStore.mastery(sp, key);
+
+        int[] milestones = {25, 50, 75};
+        for (int ms : milestones) {
+            if (before * 100 < ms && after * 100 >= ms) {
+                sp.displayClientMessage(Component.translatable("message.dmzkicontrol.milestone_" + ms, key)
+                        .withStyle(ChatFormatting.AQUA), false);
+                sound(sp, SoundEvents.EXPERIENCE_ORB_PICKUP, 0.5f, 0.8f);
+            }
+        }
+        if (c.strain.enabled && before < c.strain.strainFreeMastery && after >= c.strain.strainFreeMastery) {
+            sp.displayClientMessage(Component.translatable("message.dmzkicontrol.no_more_strain", key)
+                    .withStyle(ChatFormatting.AQUA), false);
+            sound(sp, SoundEvents.EXPERIENCE_ORB_PICKUP, 0.6f, 1.2f);
+        }
+        if (before < 1.0 && after >= 1.0) {
+            sp.displayClientMessage(Component.translatable("message.dmzkicontrol.perfect", key)
+                    .withStyle(ChatFormatting.LIGHT_PURPLE), false);
+            sound(sp, SoundEvents.PLAYER_LEVELUP, 0.7f, 1.2f);
+        }
+    }
+
+    // ================================================================== rede / util
 
     public static void sendHud(ServerPlayer sp, StatsData data) {
         Session s = session(sp);
         String key = formKey(data);
         boolean skill = hasRequiredSkill(data);
-        float mastery = 0f, red = 0f, power = 0f, strain = -1f;
+        float mastery = 0f, red = 0f, power = 0f;
+        boolean perfect = false;
         if (key != null) {
             mastery = (float) MasteryStore.mastery(sp, key);
             red = (float) kiReduction(sp, key, hasStackOnTop(data));
             power = (float) powerBonus(sp, key);
-            int limit = strainLimitTicks(sp, key);
-            if (limit > 0) strain = s.sealed ? (float) s.sealedTicks / limit : 0f;
+            perfect = isPerfect(sp, key);
         }
         int burstTicks = (int) Math.max(0, s.burstUntil - sp.level().getGameTime());
+        KiControlConfig.Strain st = KiControlConfig.get().strain;
         KiControlNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
-                new SealStateS2C(s.sealed, key == null ? "" : key, skill, mastery, red, power, strain,
-                        (float) Math.max(1.0, KiControlConfig.get().strain.breakAtLimitMultiplier), burstTicks));
+                new SealStateS2C(s.sealed, s.pendingAt > 0, key == null ? "" : key, skill, mastery, red, power,
+                        (float) s.strain, perfect, (float) (st.fatiguePercent / 100.0), (float) (st.hurtPercent / 100.0),
+                        burstTicks));
+    }
+
+    private static void broadcastAnim(ServerPlayer sp, byte type) {
+        KiControlNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> sp),
+                new SealAnimS2C(sp.getId(), type));
     }
 
     private static void sound(ServerPlayer sp, SoundEvent ev, float vol, float pitch) {

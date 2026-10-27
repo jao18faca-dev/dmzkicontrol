@@ -10,11 +10,16 @@ import java.util.Map;
 /**
  * Dominio do selo por forma, salvo nos dados persistentes do jogador (sobrevive a morte e
  * fica separado dos dados do DMZ - nao mexemos no save do DMZ).
- * Guardamos "segundos de pratica efetivos" por chave "grupo:forma".
+ * Guardamos "pratica efetiva" (segundos ponderados pela situacao) por chave "grupo:forma".
+ *
+ * <p>Curva organica: dominio = inicial + (1 - inicial) x (1 - e^(-k x pratica / escala)).
+ * Os primeiros minutos rendem muito, depois cada ponto custa mais, e a perfeicao exige dedicacao.
  */
 public final class MasteryStore {
     private static final String NBT_ROOT = "dmzkicontrol";
     private static final String NBT_TRAINED = "trained";
+    /** Acima disto o dominio e arredondado para 100% (senao a exponencial nunca chega la). */
+    private static final double SNAP_TO_PERFECT = 0.995;
 
     private MasteryStore() {}
 
@@ -67,29 +72,34 @@ public final class MasteryStore {
         writeModTag(to, old.getCompound(NBT_ROOT).copy());
     }
 
-    /** Segundos de pratica necessarios para 100% nesta forma. */
-    public static double secondsForFull(String key) {
+    /** Escala de pratica desta forma (trainSeconds x trainTimeMultiplier do tier). */
+    public static double scaleFor(String key) {
         KiControlConfig c = KiControlConfig.get();
         double mul = Math.max(0.05, c.tierFor(key).trainTimeMultiplier);
         return Math.max(1.0, c.trainSeconds * mul);
     }
 
+    private static double steepness() {
+        return Math.max(0.1, KiControlConfig.get().mastery.curveSteepness);
+    }
+
     /** Dominio 0..1 nesta forma. */
     public static double mastery(Player p, String key) {
         if (key == null) return 0.0;
-        KiControlConfig c = KiControlConfig.get();
-        double frac = Math.min(1.0, getTrained(p, key) / secondsForFull(key));
-        double start = clamp01(c.startingMastery);
-        return clamp01(start + (1.0 - start) * frac);
+        double start = clamp01(KiControlConfig.get().startingMastery);
+        double progress = 1.0 - Math.exp(-steepness() * getTrained(p, key) / scaleFor(key));
+        double m = start + (1.0 - start) * progress;
+        return m >= SNAP_TO_PERFECT ? 1.0 : clamp01(m);
     }
 
-    /** Define o dominio (0..1) convertendo para segundos de pratica. */
+    /** Define o dominio (0..1) convertendo para pratica (inverso da curva). */
     public static void setMastery(Player p, String key, double mastery) {
-        KiControlConfig c = KiControlConfig.get();
-        double start = clamp01(c.startingMastery);
+        double start = clamp01(KiControlConfig.get().startingMastery);
         double m = clamp01(mastery);
-        double frac = start >= 1.0 ? 1.0 : Math.max(0.0, (m - start) / (1.0 - start));
-        setTrained(p, key, frac * secondsForFull(key));
+        if (m <= start) { setTrained(p, key, 0.0); return; }
+        double progress = Math.min(SNAP_TO_PERFECT + 0.004, (m - start) / Math.max(1e-6, 1.0 - start));
+        double trained = -Math.log(1.0 - progress) * scaleFor(key) / steepness();
+        setTrained(p, key, trained);
     }
 
     static double clamp01(double v) {
