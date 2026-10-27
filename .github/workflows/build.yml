@@ -10,7 +10,7 @@ on:
     branches: [ main, master ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -59,3 +59,25 @@ jobs:
           path: |
             build/libs/dmzkicontrol-*.jar
             !build/libs/*-sources.jar
+
+      - name: Publicar na branch "builds" e numa Release
+        run: |
+          set -euo pipefail
+          JAR=$(ls build/libs/dmzkicontrol-*.jar | grep -v sources | head -1)
+          VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2 | tr -d '\r')
+          mkdir -p /tmp/pub && cp "$JAR" /tmp/pub/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan builds-tmp
+          git rm -rf -q .
+          git clean -fdxq
+          cp /tmp/pub/*.jar .
+          printf 'Jar gerado a partir de %s\n' "$GITHUB_SHA" > LEIA-ME.txt
+          git add -A
+          git commit -q -m "build $VERSION ($GITHUB_SHA)"
+          git push -f origin builds-tmp:builds
+          gh release delete "v$VERSION" -y --cleanup-tag 2>/dev/null || true
+          gh release create "v$VERSION" /tmp/pub/*.jar --title "DMZ Ki Control $VERSION" \
+            --notes "Build automatico do commit $GITHUB_SHA. Coloque o jar na pasta mods junto com o DragonMineZ." --target "$GITHUB_SHA"
+        env:
+          GH_TOKEN: ${{ github.token }}
