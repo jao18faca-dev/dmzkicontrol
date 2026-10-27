@@ -107,6 +107,8 @@ public final class ClientSetup {
         @SubscribeEvent
         public static void onRenderTick(TickEvent.RenderTickEvent event) {
             CutsceneController.lockRotation();
+            if (event.phase == TickEvent.Phase.START) SealAnimations.hideAurasForFrame();
+            else SealAnimations.restoreAurasAfterFrame();
         }
 
         @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -148,6 +150,7 @@ public final class ClientSetup {
         public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
             ClientSealState.reset();
             CutsceneController.resetSession();
+            SealAnimations.clearSealed();
         }
     }
 }

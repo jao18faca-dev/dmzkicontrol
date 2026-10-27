@@ -37,6 +37,10 @@ public final class SealAnimations {
     private static final Map<Integer, Object[]> STOPS = new HashMap<>();
     /** entityId -> [tipo, tick de inicio] das particulas em andamento. */
     private static final Map<Integer, long[]> FX = new HashMap<>();
+    /** Jogadores com a aura selada (todas as auras do DMZ deles ficam escondidas). */
+    private static final java.util.Set<Integer> SEALED = new java.util.HashSet<>();
+    /** entityId -> {auraActive, permanentAura, forcedAura} originais durante o frame. */
+    private static final Map<Integer, boolean[]> SAVED = new HashMap<>();
     private static boolean warned;
 
     private SealAnimations() {}
@@ -69,6 +73,8 @@ public final class SealAnimations {
     public static void onPacket(int entityId, byte type) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
+        if (type == SealAnimS2C.SEALED_ON) { SEALED.add(entityId); return; }
+        if (type == SealAnimS2C.SEALED_OFF) { SEALED.remove(entityId); return; }
         Entity e = mc.level.getEntity(entityId);
         if (!(e instanceof AbstractClientPlayer player)) return;
         boolean self = mc.player != null && player.getId() == mc.player.getId();
@@ -122,7 +128,7 @@ public final class SealAnimations {
     /** Fim de cada animacao: devolve o controle das poses ao DMZ (se ninguem trocou a animacao antes). */
     public static void clientTick() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) { STOPS.clear(); FX.clear(); return; }
+        if (mc.level == null) { STOPS.clear(); FX.clear(); SEALED.clear(); return; }
         long now = mc.level.getGameTime();
         tickEffects(mc, now);
         Iterator<Map.Entry<Integer, Object[]>> it = STOPS.entrySet().iterator();
@@ -157,5 +163,48 @@ public final class SealAnimations {
                 it.remove();
             }
         }
+    }
+
+    public static void clearSealed() {
+        SEALED.clear();
+        SAVED.clear();
+    }
+
+    /**
+     * O ki fica dentro do corpo: so durante o desenho do frame, desligamos na copia LOCAL dos dados
+     * do DMZ as flags que fazem a aura aparecer, e devolvemos os valores no fim do frame. O servidor
+     * e a logica do DMZ nunca veem essa mudanca.
+     */
+    public static void hideAurasForFrame() {
+        if (SEALED.isEmpty()) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return;
+        for (int id : SEALED) {
+            Entity e = mc.level.getEntity(id);
+            if (e == null) continue;
+            com.dragonminez.common.stats.StatsProvider.get(com.dragonminez.common.stats.StatsCapability.INSTANCE, e).ifPresent(data -> {
+                var st = data.getStatus();
+                SAVED.put(id, new boolean[]{st.isAuraActive(), st.isPermanentAura()});
+                st.setAuraActive(false);
+                st.setPermanentAura(false);
+            });
+        }
+    }
+
+    public static void restoreAurasAfterFrame() {
+        if (SAVED.isEmpty()) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level != null) {
+            for (Map.Entry<Integer, boolean[]> en : SAVED.entrySet()) {
+                Entity e = mc.level.getEntity(en.getKey());
+                if (e == null) continue;
+                boolean[] v = en.getValue();
+                com.dragonminez.common.stats.StatsProvider.get(com.dragonminez.common.stats.StatsCapability.INSTANCE, e).ifPresent(data -> {
+                    data.getStatus().setAuraActive(v[0]);
+                    data.getStatus().setPermanentAura(v[1]);
+                });
+            }
+        }
+        SAVED.clear();
     }
 }

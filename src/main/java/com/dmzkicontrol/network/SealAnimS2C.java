@@ -15,6 +15,9 @@ public record SealAnimS2C(int entityId, byte type) {
     public static final byte RELEASE = 2;
     public static final byte BREAK = 3;
     public static final byte CANCEL = 4;
+    /** Estado: aura selada (esconde todas as auras do DMZ desse jogador) / livre. */
+    public static final byte SEALED_ON = 5;
+    public static final byte SEALED_OFF = 6;
 
     public static void encode(SealAnimS2C m, FriendlyByteBuf buf) {
         buf.writeVarInt(m.entityId);

@@ -299,6 +299,7 @@ public final class AuraSealManager {
     private static void seal(ServerPlayer sp, StatsData data, Session s) {
         String key = formKey(data);
         s.sealed = true;
+        if (KiControlConfig.get().hideAura) broadcastAnim(sp, SealAnimS2C.SEALED_ON);
         s.sealedTicks = 0;
         s.prevEnergy = Float.NaN;
         s.prevStamina = Float.NaN;
@@ -341,6 +342,7 @@ public final class AuraSealManager {
         String key = s.lastKey;
 
         s.sealed = false;
+        broadcastAnim(sp, SealAnimS2C.SEALED_OFF);
         s.sealedTicks = 0;
         s.prevEnergy = Float.NaN;
         s.prevStamina = Float.NaN;
@@ -595,6 +597,14 @@ public final class AuraSealManager {
                 new SealStateS2C(s.sealed, s.pendingAt > 0, key == null ? "" : key, skill, mastery, red, power,
                         (float) s.strain, perfect, (float) (st.fatiguePercent / 100.0), (float) (st.hurtPercent / 100.0),
                         burstTicks));
+    }
+
+    /** Quem passa a ver um jogador selado tambem precisa esconder a aura dele. */
+    public static void onStartTracking(ServerPlayer viewer, Player target) {
+        Session s = SESSIONS.get(target.getUUID());
+        if (s != null && s.sealed && KiControlConfig.get().hideAura) {
+            KiControlNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> viewer), new SealAnimS2C(target.getId(), SealAnimS2C.SEALED_ON));
+        }
     }
 
     private static void broadcastAnim(ServerPlayer sp, byte type) {

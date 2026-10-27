@@ -160,6 +160,13 @@ public final class ServerHooks {
     }
 
     @SubscribeEvent
+    public static void onStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getEntity() instanceof ServerPlayer viewer && event.getTarget() instanceof Player target) {
+            AuraSealManager.onStartTracking(viewer, target);
+        }
+    }
+
+    @SubscribeEvent
     public static void onClone(PlayerEvent.Clone event) {
         MasteryStore.copy(event.getOriginal(), event.getEntity());
     }
