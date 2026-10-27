@@ -146,6 +146,13 @@ public final class ClientSetup {
             if (CutsceneController.isActive() && !CUTSCENE_OVERLAY.equals(event.getOverlay().id())) event.setCanceled(true);
         }
 
+        /** Renascer/trocar de dimensao recria o jogador local com outro id: zera os estados por id. */
+        @SubscribeEvent
+        public static void onClientClone(ClientPlayerNetworkEvent.Clone event) {
+            SealAnimations.clearSealed();
+            CutsceneController.stop();
+        }
+
         @SubscribeEvent
         public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
             ClientSealState.reset();

@@ -26,12 +26,13 @@ public final class ServerHooks {
 
     // ------------------------------------------------------------ poder
 
-    /** Bonus de dano do selo e do pico de liberacao (melee, strike e ki quando o DMZ posta). */
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onDamageModify(DMZEvent.DamageModifyEvent event) {
-        if (!(event.getAttacker() instanceof ServerPlayer sp)) return;
-        double bonus = AuraSealManager.currentDamageBonus(sp);
-        if (bonus > 0.0) event.setAmount(event.getAmount() * (1.0 + bonus));
+    // O bonus de poder agora entra no multiplicador do DMZ (AuraSealManager.updatePowerEffect),
+    // entao nao multiplicamos mais o dano aqui (seria contado duas vezes).
+
+    /** Limpa o efeito de poder que possa ter sobrado de uma sessao anterior. */
+    @SubscribeEvent
+    public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer sp) AuraSealManager.clearPowerEffect(sp);
     }
 
     /** Ki controlado = golpes mais precisos. */
@@ -164,6 +165,18 @@ public final class ServerHooks {
         if (event.getEntity() instanceof ServerPlayer viewer && event.getTarget() instanceof Player target) {
             AuraSealManager.onStartTracking(viewer, target);
         }
+    }
+
+    @SubscribeEvent
+    public static void onStopTracking(PlayerEvent.StopTracking event) {
+        if (event.getEntity() instanceof ServerPlayer viewer && event.getTarget() instanceof Player target) {
+            AuraSealManager.onStopTracking(viewer, target);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer sp) AuraSealManager.resendSealedState(sp);
     }
 
     @SubscribeEvent

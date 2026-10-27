@@ -220,12 +220,13 @@ public final class AuraSealManager {
         return st.fillPercentPerSecond / 100.0 * formMul * relief;
     }
 
-    /** Bonus de dano total agora (selo + pico de liberacao). */
-    public static double currentDamageBonus(ServerPlayer sp) {
+    /** Nome do efeito de multiplicador que o selo coloca no sistema de efeitos do DMZ. */
+    public static final String POWER_EFFECT = "dmzkicontrol_seal";
+
+    /** Bonus de poder total agora (selo + pico de liberacao), como fracao do multiplicador da forma. */
+    public static double currentPowerBonus(ServerPlayer sp, StatsData data) {
         Session s = SESSIONS.get(sp.getUUID());
-        if (s == null) return 0.0;
-        StatsData data = stats(sp);
-        if (data == null) return 0.0;
+        if (s == null || data == null) return 0.0;
         String key = formKey(data);
         if (key == null) return 0.0;
         double bonus = s.sealed ? powerBonus(sp, key) : 0.0;
@@ -233,6 +234,53 @@ public final class AuraSealManager {
             bonus += KiControlConfig.get().burst.damageBonus * MasteryStore.mastery(sp, key);
         }
         return bonus;
+    }
+
+    /**
+     * Aplica o bonus de poder DENTRO do multiplicador do DMZ (sistema de efeitos, o mesmo da Fruta da
+     * Arvore do Poder): sobe STR, SKP e PWR (e metade em DEF) de verdade, entao muda o power level e
+     * os status, nao so o dano final.
+     *
+     * <p>O bonus e uma porcentagem do multiplicador da forma: no modo multiplicativo do DMZ o efeito
+     * vale (1 + bonus); no modo aditivo (padrao) vale (1 + multForma x bonus), que da o mesmo resultado
+     * em cima da forma. Ex.: SSJ3 x3.3 com +8% vira x3.56.
+     */
+    public static void updatePowerEffect(ServerPlayer sp, StatsData data) {
+        try {
+            var effects = data.getEffects();
+            double bonus = currentPowerBonus(sp, data);
+            if (bonus <= 0.0001) {
+                if (effects.hasEffect(POWER_EFFECT)) {
+                    effects.removeEffect(POWER_EFFECT);
+                    StatsDeltaSync.markDirty(sp);
+                }
+                return;
+            }
+            boolean multiplicative = Boolean.TRUE.equals(com.dragonminez.common.config.ConfigManager.getServerConfig()
+                    .getGameplay().getMultiplicationInsteadOfAdditionForMultipliers());
+            double power;
+            if (multiplicative) {
+                power = 1.0 + bonus;
+            } else {
+                double formMult = data.getFormMultiplier("STR") + (data.getStackFormMultiplier("STR") - 1.0);
+                power = 1.0 + Math.max(1.0, formMult) * bonus;
+            }
+            if (!effects.hasEffect(POWER_EFFECT) || Math.abs(effects.getEffectPower(POWER_EFFECT) - power) > 1e-4) {
+                effects.addEffect(POWER_EFFECT, power, -1); // removido ao liberar/deslogar/logar
+                StatsDeltaSync.markDirty(sp);
+            }
+        } catch (RuntimeException e) {
+            // config do DMZ ainda nao carregada etc.: tenta de novo no proximo ciclo
+        }
+    }
+
+    /** Remove o efeito que tenha sobrado (ex.: servidor fechado com o selo ativo). */
+    public static void clearPowerEffect(ServerPlayer sp) {
+        StatsData data = stats(sp);
+        if (data != null && data.getEffects().hasEffect(POWER_EFFECT)) {
+            data.getEffects().removeEffect(POWER_EFFECT);
+            StatsDeltaSync.markDirty(sp);
+        }
     }
 
     // ================================================================== acoes
@@ -321,6 +369,7 @@ public final class AuraSealManager {
                 pct(MasteryStore.mastery(sp, key)), pct(kiReduction(sp, key, hasStackOnTop(data))), pct(powerBonus(sp, key)))
                 .withStyle(ChatFormatting.AQUA), true);
         sound(sp, SoundEvents.BEACON_DEACTIVATE, 0.8f, 1.6f);
+        updatePowerEffect(sp, data);
         sendHud(sp, data);
     }
 
@@ -391,7 +440,11 @@ public final class AuraSealManager {
             }
             case DEATH, SILENT -> { }
         }
-        if (data != null) sendHud(sp, data);
+        if (data != null) {
+            if (reason == ReleaseReason.SILENT) clearPowerEffect(sp);
+            else updatePowerEffect(sp, data);
+            sendHud(sp, data);
+        }
     }
 
     // ================================================================== tick
@@ -402,6 +455,7 @@ public final class AuraSealManager {
         if (s == null) {
             if (sp.tickCount % 40 == 0) {
                 StatsData data = stats(sp);
+                if (data != null && data.getEffects().hasEffect(POWER_EFFECT)) clearPowerEffect(sp); // sobra de save antigo
                 if (data != null && formKey(data) != null) {
                     session(sp);
                     sendHud(sp, data);
@@ -420,6 +474,8 @@ public final class AuraSealManager {
             if (formKey(data) == null) { release(sp, ReleaseReason.LOST_FORM); }
             else if (now >= s.pendingAt) { finishSeal(sp); }
         }
+
+        if (sp.tickCount % 5 == 0) updatePowerEffect(sp, data); // pico de liberacao acabando, mudanca de forma etc.
 
         if (!s.sealed) {
             // aura livre: o corpo se recupera
@@ -605,6 +661,20 @@ public final class AuraSealManager {
         if (s != null && s.sealed && KiControlConfig.get().hideAura) {
             KiControlNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> viewer), new SealAnimS2C(target.getId(), SealAnimS2C.SEALED_ON));
         }
+    }
+
+    /** Quem deixa de ver o jogador esquece o estado dele (os ids de entidade sao reaproveitados). */
+    public static void onStopTracking(ServerPlayer viewer, Player target) {
+        Session s = SESSIONS.get(target.getUUID());
+        if (s != null && s.sealed) {
+            KiControlNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> viewer), new SealAnimS2C(target.getId(), SealAnimS2C.SEALED_OFF));
+        }
+    }
+
+    /** Trocou de dimensao/renasceu: o id de entidade mudou, reenvia o estado do selo. */
+    public static void resendSealedState(ServerPlayer sp) {
+        Session s = SESSIONS.get(sp.getUUID());
+        if (s != null && s.sealed && KiControlConfig.get().hideAura) broadcastAnim(sp, SealAnimS2C.SEALED_ON);
     }
 
     private static void broadcastAnim(ServerPlayer sp, byte type) {

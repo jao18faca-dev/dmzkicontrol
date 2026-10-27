@@ -30,7 +30,7 @@ public class KiControlConfig {
     public static class Tier {
         /** Fracao do upkeep de ki da forma que voce deixa de pagar (0.80 = -80%). */
         public double maxKiReduction;
-        /** Bonus de dano (melee, ki e strike) enquanto selado (0.10 = +10%). */
+        /** Bonus no multiplicador da forma enquanto selado (0.10 = forma x1.10): sobe STR, SKP, PWR (metade em DEF) e o power level. */
         public double maxPowerBonus;
         /** Chance de critico extra somada (0.05 = +5 pontos percentuais). */
         public double maxCritBonus;
@@ -116,7 +116,7 @@ public class KiControlConfig {
         public double minSealSeconds = 20.0;
         /** Duracao do pico em segundos. */
         public double durationSeconds = 6.0;
-        /** Bonus de dano do pico com 100% de dominio (somado ao bonus normal). */
+        /** Bonus no multiplicador da forma durante o pico, com 100% de dominio (somado ao bonus normal). */
         public double damageBonus = 0.15;
         /** Tempo de recarga entre picos, em segundos. */
         public double cooldownSeconds = 30.0;

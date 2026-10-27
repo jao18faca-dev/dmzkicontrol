@@ -22,7 +22,7 @@ O add-on segue as regras da [wiki de Add-on Development](https://wiki.dragonmine
    |---|---|
    | **Upkeep de ki reduzido** | Devolve parte do custo por segundo da forma, até **-80% no Blue** com domínio total. A estamina da forma também cai (metade da redução, configurável). |
    | **Aura escondida** | A aura permanente some enquanto o selo está ativo e volta quando você libera. |
-   | **Um pouco mais forte** | Ganha bônus de dano (melee, strike e ki) e de chance de crítico. |
+   | **Um pouco mais forte** | O bônus entra **no multiplicador da forma** do DMZ, como uma porcentagem dele: no SSJ3 (×3,3), +8% vira ×3,56. Isso sobe STR, SKP e PWR (e metade em DEF), então aparece no power level e nos status. Também dá chance de crítico extra. |
    | **Ki não vaza** | A regeneração de ki fica um pouco maior (+15% com domínio total). |
    | **Domínio por forma** | Cada forma tem o próprio domínio. A curva é orgânica: sobe rápido no começo e fica cada vez mais lenta perto da perfeição. O treino rende **1,75×** lutando, **1,5×** forçando o limite (tensão entre 40% e 90%) e menos perdendo o controle. Ter domínio alto da forma no DMZ também acelera. |
 5. **Tensão (cansaço):** um medidor no estilo dos medidores laterais do DMZ, do lado direito da tela, enche enquanto a aura está selada. Quanto maior o domínio, mais devagar ele enche, e formas fortes como o Blue cansam o dobro. Golpes recebidos e técnicas de ki também enchem o medidor.
