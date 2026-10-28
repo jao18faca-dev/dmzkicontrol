@@ -27,7 +27,7 @@ import java.util.Locale;
 
 /**
  * Orelhas pontudas dos Cerealianos (na cor da pele) e o modelo da Mira Cereal (a lente do Granolah:
- * faixa de couro na testa, protetor redondo na orelha direita e lente cilindrica no olho esquerdo).
+ * faixa de couro na testa, protetor redondo na orelha direita e lente cilindrica no olho direito, do mesmo lado do protetor).
  * E uma camada comum de jogador: o DMZ repassa camadas de outros mods para o modelo dele, ja com a
  * cabeca na pose certa.
  */
@@ -77,11 +77,11 @@ public class CerealPartsLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         scope.addOrReplaceChild("ear_rim", CubeListBuilder.create().texOffs(20, 32)
                 .addBox(-6.7F, -4.6F, -2.0F, 1, 4, 4), PartPose.ZERO);
         scope.addOrReplaceChild("lens_housing", CubeListBuilder.create().texOffs(32, 32)
-                .addBox(0.6F, -5.6F, -6.4F, 3, 3, 3), PartPose.ZERO);
+                .addBox(-3.6F, -5.6F, -6.4F, 3, 3, 3), PartPose.ZERO);
         scope.addOrReplaceChild("lens_ring", CubeListBuilder.create().texOffs(32, 40)
-                .addBox(0.6F, -5.6F, -6.9F, 3, 3, 1, new CubeDeformation(0.25F)), PartPose.ZERO);
+                .addBox(-3.6F, -5.6F, -6.9F, 3, 3, 1, new CubeDeformation(0.25F)), PartPose.ZERO);
         scope.addOrReplaceChild("lens_glass", CubeListBuilder.create().texOffs(32, 48)
-                .addBox(1.1F, -5.1F, -7.2F, 2, 2, 1), PartPose.ZERO);
+                .addBox(-3.1F, -5.1F, -7.2F, 2, 2, 1), PartPose.ZERO);
         scope.addOrReplaceChild("buckle", CubeListBuilder.create().texOffs(48, 16)
                 .addBox(4.3F, -7.0F, -1.5F, 1, 3, 3), PartPose.ZERO);
         return LayerDefinition.create(mesh, 64, 64);

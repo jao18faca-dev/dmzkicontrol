@@ -67,8 +67,8 @@ public final class CerealianHooks {
         if (sp.tickCount % 40 == 0) grantRaceKit(sp);
         if (sp.tickCount % 2 == 0 && CerealianEye.isCerealian(sp)) {
             for (AbstractKiProjectile p : sp.level().getEntitiesOfClass(AbstractKiProjectile.class, sp.getBoundingBox().inflate(6),
-                    e -> e.getOwner() == sp && KiArrowTechnique.ID.equals(e.getTechniqueId()) && e.getSize() > 0.01f)) {
-                p.setSize(0.001f);
+                    e -> e.getOwner() == sp && KiArrowTechnique.ID.equals(e.getTechniqueId()))) {
+                hideCharge(p);
             }
         }
     }
@@ -121,16 +121,39 @@ public final class CerealianHooks {
         if (!(proj.getOwner() instanceof ServerPlayer sp) || !CerealianEye.isCerealian(sp)) return;
         String tech = proj.getTechniqueId();
         if (KiArrowTechnique.ID.equals(tech)) {
-            proj.setSize(0.001f);
+            hideCharge(proj);
             return;
         }
         boolean basic = proj instanceof KiBlastEntity && (tech == null || tech.isEmpty()) && proj.getSize() <= 0.6f;
         if (!basic || !KiControlConfig.get().cerealian.preciseKiShot) return;
 
         event.setCanceled(true);
-        CerealShotEntity shot = CerealShotEntity.create(sp, proj.position(), proj.getKiDamage(), proj.getColor(), false, 0);
+        CerealShotEntity shot = CerealShotEntity.create(sp, proj.position(), proj.getKiDamage(), kiColor(sp, proj.getColor()), false, 0);
         event.getLevel().addFreshEntity(shot);
-        event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.PLAYERS, 0.6f, 1.9f);
+        try {
+            event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), com.dragonminez.common.init.MainSounds.KIBLAST_ATTACK.get(), SoundSource.PLAYERS, 0.9f, 1.5f);
+        } catch (Throwable t) {
+            event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.PLAYERS, 0.6f, 1.9f);
+        }
+    }
+
+    /** Esconde a bola de carga do DMZ: o Arco de Ki desenha o proprio arco no lugar. */
+    private static void hideCharge(AbstractKiProjectile p) {
+        if (p.getSize() > 0.01f) p.setSize(0.001f);
+        if (p instanceof com.dragonminez.common.init.entities.ki.KiWaveEntity w && w.getCastSize() > 0.01f) w.setCastSize(0.0001f);
+    }
+
+    /** Cor do ki do usuario (a cor da aura atual, que muda com a forma). */
+    public static int kiColor(ServerPlayer sp, int fallback) {
+        StatsData data = AuraSealManager.stats(sp);
+        if (data == null) return fallback;
+        String hex = data.getCharacter().getActiveAuraColor();
+        if (hex == null || hex.isEmpty()) return fallback;
+        try {
+            return Integer.parseInt(hex.startsWith("#") ? hex.substring(1) : hex, 16) & 0xFFFFFF;
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
     }
 
     /** Soltou a corda do Arco de Ki: troca a onda carregada do DMZ pela flecha de luz. */
@@ -150,7 +173,7 @@ public final class CerealianHooks {
         }
         int pierce = 1 + Math.min(3, (int) (charge * 2.0f));
         Vec3 from = sp.getEyePosition().add(sp.getViewVector(1f).scale(0.6)).add(0, -0.15, 0);
-        CerealShotEntity arrow = CerealShotEntity.create(sp, from, damage, event.getKiAttack().getColorExterior(), true, pierce);
+        CerealShotEntity arrow = CerealShotEntity.create(sp, from, damage, kiColor(sp, event.getKiAttack().getColorExterior()), true, pierce, charge);
         sp.level().addFreshEntity(arrow);
         sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0f, 0.6f);
         sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.5f, 2.0f);

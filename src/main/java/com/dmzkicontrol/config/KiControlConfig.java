@@ -163,6 +163,16 @@ public class KiControlConfig {
         public java.util.List<Integer> eyeSkillCosts = new java.util.ArrayList<>(java.util.List.of(8000, 24000, 60000, 120000));
         /** Nivel da Mira que libera a Flecha de Ki. */
         public int kiArrowUnlockLevel = 2;
+        /** Raio da explosao do Arco de Ki (respeita as gamerules de destruicao do DMZ). 0 = sem destruicao. */
+        public float kiBowExplosionRadius = 2.0f;
+        /** Raio extra por carga (carga 1.0 = 100%). */
+        public float kiBowExplosionRadiusPerCharge = 1.5f;
+        /** Raio da cratera do tiro de ki comum ao bater em bloco (0 = nao quebra blocos). */
+        public float kiShotExplosionRadius = 0.0f;
+        /** Mira assistida: angulo (graus) para o tiro travar num ponto fraco marcado. */
+        public double aimAssistDegrees = 7.0;
+        /** Angulo com o Olho Cereal aberto (segurando a tecla). */
+        public double aimAssistEyeDegrees = 16.0;
     }
 
     // ------------------------------------------------------------------ geral

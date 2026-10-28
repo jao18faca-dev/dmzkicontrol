@@ -162,9 +162,17 @@ public final class CerealianEye {
 
     /** Tiro que entrou perto de um ponto fraco ativo: "tiro preciso". Devolve o multiplicador (1 = nada). */
     public static double preciseHitMultiplier(ServerPlayer shooter, LivingEntity victim, Vec3 impact) {
+        return preciseHit(shooter, victim, impact, 0.65, -1);
+    }
+
+    /**
+     * Versao dos tiros cerealianos: raio de acerto maior e, se o tiro veio travado num ponto
+     * ({@code lockedIdx} >= 0), esse ponto conta mesmo que o impacto tenha saido um pouco do lugar.
+     */
+    public static double preciseHit(ServerPlayer shooter, LivingEntity victim, Vec3 impact, double radius, int lockedIdx) {
         State st = STATES.get(shooter.getUUID());
         if (!isMarked(st, victim, shooter.level().getGameTime()) || !isCerealian(shooter)) return 1.0;
-        int idx = WeakPoints.nearest(victim, st.mask, impact, 0.65);
+        int idx = lockedIdx >= 0 && (st.mask & (1 << lockedIdx)) != 0 ? lockedIdx : WeakPoints.nearest(victim, st.mask, impact, radius);
         if (idx < 0) return 1.0;
         StatsData data = AuraSealManager.stats(shooter);
         double mul = data == null ? 1.0 : formMultiplier(data);
@@ -173,6 +181,32 @@ public final class CerealianEye {
         shooter.displayClientMessage(Component.translatable("message.dmzkicontrol.eye_precise").withStyle(ChatFormatting.GOLD), true);
         send(shooter, st);
         return 1.0 + KiControlConfig.get().cerealian.weakPointDamageBonus * 1.5 * mul;
+    }
+
+    /**
+     * Mira assistida: o ponto fraco ativo do alvo marcado mais perto da linha de visada, se estiver
+     * dentro do cone (maior com o Olho aberto e com o nivel da Mira). Devolve {idEntidade, ponto} ou null.
+     */
+    public static int[] lockOn(ServerPlayer sp) {
+        State st = STATES.get(sp.getUUID());
+        if (!isCerealian(sp) || st == null || st.markedId < 0 || st.mask == 0 || sp.level().getGameTime() > st.markUntil) return null;
+        if (!(sp.level().getEntity(st.markedId) instanceof LivingEntity le) || !le.isAlive()) return null;
+        KiControlConfig.Cerealian c = KiControlConfig.get().cerealian;
+        Vec3 eye = sp.getEyePosition();
+        Vec3 look = sp.getViewVector(1.0f).normalize();
+        double cone = Math.toRadians((st.active ? c.aimAssistEyeDegrees : c.aimAssistDegrees) + 1.5 * (eyeLevel(sp) - 1));
+        double range = range(sp);
+        int best = -1;
+        double bestAngle = cone;
+        for (int i = 0; i < WeakPoints.MAX; i++) {
+            if ((st.mask & (1 << i)) == 0) continue;
+            Vec3 d = WeakPoints.position(le, i, 1.0f).subtract(eye);
+            double dist = d.length();
+            if (dist < 1e-3 || dist > range) continue;
+            double ang = Math.acos(Math.max(-1.0, Math.min(1.0, d.scale(1.0 / dist).dot(look))));
+            if (ang < bestAngle) { bestAngle = ang; best = i; }
+        }
+        return best < 0 ? null : new int[]{le.getId(), best};
     }
 
     private static void weakPointFx(ServerPlayer p, Vec3 at) {
