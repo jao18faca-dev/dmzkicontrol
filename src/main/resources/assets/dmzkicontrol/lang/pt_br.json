@@ -78,5 +78,8 @@
   "message.dmzkicontrol.goku_level_2": "Goku: \"Isso! Agora tenta no Super Saiyajin 2. Quanto mais forte a forma, mais o ki quer vazar.\" (Aura Control Nv2)",
   "message.dmzkicontrol.goku_level_3": "Goku: \"Você tá pegando o jeito! Até no Super Saiyajin 3 dá pra economizar um monte de energia assim.\" (Aura Control Nv3)",
   "message.dmzkicontrol.goku_level_4": "Goku: \"O Whis me fez treinar isso pra eu não cansar no Blue. Agora você também consegue!\" (Aura Control Nv4)",
-  "message.dmzkicontrol.goku_level_5": "Goku: \"Controle perfeito! Com o ki todo preso no corpo, dá até pra usar o Kaioken por cima sem desperdício.\" (Aura Control Nv5)"
+  "message.dmzkicontrol.goku_level_5": "Goku: \"Controle perfeito! Com o ki todo preso no corpo, dá até pra usar o Kaioken por cima sem desperdício.\" (Aura Control Nv5)",
+  "hud.dmzkicontrol.eye_power": "Poder de luta: %s",
+  "message.dmzkicontrol.perfected_blue": "Blue Aperfeiçoado: o ki já nasce preso no corpo — aura selada.",
+  "message.dmzkicontrol.aura_story_cap": "Goku: \"Ainda não dá pra ir além disso. O Aura Control nível %s vem depois de: %s.\" (TP dos níveis excedentes devolvidos)"
 }

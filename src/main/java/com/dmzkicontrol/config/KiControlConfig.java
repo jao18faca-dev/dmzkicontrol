@@ -74,8 +74,11 @@ public class KiControlConfig {
         public boolean enabled = true;
         /** % de tensao por segundo selado com 0% de dominio (x trainTimeMultiplier do tier: o Blue cansa o dobro). */
         public double fillPercentPerSecond = 1.6;
-        /** Peso do custo da forma: tensao x (1 + peso x %kiMaximo/s que a forma gasta). Ex.: forma de 4%/s com 0.5 = x3. */
-        public double drainWeight = 0.5;
+        /**
+         * Peso do custo da forma: tensao x (1 + peso x %kiMaximo/s que a forma gasta sem o selo).
+         * Formas do DMZ/Sparking/Noea gastam ~0,2%-0,6%/s; com 3.0: 0,2%/s = x1,6 e 0,5%/s = x2,5.
+         */
+        public double drainWeight = 3.0;
         /** Limite desse multiplicador. */
         public double drainMaxFactor = 4.0;
         /** Curva do alivio pelo dominio: taxa = fill x (1 - dominio/strainFreeMastery)^curve. */
@@ -197,6 +200,13 @@ public class KiControlConfig {
     public List<Integer> auraControlCosts = new ArrayList<>(List.of(10000, 20000, 40000, 70000, 110000));
     /** Mestre que ensina o Aura Control (id de mestre do DMZ). */
     public String auraControlTeacher = "goku";
+    /** Outros mestres que tambem ensinam (no manga o Whis treina o controle do Blue). */
+    public List<String> auraControlTeachers = new ArrayList<>(List.of("goku", "whis"));
+    /**
+     * Teto do Aura Control pela historia: nivel -> "saga:missao" que precisa estar completa. So vale se
+     * a saga existir (ex.: sagas do DMZ Sparking); missao 0 = a saga inteira. Vazio = sem teto.
+     */
+    public Map<String, String> auraLevelStoryRequirements = defaultStoryRequirements();
     /** Saga que precisa estar completa para aprender (vazio = sem exigencia; ignorado com o modo historia desligado). */
     public String auraControlRequiredSaga = "frieza_saga";
     /** Por nivel (1-5): fracao do rendimento maximo da forma (reducao de ki, poder, critico). */
@@ -206,7 +216,7 @@ public class KiControlConfig {
     /** Por nivel: multiplicador da tensao interna (quanto menor, mais tempo da para segurar). */
     public List<Double> auraLevelStrain = new ArrayList<>(List.of(1.00, 0.90, 0.80, 0.70, 0.60));
     /** Versao do formato do arquivo. */
-    public int configVersion = 5;
+    public int configVersion = 6;
     /** Escala do treino: com este tanto de segundos de pratica efetiva numa forma voce chega a ~95% (antes do trainTimeMultiplier). */
     public double trainSeconds = 900.0;
     /** Dominio inicial (0..1) numa forma que voce nunca treinou. */
@@ -249,6 +259,19 @@ public class KiControlConfig {
      * Regras para formas do Dragon Block Noea (addon de ButterJaffa). Precisam vir antes das genericas:
      * "godforms:supersaiyanrose" contem "god", mas o Rose e o equivalente do Blue para o Black.
      */
+    /** Regras para formas do DMZ Sparking (addon de Yami). Precisam vir antes das genericas. */
+    static List<Rule> sparkingRules() {
+        List<Rule> r = new ArrayList<>();
+        // Blue Aperfeicoado: o proprio controle perfeito do manga; selar nele rende muito e treina rapido
+        r.add(new Rule("blueperfected", 0.90, 0.12, 0.06, 0.5, 4));
+        r.add(new Rule("evildivineforms", 0.80, 0.10, 0.05, 2.0, 4));
+        r.add(new Rule("ssj5", 0.40, 0.10, 0.04, 2.0, 5));
+        r.add(new Rule("ssjlegendary", 0.30, 0.08, 0.03, 2.0, 4));
+        r.add(new Rule("cellmax", 0.00, 0.00, 0.00, 1.0, 1));
+        r.add(new Rule("divineforms", 0.55, 0.07, 0.03, 1.5, 3));
+        return r;
+    }
+
     static List<Rule> noeaRules() {
         List<Rule> r = new ArrayList<>();
         r.add(new Rule("rose", 0.80, 0.10, 0.05, 2.0, 4));
@@ -259,12 +282,35 @@ public class KiControlConfig {
         return r;
     }
 
+    private static Map<String, String> defaultStoryRequirements() {
+        Map<String, String> m = new LinkedHashMap<>();
+        m.put("3", "beerus_saga:7");   // a licao do Whis (DMZ Sparking)
+        m.put("4", "black_saga:3");    // o primeiro encontro com o Black
+        m.put("5", "black_saga:7");    // o controle perfeito contra o Black e o Zamasu
+        return m;
+    }
+
+    /** Integracao com outros add-ons (so vale quando eles estao instalados). */
+    public static class Integrations {
+        /** DMZ Sparking: meditar com a aura selada multiplica o treino do dominio. */
+        public double sparkingMeditationTrainMultiplier = 2.0;
+        /** DMZ Sparking: % de tensao aliviada por segundo meditando, mesmo selado. */
+        public double sparkingMeditationStrainRelief = 2.0;
+        /** DMZ Sparking: transformar no Blue Aperfeicoado ja sela a aura (controle perfeito do manga). */
+        public boolean perfectedBlueAutoSeal = true;
+        /** Olho Cereal mostra o poder de luta do alvo (usa o calculo do DMZ e dos add-ons instalados). */
+        public boolean eyeShowsBattlePower = true;
+    }
+
+    public Integrations integrations = new Integrations();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
         // Principio do Goku na saga Black: o Blue e onde o controle mais compensa,
         // mas tambem e o mais dificil de dominar.
-        // Dragon Block Noea (ButterJaffa): formas que nao caem bem nas regras genericas abaixo
+        // DMZ Sparking (Yami) e Dragon Block Noea (ButterJaffa): formas que nao caem bem nas regras genericas
+        r.addAll(sparkingRules());
         r.addAll(noeaRules());
         r.add(new Rule("blue", 0.80, 0.10, 0.05, 2.0, 4));
         r.add(new Rule("god", 0.60, 0.08, 0.04, 1.5, 3));
@@ -335,6 +381,18 @@ public class KiControlConfig {
             }
             configVersion = 4;
         }
+        if (configVersion < 6) {
+            if (strain != null && Math.abs(strain.drainWeight - 0.5) < 1e-6) strain.drainWeight = 3.0;
+            if (rules != null) {
+                List<Rule> add = new ArrayList<>();
+                for (Rule n : sparkingRules()) {
+                    boolean has = false;
+                    for (Rule r : rules) if (r != null && n.contains.equalsIgnoreCase(r.contains)) has = true;
+                    if (!has) add.add(n);
+                }
+                rules.addAll(0, add);
+            }
+        }
         if (configVersion < 5) {
             // formas do Dragon Block Noea: entram no comeco (antes de "god"), so as que faltam
             if (rules != null) {
@@ -348,12 +406,16 @@ public class KiControlConfig {
             }
             configVersion = 5;
         }
+        if (configVersion < 6) configVersion = 6;
     }
 
     private void fillMissing() {
         if (requiredSkill == null) requiredSkill = "";
         if (auraControlCosts == null || auraControlCosts.isEmpty()) auraControlCosts = new ArrayList<>(List.of(10000, 20000, 40000, 70000, 110000));
         if (auraControlTeacher == null) auraControlTeacher = "";
+        if (auraControlTeachers == null) auraControlTeachers = new ArrayList<>();
+        if (auraLevelStoryRequirements == null) auraLevelStoryRequirements = new LinkedHashMap<>();
+        if (integrations == null) integrations = new Integrations();
         if (auraControlRequiredSaga == null) auraControlRequiredSaga = "";
         if (auraLevelEfficiency == null || auraLevelEfficiency.isEmpty()) auraLevelEfficiency = new ArrayList<>(List.of(0.60, 0.70, 0.80, 0.90, 1.00));
         if (auraLevelTrainSpeed == null || auraLevelTrainSpeed.isEmpty()) auraLevelTrainSpeed = new ArrayList<>(List.of(1.00, 1.15, 1.30, 1.45, 1.60));

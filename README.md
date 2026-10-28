@@ -147,4 +147,8 @@ Licença: GPL-3.0-or-later, a mesma família do DragonMineZ.
 - **Dragon Block Noea**, de ButterJaffa e contribuidores: o DragonMineZ Evolution reconhece as formas do Noea
   (Rose, Beast, Golden/Black, Orange Piccolo, Ki Divino) no Aura Control quando os dois estao instalados.
   Feito com permissao do autor. Nenhum codigo ou asset do Noea e incluido neste mod.
+- **DMZ Sparking**, de Yami: o DragonMineZ Evolution se conecta as sagas do Super (os niveis do Aura Control
+  acompanham a licao do Whis e o arco do Black), a meditacao (meditar selado treina o dominio e alivia a tensao)
+  e ao Blue Aperfeicoado (ja transforma com a aura selada). Feito com permissao do autor; nenhum codigo ou asset
+  do Sparking e incluido neste mod.
 - **DragonMineZ**, base de tudo.

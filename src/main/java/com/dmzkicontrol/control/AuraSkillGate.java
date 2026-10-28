@@ -33,6 +33,7 @@ public final class AuraSkillGate {
         if (data == null) return;
         int level = data.getSkills().getSkillLevel(skill);
         if (level <= 0 || sagaRequirementMet(data, cfg.auraControlRequiredSaga)) {
+            if (level > 0) level = applyStoryCap(sp, data, skill, level, cfg);
             mentorLines(sp, level);
             return;
         }
@@ -46,6 +47,52 @@ public final class AuraSkillGate {
         AuraSealManager.release(sp, AuraSealManager.ReleaseReason.SILENT);
         StatsDeltaSync.markDirty(sp);
         sp.displayClientMessage(Component.translatable("message.dmzkicontrol.aura_teacher_locked").withStyle(ChatFormatting.GOLD), false);
+    }
+
+    /**
+     * Teto pela historia (ex.: sagas do DMZ Sparking): o nivel 5, o controle perfeito, so vem depois de
+     * enfrentar o Black. Quem subiu antes da hora volta ao teto e recebe os TP dos niveis excedentes.
+     */
+    private static int applyStoryCap(ServerPlayer sp, StatsData data, String skill, int level, KiControlConfig cfg) {
+        int cap = 5;
+        String blocking = null;
+        for (int lv = 2; lv <= 5; lv++) {
+            String req = cfg.auraLevelStoryRequirements.get(String.valueOf(lv));
+            if (req == null || req.isBlank()) continue;
+            String[] parts = req.split(":");
+            int quest = parts.length > 1 ? parseInt(parts[1]) : 0;
+            if (!questDone(data, parts[0].trim(), quest)) { cap = lv - 1; blocking = parts[0].trim(); break; }
+        }
+        if (level <= cap) return level;
+        double refund = 0;
+        List<Integer> costs = cfg.auraControlCosts;
+        for (int i = cap; i < level && costs != null && i < costs.size(); i++) if (costs.get(i) != null) refund += Math.max(0, costs.get(i));
+        data.getSkills().setSkillLevel(skill, cap);
+        if (refund > 0) data.getResources().setTrainingPointsExact(data.getResources().getTrainingPointsExact() + refund);
+        StatsDeltaSync.markDirty(sp);
+        sp.displayClientMessage(Component.translatable("message.dmzkicontrol.aura_story_cap", cap + 1,
+                Component.translatable("dmz.saga." + blocking)).withStyle(ChatFormatting.GOLD), false);
+        return cap;
+    }
+
+    private static int parseInt(String v) {
+        try { return Integer.parseInt(v.trim()); } catch (NumberFormatException e) { return 0; }
+    }
+
+    /** A missao (ou a saga inteira, com 0) esta completa? Saga inexistente ou modo historia desligado = sim. */
+    public static boolean questDone(StatsData data, String sagaId, int questId) {
+        if (sagaId == null || sagaId.isBlank()) return true;
+        try {
+            var gameplay = com.dragonminez.common.config.ConfigManager.getServerConfig().getGameplay();
+            if (Boolean.FALSE.equals(gameplay.getStoryModeEnabled())) return true;
+            var saga = com.dragonminez.common.quest.QuestRegistry.getSaga(sagaId);
+            if (saga == null || saga.getQuests() == null || saga.getQuests().isEmpty()) return true;
+            int id = questId;
+            if (id <= 0 || saga.getQuestById(id) == null) id = saga.getQuests().get(saga.getQuests().size() - 1).getId();
+            return data.getPlayerQuestData().isQuestCompleted(com.dragonminez.common.quest.PlayerQuestData.sagaQuestKey(sagaId, id));
+        } catch (Throwable t) {
+            return true;
+        }
     }
 
     private static final java.util.Map<java.util.UUID, Integer> KNOWN = new java.util.concurrent.ConcurrentHashMap<>();

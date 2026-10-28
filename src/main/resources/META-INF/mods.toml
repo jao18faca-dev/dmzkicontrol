@@ -8,7 +8,7 @@ modId="dmzkicontrol"
 version="${version}"
 displayName="DragonMineZ Evolution"
 authors="jaqkcson"
-credits="Compatibilidade com Dragon Block Noea, de ButterJaffa e contribuidores (com permissao do autor)."
+credits="Integracao com Dragon Block Noea (ButterJaffa e contribuidores) e DMZ Sparking (Yami), com permissao dos autores."
 description='''
 Add-on de expansao para o DragonMineZ.
 - Selamento de Aura (saga Black): prenda a aura no corpo para gastar menos ki nas transformacoes, com dominio, tensao e cutscene.
@@ -39,6 +39,13 @@ Add-on de expansao para o DragonMineZ.
 
 [[dependencies.dmzkicontrol]]
     modId="noeabosses"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.dmzkicontrol]]
+    modId="dmzsparking"
     mandatory=false
     versionRange="*"
     ordering="AFTER"

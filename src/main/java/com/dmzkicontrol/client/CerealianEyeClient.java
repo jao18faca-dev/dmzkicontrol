@@ -227,6 +227,16 @@ public final class CerealianEyeClient implements IGuiOverlay {
             DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.eye_target", target.getDisplayName(), dist),
                     cx, ty, 0.9f, 0.5f, 0xFFFFFF, z);
             ty += 11;
+            // poder de luta lido pelo olho (calculo do DMZ, ja com o que Sparking/Noea somam)
+            if (KiControlConfig.get().integrations.eyeShowsBattlePower && target instanceof net.minecraft.world.entity.player.Player tp) {
+                double bp = StatsProvider.get(StatsCapability.INSTANCE, tp).resolve().map(d -> {
+                    try { return d.getBattlePowerExact(); } catch (Throwable t) { return 0.0; }
+                }).orElse(0.0);
+                if (bp > 0) {
+                    DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.eye_power", formatPower(bp)), cx, ty, 0.9f, 0.5f, 0xFFD27A, z);
+                    ty += 11;
+                }
+            }
         }
         var level = mc.level;
         if (markedId >= 0 && level != null && level.getGameTime() < markEnd) {
@@ -238,6 +248,14 @@ public final class CerealianEyeClient implements IGuiOverlay {
                         cx, ty, 0.9f, 0.5f, 0xFF7050, z);
             }
         }
+    }
+
+    private static String formatPower(double bp) {
+        if (bp >= 1e12) return String.format(java.util.Locale.ROOT, "%.2fT", bp / 1e12);
+        if (bp >= 1e9) return String.format(java.util.Locale.ROOT, "%.2fB", bp / 1e9);
+        if (bp >= 1e6) return String.format(java.util.Locale.ROOT, "%.2fM", bp / 1e6);
+        if (bp >= 1e4) return String.format(java.util.Locale.ROOT, "%.1fK", bp / 1e3);
+        return String.valueOf(Math.round(bp));
     }
 
     private static LivingEntity lookTarget(Minecraft mc, double range, float partial) {

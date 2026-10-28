@@ -78,5 +78,8 @@
   "message.dmzkicontrol.goku_level_2": "Goku: \"That's it! Now try it in Super Saiyan 2. The stronger the form, the more the ki wants to leak.\" (Aura Control Lv2)",
   "message.dmzkicontrol.goku_level_3": "Goku: \"You're getting the hang of it! Even in Super Saiyan 3 you save a ton of energy this way.\" (Aura Control Lv3)",
   "message.dmzkicontrol.goku_level_4": "Goku: \"Whis made me train this so I wouldn't run out of steam in Blue. Now you can do it too!\" (Aura Control Lv4)",
-  "message.dmzkicontrol.goku_level_5": "Goku: \"Perfect control! With all your ki locked inside, you can even stack Kaioken on top without wasting any.\" (Aura Control Lv5)"
+  "message.dmzkicontrol.goku_level_5": "Goku: \"Perfect control! With all your ki locked inside, you can even stack Kaioken on top without wasting any.\" (Aura Control Lv5)",
+  "hud.dmzkicontrol.eye_power": "Battle power: %s",
+  "message.dmzkicontrol.perfected_blue": "Perfected Blue: your ki is born locked inside the body — aura sealed.",
+  "message.dmzkicontrol.aura_story_cap": "Goku: \"You can't go past this yet. Aura Control level %s comes after: %s.\" (TP for the extra levels refunded)"
 }

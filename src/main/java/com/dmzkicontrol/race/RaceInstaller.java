@@ -140,8 +140,10 @@ public final class RaceInstaller {
                 root.add("skills", skills);
                 changed = true;
             }
-            String teacher = cfg.auraControlTeacher == null ? "" : cfg.auraControlTeacher.toLowerCase(java.util.Locale.ROOT);
-            if (!teacher.isEmpty()) {
+            java.util.Set<String> teachers = new java.util.LinkedHashSet<>();
+            if (cfg.auraControlTeacher != null && !cfg.auraControlTeacher.isBlank()) teachers.add(cfg.auraControlTeacher.toLowerCase(java.util.Locale.ROOT));
+            if (cfg.auraControlTeachers != null) for (String t : cfg.auraControlTeachers) if (t != null && !t.isBlank()) teachers.add(t.toLowerCase(java.util.Locale.ROOT));
+            for (String teacher : teachers) {
                 JsonObject offerings = root.has("skillOfferings") && root.get("skillOfferings").isJsonObject()
                         ? root.getAsJsonObject("skillOfferings") : new JsonObject();
                 JsonArray list = offerings.has(teacher) && offerings.get(teacher).isJsonArray() ? offerings.getAsJsonArray(teacher) : new JsonArray();
@@ -156,7 +158,7 @@ public final class RaceInstaller {
             }
             if (changed) {
                 Files.writeString(file, GSON.toJson(root), StandardCharsets.UTF_8);
-                KiControlMod.LOGGER.info("Habilidade '{}' adicionada ao {} (ensinada por '{}')", skill, file, teacher);
+                KiControlMod.LOGGER.info("Habilidade '{}' adicionada ao {} (ensinada por {})", skill, file, teachers);
             }
             return changed;
         } catch (Exception e) {

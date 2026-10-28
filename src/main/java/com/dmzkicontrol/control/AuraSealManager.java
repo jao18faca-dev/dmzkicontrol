@@ -592,7 +592,13 @@ public final class AuraSealManager {
 
         // ---- tensao: enche selado; com controle perfeito, alivia mesmo selado
         double perSecond = strainPerSecond(sp, key);
-        if (perSecond > 0) s.strain = Math.min(1.0, s.strain + perSecond / 20.0);
+        // meditando (DMZ Sparking): a mente calma alivia a tensao mesmo com o ki preso
+        if (com.dmzkicontrol.compat.AddonCompat.isMeditating(sp.getUUID())) {
+            perSecond = -Math.max(0.0, c.integrations.sparkingMeditationStrainRelief) / 100.0;
+            if (s.strain > 0) s.strain = Math.max(0.0, s.strain + perSecond / 20.0);
+            perSecond = 0;
+        }
+        else if (perSecond > 0) s.strain = Math.min(1.0, s.strain + perSecond / 20.0);
         else if (s.strain > 0) s.strain = Math.max(0.0, s.strain - c.strain.recoverPercentPerSecond / 100.0 / 20.0);
 
         // ---- treino organico (uma vez por segundo)
@@ -650,6 +656,7 @@ public final class AuraSealManager {
         long now = sp.level().getGameTime();
         double gain = 1.0 + dmzFormMastery(data) * Math.max(0.0, c.dmzMasteryTrainBoost);
         gain *= Math.max(0.0, KiControlConfig.perLevel(c.auraLevelTrainSpeed, auraLevel(data), 1.0));
+        if (com.dmzkicontrol.compat.AddonCompat.isMeditating(sp.getUUID())) gain *= Math.max(0.0, c.integrations.sparkingMeditationTrainMultiplier);
         if (now - s.lastCombat <= mc.combatWindowSeconds * 20.0) gain *= Math.max(0.0, mc.combatMultiplier);
         double pctStrain = s.strain * 100.0;
         if (pctStrain >= c.strain.hurtPercent) gain *= Math.max(0.0, mc.overstrainMultiplier);
