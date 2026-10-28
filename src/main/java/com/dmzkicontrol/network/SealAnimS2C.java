@@ -20,6 +20,7 @@ public record SealAnimS2C(int entityId, byte type) {
     public static final byte SEALED_OFF = 6;
     /** Arco de Ki disparado: encerra a pose de arco depois da animacao de soltar. */
     public static final byte KIBOW_RELEASE = 7;
+    public static final byte LASER = 8;
 
     public static void encode(SealAnimS2C m, FriendlyByteBuf buf) {
         buf.writeVarInt(m.entityId);

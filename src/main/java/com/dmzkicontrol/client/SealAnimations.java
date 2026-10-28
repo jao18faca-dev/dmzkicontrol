@@ -35,6 +35,9 @@ public final class SealAnimations {
 
     /** entityId -> [tick de parada, nome]. */
     private static final Map<Integer, Object[]> STOPS = new HashMap<>();
+    /** Jogadores em que a pose de tiro do DMZ fica desligada por alguns ticks (laser cerealiano). */
+    private static final Map<Integer, Long> NO_SHOOT_POSE = new HashMap<>();
+    private static final String LASER_ANIM = "dmzkicontrol.laser_fire";
     /** entityId -> [tipo, tick de inicio] das particulas em andamento. */
     private static final Map<Integer, long[]> FX = new HashMap<>();
     /** Jogadores com a aura selada (todas as auras do DMZ deles ficam escondidas). */
@@ -106,8 +109,22 @@ public final class SealAnimations {
                 if (self) CutsceneController.stop();
                 SealEffects.burst(player, true);
             }
+            case SealAnimS2C.LASER -> {
+                // troca a pose instantanea do ki blast do DMZ por um "dedo apontado" suave
+                NO_SHOOT_POSE.put(player.getId(), mc.level.getGameTime() + 16);
+                if (((Object) player) instanceof IPlayerAnimatable anim && ensureInjected()) {
+                    try {
+                        anim.dragonminez$setShootingKi(false);
+                        anim.dragonminez$playKiAnimation(LASER_ANIM, false);
+                    } catch (Throwable ignored) { }
+                }
+            }
             case SealAnimS2C.KIBOW_RELEASE -> {
-                STOPS.put(player.getId(), new Object[]{mc.level.getGameTime() + 14, "ki.kibow"});
+                // solta a corda: animacao de disparo (o controlador de ki do DMZ encerra sozinho os "_fire")
+                if (((Object) player) instanceof IPlayerAnimatable anim && ensureInjected()) {
+                    try { anim.dragonminez$playKiAnimation(KiBowRenderer.FIRE_ANIM, false); } catch (Throwable ignored) { }
+                }
+                STOPS.put(player.getId(), new Object[]{mc.level.getGameTime() + 16, "ki.kibow"});
                 KiBowRenderer.onRelease(player);
             }
             case SealAnimS2C.CANCEL -> {
@@ -144,6 +161,7 @@ public final class SealAnimations {
         if (mc.level == null) { STOPS.clear(); FX.clear(); SEALED.clear(); return; }
         long now = mc.level.getGameTime();
         tickEffects(mc, now);
+        suppressShootPose();
         if (now % 7 == 0) {
             for (int id : SEALED) {
                 if (mc.level.getEntity(id) instanceof AbstractClientPlayer p
@@ -160,7 +178,7 @@ public final class SealAnimations {
                 try {
                     String current = anim.dragonminez$getCurrentKiAnimation();
                     String name = (String) en.getValue()[1];
-                    boolean match = name.equals("ki.kibow") ? current.startsWith("ki.kibow") : name.equals(current);
+                    boolean match = name.equals("ki.kibow") ? (current.startsWith("ki.kibow") || current.startsWith("dmzkicontrol.kibow")) : name.equals(current);
                     if (match) anim.dragonminez$stopKiAnimation();
                 } catch (Throwable ignored) { }
             }
@@ -190,6 +208,7 @@ public final class SealAnimations {
     public static void clearSealed() {
         SEALED.clear();
         SealFxRenderer.clear();
+        NO_SHOOT_POSE.clear();
         SAVED.clear();
     }
 
@@ -198,6 +217,21 @@ public final class SealAnimations {
      * do DMZ as flags que fazem a aura aparecer, e devolvemos os valores no fim do frame. O servidor
      * e a logica do DMZ nunca veem essa mudanca.
      */
+    /** O pacote de pose de tiro do DMZ chega depois do nosso: desliga de novo a cada tick/frame. */
+    public static void suppressShootPose() {
+        if (NO_SHOOT_POSE.isEmpty()) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) { NO_SHOOT_POSE.clear(); return; }
+        long now = mc.level.getGameTime();
+        NO_SHOOT_POSE.entrySet().removeIf(en -> {
+            if (now > en.getValue()) return true;
+            if (((Object) mc.level.getEntity(en.getKey())) instanceof IPlayerAnimatable anim) {
+                try { anim.dragonminez$setShootingKi(false); } catch (Throwable ignored) { }
+            }
+            return false;
+        });
+    }
+
     public static void hideAurasForFrame() {
         if (SEALED.isEmpty()) return;
         Minecraft mc = Minecraft.getInstance();

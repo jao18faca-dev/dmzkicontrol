@@ -26,7 +26,9 @@ public final class KiBowRenderer {
     public static final int FALLBACK = 0x5FD3C4;
     /** Invocacao do arco: o ki junta na mao e os bracos crescem para fora. */
     private static final float SUMMON_TICKS = 8f;
-    private static final String CAST_ANIM = "ki.kibow_cast";
+    /** Mesmo caminho das animacoes do selo (controlador de ki do DMZ, sem "hold"), que funciona com a nossa injecao. */
+    public static final String CAST_ANIM = "dmzkicontrol.kibow_cast";
+    public static final String FIRE_ANIM = "dmzkicontrol.kibow_fire";
     /** Puxada da corda depois da invocacao (bate com a animacao: 0,45 s a 1,3 s). */
     private static final float PULL_START = 9f;
     private static final float PULL_TICKS = 17f;
@@ -65,7 +67,7 @@ public final class KiBowRenderer {
                     && ((Object) pl) instanceof com.dragonminez.client.animation.IPlayerAnimatable anim) {
                 try {
                     if (!CAST_ANIM.equals(anim.dragonminez$getCurrentKiAnimation()) && SealAnimations.ensureInjected()) {
-                        anim.dragonminez$playKiAnimation(CAST_ANIM, true);
+                        anim.dragonminez$playKiAnimation(CAST_ANIM, false);
                     }
                 } catch (Throwable ignored) {
                 }

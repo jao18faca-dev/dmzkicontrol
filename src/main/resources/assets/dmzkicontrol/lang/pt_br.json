@@ -7,7 +7,7 @@
   "message.dmzkicontrol.released": "Aura liberada.",
   "message.dmzkicontrol.burst": "O ki contido explode para fora! Poder +%s%% por %ss",
   "message.dmzkicontrol.need_form": "Você precisa estar transformado para selar a aura.",
-  "message.dmzkicontrol.need_skill": "Você precisa da skill %s (aprenda com um mestre) para selar a aura.",
+  "message.dmzkicontrol.need_skill": "Você precisa da habilidade %s (aprenda com o Goku depois da Saga do Freeza) para selar a aura.",
   "message.dmzkicontrol.lost_form": "Selo encerrado: você voltou à forma base.",
   "message.dmzkicontrol.lost_skill": "Selo encerrado: você não tem mais a skill exigida.",
   "message.dmzkicontrol.aura_expanded": "Você expandiu a aura - o selo foi liberado.",
@@ -68,5 +68,9 @@
   "message.dmzkicontrol.eye_learned": "Seu olho cerealiano despertou: skill Mira (nível 1). Segure B para mirar.",
   "message.dmzkicontrol.ki_arrow_learned": "Você aprendeu o Arco de Ki! Segure para carregar o arco e solte para disparar. Equipe-o no menu de técnicas de ki.",
   "entity.dmzkicontrol.cereal_shot": "Flecha de Ki",
-  "entity.dmzkicontrol.cereal_beam": "Laser Cerealiano"
+  "entity.dmzkicontrol.cereal_beam": "Laser Cerealiano",
+  "skill.dragonminez.aura_control": "Aura Control",
+  "skill.dragonminez.aura_control.desc": "Ensinada pelo Goku depois da Saga do Freeza. Prende a aura dentro do corpo (tecla N) para gastar muito menos ki numa transformação, como o Goku no Blue durante a saga do Black. Cada nível aumenta o rendimento do selo, acelera o domínio, reduz a tensão e libera formas mais difíceis: Nv2 SSJ2/Kaioken, Nv3 SSJ3/Deus, Nv4 Blue/SSJ4, Nv5 Ultra Instinto/Ultra Ego.",
+  "message.dmzkicontrol.need_aura_level": "Esta forma exige Aura Control nível %s (você tem %s).",
+  "message.dmzkicontrol.aura_teacher_locked": "Goku: \"Calma! Primeiro termina a luta contra o Freeza, depois eu te ensino a segurar a aura.\" (TP devolvidos)"
 }

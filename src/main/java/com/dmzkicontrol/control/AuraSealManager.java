@@ -163,6 +163,24 @@ public final class AuraSealManager {
         return skill == null || skill.isBlank() || data.getSkills().getSkillLevel(skill) > 0;
     }
 
+    /** Nivel do Aura Control (1-5). Sem habilidade exigida na config = 5 (rendimento total). */
+    public static int auraLevel(StatsData data) {
+        String skill = KiControlConfig.get().requiredSkill;
+        if (skill == null || skill.isBlank()) return 5;
+        if (data == null) return 0;
+        return Math.max(0, Math.min(5, data.getSkills().getSkillLevel(skill)));
+    }
+
+    public static int auraLevel(Player p) {
+        return auraLevel(stats(p));
+    }
+
+    /** Fracao do rendimento maximo liberada pelo nivel do Aura Control. */
+    private static double levelEfficiency(Player p) {
+        KiControlConfig c = KiControlConfig.get();
+        return KiControlConfig.perLevel(c.auraLevelEfficiency, auraLevel(p), 1.0);
+    }
+
     /** Dominio de forma do proprio DMZ (0..1) na forma principal. */
     public static double dmzFormMastery(StatsData data) {
         var c = data.getCharacter();
@@ -189,17 +207,17 @@ public final class AuraSealManager {
 
     public static double kiReduction(Player p, String key, boolean stackOnTop) {
         KiControlConfig c = KiControlConfig.get();
-        double r = c.tierFor(key).maxKiReduction * MasteryStore.mastery(p, key);
+        double r = c.tierFor(key).maxKiReduction * MasteryStore.mastery(p, key) * levelEfficiency(p);
         if (stackOnTop) r *= c.stackFormPenalty;
         return Math.max(0.0, Math.min(0.95, r));
     }
 
     public static double powerBonus(Player p, String key) {
-        return Math.max(0.0, KiControlConfig.get().tierFor(key).maxPowerBonus * MasteryStore.mastery(p, key));
+        return Math.max(0.0, KiControlConfig.get().tierFor(key).maxPowerBonus * MasteryStore.mastery(p, key) * levelEfficiency(p));
     }
 
     public static double critBonus(Player p, String key) {
-        return Math.max(0.0, KiControlConfig.get().tierFor(key).maxCritBonus * MasteryStore.mastery(p, key));
+        return Math.max(0.0, KiControlConfig.get().tierFor(key).maxCritBonus * MasteryStore.mastery(p, key) * levelEfficiency(p));
     }
 
     public static boolean isPerfect(Player p, String key) {
@@ -217,7 +235,8 @@ public final class AuraSealManager {
         if (m >= free) return 0.0;
         double relief = Math.pow(1.0 - m / free, Math.max(0.1, st.curve));
         double formMul = Math.max(0.1, c.tierFor(key).trainTimeMultiplier);
-        return st.fillPercentPerSecond / 100.0 * formMul * relief;
+        double levelMul = KiControlConfig.perLevel(c.auraLevelStrain, auraLevel(p), 1.0);
+        return st.fillPercentPerSecond / 100.0 * formMul * relief * Math.max(0.0, levelMul);
     }
 
     /** Nome do efeito de multiplicador que o selo coloca no sistema de efeitos do DMZ. */
@@ -320,6 +339,12 @@ public final class AuraSealManager {
         }
         if (formKey(data) == null) {
             if (tellPlayer) sp.displayClientMessage(Component.translatable("message.dmzkicontrol.need_form"), true);
+            return false;
+        }
+        int needed = c.tierFor(formKey(data)).minAuraLevel;
+        if (auraLevel(data) < needed) {
+            if (tellPlayer) sp.displayClientMessage(Component.translatable("message.dmzkicontrol.need_aura_level",
+                    needed, auraLevel(data)).withStyle(ChatFormatting.RED), true);
             return false;
         }
         if (c.strain.enabled && s.strain * 100.0 >= c.strain.resealLockoutPercent) {
@@ -495,6 +520,7 @@ public final class AuraSealManager {
         String key = formKey(data);
         if (key == null) { release(sp, ReleaseReason.LOST_FORM); return; }
         if (!hasRequiredSkill(data)) { release(sp, ReleaseReason.NO_SKILL); return; }
+        if (auraLevel(data) < c.tierFor(key).minAuraLevel) { release(sp, ReleaseReason.NO_SKILL); return; }
 
         if (!key.equals(s.lastKey)) {
             s.lastKey = key;
@@ -604,6 +630,7 @@ public final class AuraSealManager {
         KiControlConfig.Mastery mc = c.mastery;
         long now = sp.level().getGameTime();
         double gain = 1.0 + dmzFormMastery(data) * Math.max(0.0, c.dmzMasteryTrainBoost);
+        gain *= Math.max(0.0, KiControlConfig.perLevel(c.auraLevelTrainSpeed, auraLevel(data), 1.0));
         if (now - s.lastCombat <= mc.combatWindowSeconds * 20.0) gain *= Math.max(0.0, mc.combatMultiplier);
         double pctStrain = s.strain * 100.0;
         if (pctStrain >= c.strain.hurtPercent) gain *= Math.max(0.0, mc.overstrainMultiplier);

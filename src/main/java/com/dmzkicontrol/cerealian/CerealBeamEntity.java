@@ -41,7 +41,7 @@ import java.util.UUID;
  * <p>A entidade e so o desenho do raio (fica alguns ticks na tela); o acerto acontece ao disparar.
  */
 public class CerealBeamEntity extends Entity {
-    public static final int LIFE = 7;
+    public static final int LIFE = 14;
     private static final EntityDataAccessor<Vector3f> END = SynchedEntityData.defineId(CerealBeamEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(CerealBeamEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> HIT = SynchedEntityData.defineId(CerealBeamEntity.class, EntityDataSerializers.BOOLEAN);

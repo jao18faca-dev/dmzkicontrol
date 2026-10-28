@@ -51,9 +51,11 @@ public final class RaceInstaller {
     }
 
     private static boolean runAll() {
+        boolean aura = ensureAuraControlSkill(KiControlConfig.get());
         KiControlConfig.Cerealian c = KiControlConfig.get().cerealian;
-        if (!c.installRace) return false;
-        boolean changed = install("cerealian", c.raceKey, CEREALIAN_FILES);
+        if (!c.installRace) return aura;
+        boolean changed = aura;
+        changed |= install("cerealian", c.raceKey, CEREALIAN_FILES);
         changed |= patchCerealianDefaults(c.raceKey);
         changed |= ensureEyeSkill(c);
         return changed;
@@ -113,6 +115,54 @@ public final class RaceInstaller {
             KiControlMod.LOGGER.warn("Nao consegui atualizar {}: {}", file, e.toString());
         }
         return false;
+    }
+
+    /**
+     * Habilidade Aura Control no skills.json do DMZ: custos dos 5 niveis e o mestre que ensina (o Goku,
+     * na lista "skillOfferings"). So adiciona o que falta.
+     */
+    private static boolean ensureAuraControlSkill(KiControlConfig cfg) {
+        String skill = cfg.requiredSkill;
+        if (skill == null || skill.isBlank() || !skill.equalsIgnoreCase("aura_control")) return false;
+        Path file = dmzDir().resolve("skills.json");
+        if (!Files.exists(file)) return false;
+        try {
+            JsonObject root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8)).getAsJsonObject();
+            boolean changed = false;
+            JsonObject skills = root.has("skills") && root.get("skills").isJsonObject() ? root.getAsJsonObject("skills") : new JsonObject();
+            if (!skills.has(skill)) {
+                JsonObject entry = new JsonObject();
+                JsonArray costs = new JsonArray();
+                for (Integer cost : cfg.auraControlCosts) costs.add(cost);
+                entry.add("costs", costs);
+                entry.add("allowedRaces", new JsonArray());
+                skills.add(skill, entry);
+                root.add("skills", skills);
+                changed = true;
+            }
+            String teacher = cfg.auraControlTeacher == null ? "" : cfg.auraControlTeacher.toLowerCase(java.util.Locale.ROOT);
+            if (!teacher.isEmpty()) {
+                JsonObject offerings = root.has("skillOfferings") && root.get("skillOfferings").isJsonObject()
+                        ? root.getAsJsonObject("skillOfferings") : new JsonObject();
+                JsonArray list = offerings.has(teacher) && offerings.get(teacher).isJsonArray() ? offerings.getAsJsonArray(teacher) : new JsonArray();
+                boolean present = false;
+                for (JsonElement el : list) if (el.isJsonPrimitive() && skill.equalsIgnoreCase(el.getAsString())) present = true;
+                if (!present) {
+                    list.add(skill);
+                    offerings.add(teacher, list);
+                    root.add("skillOfferings", offerings);
+                    changed = true;
+                }
+            }
+            if (changed) {
+                Files.writeString(file, GSON.toJson(root), StandardCharsets.UTF_8);
+                KiControlMod.LOGGER.info("Habilidade '{}' adicionada ao {} (ensinada por '{}')", skill, file, teacher);
+            }
+            return changed;
+        } catch (Exception e) {
+            KiControlMod.LOGGER.warn("Nao consegui adicionar o Aura Control ao {}: {}", file, e.toString());
+            return false;
+        }
     }
 
     /** Adiciona a skill "Mira" ao skills.json do DMZ (custos por nivel e so para Cerealianos). */

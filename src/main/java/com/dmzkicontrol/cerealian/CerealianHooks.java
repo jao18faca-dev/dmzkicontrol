@@ -128,8 +128,13 @@ public final class CerealianHooks {
         if (!basic || !KiControlConfig.get().cerealian.preciseKiShot) return;
 
         event.setCanceled(true);
-        CerealBeamEntity beam = CerealBeamEntity.fire(sp, proj.position(), proj.getKiDamage(), kiColor(sp, proj.getColor()));
+        // sempre da mao direita, na ponta do dedo (a animacao do Cerealiano aponta com o braco direito)
+        Vec3 right = Vec3.directionFromRotation(0.0F, sp.getYRot() + 90.0F);
+        Vec3 hand = new Vec3(sp.getX(), sp.getEyeY() - 0.42, sp.getZ()).add(right.scale(0.36)).add(sp.getViewVector(1f).scale(0.75));
+        CerealBeamEntity beam = CerealBeamEntity.fire(sp, hand, proj.getKiDamage(), kiColor(sp, proj.getColor()));
         event.getLevel().addFreshEntity(beam);
+        com.dmzkicontrol.network.KiControlNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> sp),
+                new com.dmzkicontrol.network.SealAnimS2C(sp.getId(), com.dmzkicontrol.network.SealAnimS2C.LASER));
         try {
             event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), com.dragonminez.common.init.MainSounds.KIBLAST_ATTACK.get(), SoundSource.PLAYERS, 0.9f, 1.8f);
         } catch (Throwable t) {

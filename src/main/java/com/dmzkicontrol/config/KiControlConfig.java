@@ -36,6 +36,8 @@ public class KiControlConfig {
         public double maxCritBonus;
         /** Multiplica o tempo necessario para dominar esta forma (2.0 = demora o dobro). */
         public double trainTimeMultiplier = 1.0;
+        /** Nivel minimo da habilidade Aura Control (1-5) para selar nesta forma. */
+        public int minAuraLevel = 1;
 
         public Tier() {}
 
@@ -55,6 +57,11 @@ public class KiControlConfig {
         public Rule(String contains, double ki, double power, double crit, double trainMul) {
             super(ki, power, crit, trainMul);
             this.contains = contains;
+        }
+
+        public Rule(String contains, double ki, double power, double crit, double trainMul, int minLevel) {
+            this(contains, ki, power, crit, trainMul);
+            this.minAuraLevel = minLevel;
         }
     }
 
@@ -177,10 +184,25 @@ public class KiControlConfig {
 
     // ------------------------------------------------------------------ geral
 
-    /** Skill do DMZ exigida para usar o selo ("kicontrol", vendida pelos mestres). Vazio = sem exigencia. */
-    public String requiredSkill = "kicontrol";
+    /**
+     * Habilidade exigida para usar o selo: "aura_control" (Aura Control, niveis 1-5, ensinada pelo Goku
+     * depois da Saga do Freeza). Vazio = qualquer um usa, com eficiencia de nivel 5.
+     */
+    public String requiredSkill = "aura_control";
+    /** Custo em TP de cada nivel do Aura Control (o 1o e pago ao Goku, os outros no menu de habilidades). */
+    public List<Integer> auraControlCosts = new ArrayList<>(List.of(10000, 20000, 40000, 70000, 110000));
+    /** Mestre que ensina o Aura Control (id de mestre do DMZ). */
+    public String auraControlTeacher = "goku";
+    /** Saga que precisa estar completa para aprender (vazio = sem exigencia; ignorado com o modo historia desligado). */
+    public String auraControlRequiredSaga = "frieza_saga";
+    /** Por nivel (1-5): fracao do rendimento maximo da forma (reducao de ki, poder, critico). */
+    public List<Double> auraLevelEfficiency = new ArrayList<>(List.of(0.60, 0.70, 0.80, 0.90, 1.00));
+    /** Por nivel: velocidade do treino de dominio. */
+    public List<Double> auraLevelTrainSpeed = new ArrayList<>(List.of(1.00, 1.15, 1.30, 1.45, 1.60));
+    /** Por nivel: multiplicador da tensao interna (quanto menor, mais tempo da para segurar). */
+    public List<Double> auraLevelStrain = new ArrayList<>(List.of(1.00, 0.90, 0.80, 0.70, 0.60));
     /** Versao do formato do arquivo. */
-    public int configVersion = 3;
+    public int configVersion = 4;
     /** Escala do treino: com este tanto de segundos de pratica efetiva numa forma voce chega a ~95% (antes do trainTimeMultiplier). */
     public double trainSeconds = 900.0;
     /** Dominio inicial (0..1) numa forma que voce nunca treinou. */
@@ -222,19 +244,19 @@ public class KiControlConfig {
         // A ordem importa: a primeira regra que casar vence.
         // Principio do Goku na saga Black: o Blue e onde o controle mais compensa,
         // mas tambem e o mais dificil de dominar.
-        r.add(new Rule("blue", 0.80, 0.10, 0.05, 2.0));
-        r.add(new Rule("god", 0.60, 0.08, 0.04, 1.5));
-        r.add(new Rule("ultrainstinct", 0.30, 0.06, 0.08, 2.5));
-        r.add(new Rule("ultraego", 0.30, 0.10, 0.02, 2.5));
-        r.add(new Rule("kaioken", 0.15, 0.03, 0.01, 1.5));
-        r.add(new Rule("oozaru", 0.00, 0.00, 0.00, 1.0));
-        r.add(new Rule("supersaiyan4", 0.40, 0.06, 0.03, 1.5));
-        r.add(new Rule("supersaiyan3", 0.25, 0.08, 0.02, 1.75));
-        r.add(new Rule("supersaiyan2", 0.40, 0.07, 0.03, 1.25));
-        r.add(new Rule("mastered", 0.60, 0.05, 0.03, 0.75));
-        r.add(new Rule("grade", 0.20, 0.03, 0.01, 1.0));
-        r.add(new Rule("fullpower", 0.30, 0.06, 0.02, 1.25));
-        r.add(new Rule("ultimate", 0.45, 0.06, 0.03, 1.5));
+        r.add(new Rule("blue", 0.80, 0.10, 0.05, 2.0, 4));
+        r.add(new Rule("god", 0.60, 0.08, 0.04, 1.5, 3));
+        r.add(new Rule("ultrainstinct", 0.30, 0.06, 0.08, 2.5, 5));
+        r.add(new Rule("ultraego", 0.30, 0.10, 0.02, 2.5, 5));
+        r.add(new Rule("kaioken", 0.15, 0.03, 0.01, 1.5, 2));
+        r.add(new Rule("oozaru", 0.00, 0.00, 0.00, 1.0, 1));
+        r.add(new Rule("supersaiyan4", 0.40, 0.06, 0.03, 1.5, 4));
+        r.add(new Rule("supersaiyan3", 0.25, 0.08, 0.02, 1.75, 3));
+        r.add(new Rule("supersaiyan2", 0.40, 0.07, 0.03, 1.25, 2));
+        r.add(new Rule("mastered", 0.60, 0.05, 0.03, 0.75, 1));
+        r.add(new Rule("grade", 0.20, 0.03, 0.01, 1.0, 1));
+        r.add(new Rule("fullpower", 0.30, 0.06, 0.02, 1.25, 2));
+        r.add(new Rule("ultimate", 0.45, 0.06, 0.03, 1.5, 3));
         return r;
     }
 
@@ -254,6 +276,7 @@ public class KiControlConfig {
             try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
                 KiControlConfig loaded = GSON.fromJson(reader, KiControlConfig.class);
                 if (loaded != null) {
+                    loaded.migrate();
                     loaded.fillMissing();
                     instance = loaded;
                     save(file, loaded); // grava campos novos de versoes futuras
@@ -277,8 +300,29 @@ public class KiControlConfig {
         }
     }
 
+    /** Atualiza configs de versoes antigas sem perder o que o dono mudou. */
+    private void migrate() {
+        if (configVersion < 4) {
+            // o selo agora usa a habilidade propria Aura Control em vez do "kicontrol" do DMZ
+            if ("kicontrol".equalsIgnoreCase(requiredSkill)) requiredSkill = "aura_control";
+            // niveis minimos do Aura Control nas regras padrao que o dono nao mudou
+            Map<String, Integer> levels = new java.util.HashMap<>();
+            for (Rule d : defaultRules()) levels.put(d.contains, d.minAuraLevel);
+            if (rules != null) for (Rule r : rules) {
+                if (r != null && r.contains != null && r.minAuraLevel <= 1 && levels.containsKey(r.contains)) r.minAuraLevel = levels.get(r.contains);
+            }
+            configVersion = 4;
+        }
+    }
+
     private void fillMissing() {
         if (requiredSkill == null) requiredSkill = "";
+        if (auraControlCosts == null || auraControlCosts.isEmpty()) auraControlCosts = new ArrayList<>(List.of(10000, 20000, 40000, 70000, 110000));
+        if (auraControlTeacher == null) auraControlTeacher = "";
+        if (auraControlRequiredSaga == null) auraControlRequiredSaga = "";
+        if (auraLevelEfficiency == null || auraLevelEfficiency.isEmpty()) auraLevelEfficiency = new ArrayList<>(List.of(0.60, 0.70, 0.80, 0.90, 1.00));
+        if (auraLevelTrainSpeed == null || auraLevelTrainSpeed.isEmpty()) auraLevelTrainSpeed = new ArrayList<>(List.of(1.00, 1.15, 1.30, 1.45, 1.60));
+        if (auraLevelStrain == null || auraLevelStrain.isEmpty()) auraLevelStrain = new ArrayList<>(List.of(1.00, 0.90, 0.80, 0.70, 0.60));
         if (strain == null) strain = new Strain();
         if (mastery == null) mastery = new Mastery();
         if (cerealian == null) cerealian = new Cerealian();
@@ -289,6 +333,13 @@ public class KiControlConfig {
         Map<String, Tier> lower = new LinkedHashMap<>();
         forms.forEach((k, v) -> { if (k != null && v != null) lower.put(k.toLowerCase(Locale.ROOT), v); });
         forms = lower;
+    }
+
+    /** Valor da lista para o nivel (1 = primeiro item; nivel acima do tamanho usa o ultimo). */
+    public static double perLevel(List<Double> list, int level, double fallback) {
+        if (list == null || list.isEmpty() || level <= 0) return fallback;
+        Double v = list.get(Math.min(level, list.size()) - 1);
+        return v == null ? fallback : v;
     }
 
     public Tier tierFor(String formKey) {

@@ -143,7 +143,10 @@ public final class ClientSetup {
         @SubscribeEvent
         public static void onRenderTick(TickEvent.RenderTickEvent event) {
             CutsceneController.lockRotation();
-            if (event.phase == TickEvent.Phase.START) SealAnimations.hideAurasForFrame();
+            if (event.phase == TickEvent.Phase.START) {
+                SealAnimations.suppressShootPose();
+                SealAnimations.hideAurasForFrame();
+            }
             else SealAnimations.restoreAurasAfterFrame();
         }
 
