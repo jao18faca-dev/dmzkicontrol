@@ -32,7 +32,10 @@ public final class AuraSkillGate {
         StatsData data = AuraSealManager.stats(sp);
         if (data == null) return;
         int level = data.getSkills().getSkillLevel(skill);
-        if (level <= 0 || sagaRequirementMet(data, cfg.auraControlRequiredSaga)) return;
+        if (level <= 0 || sagaRequirementMet(data, cfg.auraControlRequiredSaga)) {
+            mentorLines(sp, level);
+            return;
+        }
 
         // devolve o que foi pago e tira a habilidade
         double refund = 0;
@@ -43,6 +46,22 @@ public final class AuraSkillGate {
         AuraSealManager.release(sp, AuraSealManager.ReleaseReason.SILENT);
         StatsDeltaSync.markDirty(sp);
         sp.displayClientMessage(Component.translatable("message.dmzkicontrol.aura_teacher_locked").withStyle(ChatFormatting.GOLD), false);
+    }
+
+    private static final java.util.Map<java.util.UUID, Integer> KNOWN = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** Uma fala do Goku sempre que o Aura Control sobe de nivel (na entrada so memoriza o nivel). */
+    private static void mentorLines(ServerPlayer sp, int level) {
+        Integer before = KNOWN.put(sp.getUUID(), level);
+        if (before == null || level <= before || level < 1 || level > 5) return;
+        sp.displayClientMessage(Component.translatable("message.dmzkicontrol.goku_level_" + level).withStyle(ChatFormatting.AQUA), false);
+        sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP,
+                net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 1.2f);
+    }
+
+    @SubscribeEvent
+    public static void onLogout(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
+        KNOWN.remove(event.getEntity().getUUID());
     }
 
     /** A ultima missao da saga exigida esta completa? (sem saga, sem modo historia ou saga inexistente = liberado) */

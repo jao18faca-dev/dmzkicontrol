@@ -208,7 +208,12 @@ public final class AuraSealManager {
     public static double kiReduction(Player p, String key, boolean stackOnTop) {
         KiControlConfig c = KiControlConfig.get();
         double r = c.tierFor(key).maxKiReduction * MasteryStore.mastery(p, key) * levelEfficiency(p);
-        if (stackOnTop) r *= c.stackFormPenalty;
+        if (stackOnTop) {
+            // "Blue Kaioken": com controle perfeito (Aura Control 5 e dominio sem tensao) o ki da stack
+            // form tambem fica preso no corpo, entao quase nao se perde eficiencia
+            boolean perfect = auraLevel(p) >= 5 && MasteryStore.mastery(p, key) >= c.strain.strainFreeMastery;
+            r *= perfect ? Math.max(c.stackFormPenalty, c.perfectControlStackPenalty) : c.stackFormPenalty;
+        }
         return Math.max(0.0, Math.min(0.95, r));
     }
 

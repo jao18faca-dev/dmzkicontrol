@@ -72,5 +72,11 @@
   "skill.dragonminez.aura_control": "Aura Control",
   "skill.dragonminez.aura_control.desc": "Taught by Goku after the Frieza Saga. Seals the aura inside the body (N key) to spend much less ki in a transformation, like Goku's Blue in the Black arc. Each level raises the seal's efficiency, speeds up mastery, lowers strain and unlocks harder forms: Lv2 SSJ2/Kaioken, Lv3 SSJ3/God, Lv4 Blue/SSJ4, Lv5 Ultra Instinct/Ultra Ego.",
   "message.dmzkicontrol.need_aura_level": "This form requires Aura Control level %s (you have %s).",
-  "message.dmzkicontrol.aura_teacher_locked": "Goku: \"Easy there! Finish the fight against Frieza first, then I'll teach you to hold your aura in.\" (TP refunded)"
+  "message.dmzkicontrol.aura_teacher_locked": "Goku: \"Easy there! Finish the fight against Frieza first, then I'll teach you to hold your aura in.\" (TP refunded)",
+  "message.dmzkicontrol.arrow_rain": "Arrow Rain!",
+  "message.dmzkicontrol.goku_level_1": "Goku: \"Don't let your ki slip out through the aura. Hold it in, right here in your chest.\" (Aura Control Lv1)",
+  "message.dmzkicontrol.goku_level_2": "Goku: \"That's it! Now try it in Super Saiyan 2. The stronger the form, the more the ki wants to leak.\" (Aura Control Lv2)",
+  "message.dmzkicontrol.goku_level_3": "Goku: \"You're getting the hang of it! Even in Super Saiyan 3 you save a ton of energy this way.\" (Aura Control Lv3)",
+  "message.dmzkicontrol.goku_level_4": "Goku: \"Whis made me train this so I wouldn't run out of steam in Blue. Now you can do it too!\" (Aura Control Lv4)",
+  "message.dmzkicontrol.goku_level_5": "Goku: \"Perfect control! With all your ki locked inside, you can even stack Kaioken on top without wasting any.\" (Aura Control Lv5)"
 }

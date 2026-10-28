@@ -13,6 +13,7 @@ import com.dragonminez.common.stats.StatsData;
 import com.dragonminez.common.stats.techniques.PredefinedTechniques;
 import com.dragonminez.common.stats.techniques.TechniqueData;
 import net.minecraft.ChatFormatting;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -156,6 +157,31 @@ public final class CerealianHooks {
         }
     }
 
+    /**
+     * Chuva de flechas (Granolah atira varias flechas que fazem curva ate os alvos): com o arco
+     * sobrecarregado (150%+), flechas extras saem em leque e cada uma persegue um inimigo diferente a
+     * frente (de preferencia num ponto fraco). Sem alvos, elas seguem em leque.
+     */
+    private static void arrowRain(ServerPlayer sp, Vec3 from, float damage, int color, float charge) {
+        int extra = charge >= 1.75f ? 4 : 2;
+        Vec3 look = sp.getViewVector(1f).normalize();
+        java.util.List<LivingEntity> targets = new java.util.ArrayList<>(sp.level().getEntitiesOfClass(LivingEntity.class,
+                sp.getBoundingBox().inflate(40), e -> e != sp && e.isAlive() && !e.isSpectator() && !(e instanceof net.minecraft.world.entity.decoration.ArmorStand)
+                        && e.position().add(0, e.getBbHeight() * 0.5, 0).subtract(sp.getEyePosition()).normalize().dot(look) > 0.75
+                        && sp.hasLineOfSight(e)));
+        targets.sort(java.util.Comparator.comparingDouble(e -> -e.position().subtract(sp.getEyePosition()).normalize().dot(look)));
+        for (int i = 0; i < extra; i++) {
+            double side = (i % 2 == 0 ? 1 : -1) * (10.0 + 8.0 * (i / 2));
+            Vec3 dir = look.yRot((float) Math.toRadians(side)).add(0, 0.06 * (i / 2 + 1), 0).normalize();
+            CerealShotEntity a = CerealShotEntity.create(sp, from, damage * 0.45f, color, true, 0, Math.max(0.5f, charge * 0.6f));
+            if (!targets.isEmpty()) a.homeOn(targets.get(i % targets.size()), i % WeakPoints.MAX, dir);
+            else a.aim(dir);
+            sp.level().addFreshEntity(a);
+        }
+        sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.ILLUSIONER_CAST_SPELL, SoundSource.PLAYERS, 0.8f, 1.6f);
+        sp.displayClientMessage(Component.translatable("message.dmzkicontrol.arrow_rain").withStyle(ChatFormatting.GOLD), true);
+    }
+
     /** A config da raca ainda permite essa combinacao de partes da cabeca? (o dono pode ter readicionado orelhas) */
     private static boolean headBoneAllowed(String race, String bone) {
         try {
@@ -207,6 +233,7 @@ public final class CerealianHooks {
         Vec3 from = sp.getEyePosition().add(sp.getViewVector(1f).scale(0.6)).add(0, -0.15, 0);
         CerealShotEntity arrow = CerealShotEntity.create(sp, from, damage, kiColor(sp, event.getKiAttack().getColorExterior()), true, pierce, charge);
         sp.level().addFreshEntity(arrow);
+        if (charge >= 1.5f) arrowRain(sp, from, damage, kiColor(sp, event.getKiAttack().getColorExterior()), charge);
         sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0f, 0.6f);
         sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.5f, 2.0f);
         // devolve a pose ao DMZ depois da animacao de soltar a corda

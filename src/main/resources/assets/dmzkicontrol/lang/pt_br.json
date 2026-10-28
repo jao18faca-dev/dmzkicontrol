@@ -72,5 +72,11 @@
   "skill.dragonminez.aura_control": "Aura Control",
   "skill.dragonminez.aura_control.desc": "Ensinada pelo Goku depois da Saga do Freeza. Prende a aura dentro do corpo (tecla N) para gastar muito menos ki numa transformação, como o Goku no Blue durante a saga do Black. Cada nível aumenta o rendimento do selo, acelera o domínio, reduz a tensão e libera formas mais difíceis: Nv2 SSJ2/Kaioken, Nv3 SSJ3/Deus, Nv4 Blue/SSJ4, Nv5 Ultra Instinto/Ultra Ego.",
   "message.dmzkicontrol.need_aura_level": "Esta forma exige Aura Control nível %s (você tem %s).",
-  "message.dmzkicontrol.aura_teacher_locked": "Goku: \"Calma! Primeiro termina a luta contra o Freeza, depois eu te ensino a segurar a aura.\" (TP devolvidos)"
+  "message.dmzkicontrol.aura_teacher_locked": "Goku: \"Calma! Primeiro termina a luta contra o Freeza, depois eu te ensino a segurar a aura.\" (TP devolvidos)",
+  "message.dmzkicontrol.arrow_rain": "Chuva de Flechas!",
+  "message.dmzkicontrol.goku_level_1": "Goku: \"Não deixa o ki escapar pela aura. Segura ele aqui dentro, ó, no peito.\" (Aura Control Nv1)",
+  "message.dmzkicontrol.goku_level_2": "Goku: \"Isso! Agora tenta no Super Saiyajin 2. Quanto mais forte a forma, mais o ki quer vazar.\" (Aura Control Nv2)",
+  "message.dmzkicontrol.goku_level_3": "Goku: \"Você tá pegando o jeito! Até no Super Saiyajin 3 dá pra economizar um monte de energia assim.\" (Aura Control Nv3)",
+  "message.dmzkicontrol.goku_level_4": "Goku: \"O Whis me fez treinar isso pra eu não cansar no Blue. Agora você também consegue!\" (Aura Control Nv4)",
+  "message.dmzkicontrol.goku_level_5": "Goku: \"Controle perfeito! Com o ki todo preso no corpo, dá até pra usar o Kaioken por cima sem desperdício.\" (Aura Control Nv5)"
 }

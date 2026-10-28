@@ -96,6 +96,21 @@ public class CerealShotEntity extends Projectile {
         return shot;
     }
 
+    /** Faz o tiro mirar e perseguir um alvo (ponto fraco {@code idx}), usado pela chuva de flechas. */
+    public void homeOn(LivingEntity target, int idx, Vec3 initialDir) {
+        this.lockTarget = target.getId();
+        this.lockIdx = Math.max(0, Math.min(WeakPoints.MAX - 1, idx));
+        this.entityData.set(LOCKED, true);
+        aim(initialDir);
+    }
+
+    /** Muda a direcao inicial mantendo a velocidade. */
+    public void aim(Vec3 dir) {
+        Vec3 d = dir.normalize();
+        this.setDeltaMovement(d.scale(this.speed > 0 ? this.speed : 3.0));
+        faceVelocity();
+    }
+
     @Override
     protected void defineSynchedData() {
         this.entityData.define(COLOR, 0x5FD3C4);

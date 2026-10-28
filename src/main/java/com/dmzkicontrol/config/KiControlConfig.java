@@ -211,6 +211,8 @@ public class KiControlConfig {
     public double dmzMasteryTrainBoost = 1.0;
     /** Multiplicador da reducao quando uma stack form (Kaioken, UI...) esta ativa junto. */
     public double stackFormPenalty = 0.5;
+    /** O mesmo, com controle perfeito (Aura Control 5 e dominio sem tensao): o "Blue Kaioken". */
+    public double perfectControlStackPenalty = 0.85;
     /** Fracao da reducao de ki aplicada tambem ao dreno de estamina da forma. */
     public double staminaReductionShare = 0.5;
     /** Bonus de regeneracao de ki enquanto selado com 100% de dominio (o ki nao vaza do corpo). */
