@@ -90,28 +90,10 @@ public class CerealPartsLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
     @Override
     public void render(PoseStack pose, MultiBufferSource buffers, int light, AbstractClientPlayer player,
                        float limbSwing, float limbSwingAmount, float partial, float age, float headYaw, float headPitch) {
-        if (player.isInvisible()) return;
-        String race = null;
-        String skin = null;
-        var data = StatsProvider.get(StatsCapability.INSTANCE, player).resolve().orElse(null);
-        if (data != null) {
-            race = data.getCharacter().getRaceName();
-            skin = data.getCharacter().getBodyColor();
-        }
-        boolean cerealian = race != null && race.toLowerCase(Locale.ROOT).equals(KiControlConfig.get().cerealian.raceKey.toLowerCase(Locale.ROOT));
-        boolean wearing = CerealScopeItem.isWearing(player);
-        if (!cerealian && !wearing) return;
-
+        if (player.isInvisible() || !CerealScopeItem.isWearing(player)) return;
         pose.pushPose();
         this.getParentModel().head.translateAndRotate(pose);
-        if (cerealian) {
-            int c = parse(skin, 0xE9AE97);
-            ears.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(EARS_TEX)), light, OverlayTexture.NO_OVERLAY,
-                    ((c >> 16) & 0xFF) / 255f, ((c >> 8) & 0xFF) / 255f, (c & 0xFF) / 255f, 1f);
-        }
-        if (wearing) {
-            scope.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SCOPE_TEX)), light, OverlayTexture.NO_OVERLAY);
-        }
+        scope.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SCOPE_TEX)), light, OverlayTexture.NO_OVERLAY);
         pose.popPose();
     }
 
