@@ -668,7 +668,7 @@
       },
       "1.4": {
        "vector": [
-        "-91\"+math.sin(query.anim_time*1500)*0.5",
+        "-91+math.sin(query.anim_time*1500)*0.5",
         12,
         0
        ]
@@ -710,7 +710,7 @@
       },
       "1.4": {
        "vector": [
-        "-94\"+math.sin(query.anim_time*1500)*0.5",
+        "-94+math.sin(query.anim_time*1500)*0.5",
         -62,
         0
        ]
@@ -831,7 +831,7 @@
       },
       "1.4": {
        "vector": [
-        "-91\"+math.sin(query.anim_time*1500)*0.5",
+        "-91+math.sin(query.anim_time*1500)*0.5",
         12,
         0
        ]
@@ -873,7 +873,7 @@
       },
       "1.4": {
        "vector": [
-        "-94\"+math.sin(query.anim_time*1500)*0.5",
+        "-94+math.sin(query.anim_time*1500)*0.5",
         -62,
         0
        ]
