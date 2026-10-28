@@ -140,3 +140,11 @@ Gastos de ataque, dash, esquiva e troca de forma são ignorados (`KiAttackFireEv
 A sincronização com o cliente usa o próprio delta-sync do DMZ.
 
 Licença: GPL-3.0-or-later, a mesma família do DragonMineZ.
+
+
+## Creditos
+
+- **Dragon Block Noea**, de ButterJaffa e contribuidores: o DragonMineZ Evolution reconhece as formas do Noea
+  (Rose, Beast, Golden/Black, Orange Piccolo, Ki Divino) no Aura Control quando os dois estao instalados.
+  Feito com permissao do autor. Nenhum codigo ou asset do Noea e incluido neste mod.
+- **DragonMineZ**, base de tudo.

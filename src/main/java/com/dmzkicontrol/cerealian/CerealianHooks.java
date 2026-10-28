@@ -51,6 +51,21 @@ public final class CerealianHooks {
      * Instala o que faltar (raca + skill da Mira no skills.json) e, se algo mudou depois que o DMZ ja
      * leu as configs, pede um reload ao DMZ. Roda depois do reload do proprio DMZ (prioridade baixa).
      */
+    /**
+     * Outros add-ons (ex.: Dragon Block Noea) podem reescrever o skills.json do DMZ ao iniciar. Depois
+     * que o servidor subiu, conferimos de novo e recarregamos o DMZ se a habilidade tiver sumido.
+     */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onServerStarted(net.minecraftforge.event.server.ServerStartedEvent event) {
+        if (!RaceInstaller.installLate()) return;
+        try {
+            com.dragonminez.common.config.ConfigManager.reload();
+            KiControlMod.LOGGER.info("Habilidades do add-on recolocadas no skills.json depois de outro mod reescreve-lo.");
+        } catch (Throwable t) {
+            KiControlMod.LOGGER.warn("Recoloquei as habilidades no skills.json, mas nao consegui recarregar o DMZ ({}). Rode /dmzreload config.", t.toString());
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         boolean late = RaceInstaller.installLate();

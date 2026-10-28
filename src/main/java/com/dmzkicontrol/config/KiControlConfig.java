@@ -206,7 +206,7 @@ public class KiControlConfig {
     /** Por nivel: multiplicador da tensao interna (quanto menor, mais tempo da para segurar). */
     public List<Double> auraLevelStrain = new ArrayList<>(List.of(1.00, 0.90, 0.80, 0.70, 0.60));
     /** Versao do formato do arquivo. */
-    public int configVersion = 4;
+    public int configVersion = 5;
     /** Escala do treino: com este tanto de segundos de pratica efetiva numa forma voce chega a ~95% (antes do trainTimeMultiplier). */
     public double trainSeconds = 900.0;
     /** Dominio inicial (0..1) numa forma que voce nunca treinou. */
@@ -245,11 +245,27 @@ public class KiControlConfig {
     public List<Rule> rules = defaultRules();
     public Map<String, Tier> forms = new LinkedHashMap<>();
 
+    /**
+     * Regras para formas do Dragon Block Noea (addon de ButterJaffa). Precisam vir antes das genericas:
+     * "godforms:supersaiyanrose" contem "god", mas o Rose e o equivalente do Blue para o Black.
+     */
+    static List<Rule> noeaRules() {
+        List<Rule> r = new ArrayList<>();
+        r.add(new Rule("rose", 0.80, 0.10, 0.05, 2.0, 4));
+        r.add(new Rule("beastforms", 0.50, 0.10, 0.04, 2.0, 4));
+        r.add(new Rule("frostgodforms", 0.60, 0.08, 0.04, 1.5, 3));
+        r.add(new Rule("orangepiccolo", 0.45, 0.07, 0.03, 1.5, 3));
+        r.add(new Rule("enhancewithgodki", 0.40, 0.06, 0.03, 1.5, 3));
+        return r;
+    }
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
         // Principio do Goku na saga Black: o Blue e onde o controle mais compensa,
         // mas tambem e o mais dificil de dominar.
+        // Dragon Block Noea (ButterJaffa): formas que nao caem bem nas regras genericas abaixo
+        r.addAll(noeaRules());
         r.add(new Rule("blue", 0.80, 0.10, 0.05, 2.0, 4));
         r.add(new Rule("god", 0.60, 0.08, 0.04, 1.5, 3));
         r.add(new Rule("ultrainstinct", 0.30, 0.06, 0.08, 2.5, 5));
@@ -318,6 +334,19 @@ public class KiControlConfig {
                 if (r != null && r.contains != null && r.minAuraLevel <= 1 && levels.containsKey(r.contains)) r.minAuraLevel = levels.get(r.contains);
             }
             configVersion = 4;
+        }
+        if (configVersion < 5) {
+            // formas do Dragon Block Noea: entram no comeco (antes de "god"), so as que faltam
+            if (rules != null) {
+                List<Rule> add = new ArrayList<>();
+                for (Rule n : noeaRules()) {
+                    boolean has = false;
+                    for (Rule r : rules) if (r != null && n.contains.equalsIgnoreCase(r.contains)) has = true;
+                    if (!has) add.add(n);
+                }
+                rules.addAll(0, add);
+            }
+            configVersion = 5;
         }
     }
 
