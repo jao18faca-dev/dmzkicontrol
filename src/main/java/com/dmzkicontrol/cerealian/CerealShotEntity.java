@@ -48,11 +48,11 @@ public class CerealShotEntity extends Projectile {
     }
 
     /** Cria o tiro saindo de {@code from} na direcao em que o dono esta olhando. */
-    public static CerealShotEntity create(LivingEntity owner, Vec3 from, float damage, int color, boolean arrow) {
+    public static CerealShotEntity create(LivingEntity owner, Vec3 from, float damage, int color, boolean arrow, int pierce) {
         CerealShotEntity shot = new CerealShotEntity(ModRegistry.CEREAL_SHOT.get(), owner.level());
         shot.setOwner(owner);
         shot.damage = damage;
-        shot.pierceLeft = arrow ? 3 : 0;
+        shot.pierceLeft = Math.max(0, pierce);
         shot.entityData.set(COLOR, color & 0xFFFFFF);
         shot.entityData.set(ARROW, arrow);
         Vec3 look = owner.getViewVector(1.0f);

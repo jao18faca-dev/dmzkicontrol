@@ -76,6 +76,22 @@ public final class ClientSetup {
         }
 
         @SubscribeEvent
+        public static void onLayerDefinitions(net.minecraftforge.client.event.EntityRenderersEvent.RegisterLayerDefinitions event) {
+            event.registerLayerDefinition(CerealPartsLayer.LAYER, CerealPartsLayer::createLayer);
+        }
+
+        @SubscribeEvent
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        public static void onAddLayers(net.minecraftforge.client.event.EntityRenderersEvent.AddLayers event) {
+            for (String skin : event.getSkins()) {
+                var renderer = event.getSkin(skin);
+                if (renderer instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer pr) {
+                    pr.addLayer(new CerealPartsLayer(pr, event.getEntityModels().bakeLayer(CerealPartsLayer.LAYER)));
+                }
+            }
+        }
+
+        @SubscribeEvent
         public static void onRegisterRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_SHOT.get(), CerealShotRenderer::new);
         }
@@ -110,11 +126,13 @@ public final class ClientSetup {
             CutsceneController.clientTick();
             SealAnimations.clientTick();
             CerealianEyeClient.clientTick();
+            if (mc.player != null && mc.player.tickCount % 20 == 0) SealAnimations.ensureInjected();
         }
 
         @SubscribeEvent
         public static void onRenderLevel(net.minecraftforge.client.event.RenderLevelStageEvent event) {
             WeakPointRenderer.render(event);
+            KiBowRenderer.render(event);
         }
 
         @SubscribeEvent

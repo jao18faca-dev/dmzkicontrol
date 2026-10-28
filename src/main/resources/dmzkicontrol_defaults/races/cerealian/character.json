@@ -4,10 +4,7 @@
   "useVanillaSkin": false,
   "customModel": "human",
   "isLayered": true,
-  "headBones": [
-    "ears1",
-    "hair"
-  ],
+  "headBones": ["hair"],
   "racialSkill": "cerealian",
   "hasSaiyanTail": false,
   "auraType": "kakarot",

@@ -91,9 +91,21 @@ public final class RaceInstaller {
         if (!Files.exists(file)) return false;
         try {
             JsonObject obj = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8)).getAsJsonObject();
+            boolean dirty = false;
             JsonElement hair = obj.get("defaultHairColor");
             if (hair != null && "#F1E4DF".equalsIgnoreCase(hair.getAsString())) {
                 obj.addProperty("defaultHairColor", "#5FD3C4");
+                dirty = true;
+            }
+            // versao anterior herdava as orelhas da Glind ("ears1"); os Cerealianos tem as proprias
+            JsonElement bones = obj.get("headBones");
+            if (bones != null && bones.isJsonArray() && bones.toString().contains("ears1")) {
+                JsonArray only = new JsonArray();
+                only.add("hair");
+                obj.add("headBones", only);
+                dirty = true;
+            }
+            if (dirty) {
                 Files.writeString(file, GSON.toJson(obj), StandardCharsets.UTF_8);
                 return true;
             }

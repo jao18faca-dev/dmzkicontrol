@@ -57,8 +57,8 @@
   "skill.dragonminez.racial_cerealian": "Cereal Eye",
   "skill.dragonminez.racial_cerealian.desc": "A Cerealian's right eye sees ki. Hold B to aim: sniper zoom, outlines on everyone with ki nearby and weak points (red circles) on the target. Passives: Trajectory Reading (chance to dodge projectiles) and Precise Gaze (extra crit). Ki blasts become thin, precise shots.",
   "skill.dragonminez.cereal_eye": "Aim",
-  "skill.dragonminez.cereal_eye.desc": "Cerealian only. Each level reveals one more weak point on the target (up to 4), increases Cereal Eye range, dodge and crit chance, and lowers its ki cost. Level 2 unlocks Ki Arrow.",
-  "technique.dragonminez.ki_arrow": "Ki Arrow",
+  "skill.dragonminez.cereal_eye.desc": "Cerealian only. Each level reveals one more weak point on the target (up to 4), increases Cereal Eye range, dodge and crit chance, and lowers its ki cost. Level 2 unlocks Ki Bow.",
+  "technique.dragonminez.ki_arrow": "Ki Bow",
   "item.dmzkicontrol.cereal_scope": "Cereal Scope",
   "item.dmzkicontrol.cereal_scope.tip1": "A Cerealian sniper's lens",
   "item.dmzkicontrol.cereal_scope.tip2": "Cerealians: +1 weak point, +16 blocks of range and half the ki cost for the Cereal Eye",
@@ -66,5 +66,5 @@
   "message.dmzkicontrol.eye_precise": "Precise shot on a weak point!",
   "message.dmzkicontrol.eye_dodge": "Trajectory Reading: you dodged!",
   "message.dmzkicontrol.eye_learned": "Your Cerealian eye awakened: Aim skill (level 1). Hold B to aim.",
-  "message.dmzkicontrol.ki_arrow_learned": "You learned Ki Arrow! Equip it in the ki techniques menu."
+  "message.dmzkicontrol.ki_arrow_learned": "You learned Ki Bow! Equip it in the ki techniques menu."
 }

@@ -98,6 +98,10 @@ public final class SealAnimations {
                 if (self) CutsceneController.stop();
                 SealEffects.burst(player, true);
             }
+            case SealAnimS2C.KIBOW_RELEASE -> {
+                STOPS.put(player.getId(), new Object[]{mc.level.getGameTime() + 12, "ki.kibow"});
+                KiBowRenderer.onRelease(player);
+            }
             case SealAnimS2C.CANCEL -> {
                 stop(player);
                 FX.remove(player.getId());
@@ -139,7 +143,10 @@ public final class SealAnimations {
             Entity e = mc.level.getEntity(en.getKey());
             if (((Object) e) instanceof IPlayerAnimatable anim) {
                 try {
-                    if (en.getValue()[1].equals(anim.dragonminez$getCurrentKiAnimation())) anim.dragonminez$stopKiAnimation();
+                    String current = anim.dragonminez$getCurrentKiAnimation();
+                    String name = (String) en.getValue()[1];
+                    boolean match = name.equals("ki.kibow") ? current.startsWith("ki.kibow") : name.equals(current);
+                    if (match) anim.dragonminez$stopKiAnimation();
                 } catch (Throwable ignored) { }
             }
         }
