@@ -60,24 +60,17 @@ public final class KiBowRenderer {
             if (p.getOwner() != null && !RELEASED.containsKey(p.getOwner().getId())) CHARGING.put(p.getOwner().getId(), p.getId());
         }
         SUMMONED.retainAll(CHARGING.keySet());
-        // garante a pose de puxar o arco (o DMZ manda a animacao so no inicio da carga; se ela se perder,
-        // por exemplo por um pacote que chegou antes do jogador, o arco ficaria com o braco abaixado)
-        for (Integer ownerId : CHARGING.keySet()) {
-            if (mc.level.getEntity(ownerId) instanceof net.minecraft.client.player.AbstractClientPlayer pl
-                    && ((Object) pl) instanceof com.dragonminez.client.animation.IPlayerAnimatable anim) {
-                try {
-                    if (!CAST_ANIM.equals(anim.dragonminez$getCurrentKiAnimation()) && SealAnimations.ensureInjected()) {
-                        anim.dragonminez$playKiAnimation(CAST_ANIM, false);
-                    }
-                } catch (Throwable ignored) {
-                }
-            }
-        }
+
         for (Map.Entry<Integer, Integer> en : CHARGING.entrySet()) {
             Entity owner = mc.level.getEntity(en.getKey());
             Entity charge = mc.level.getEntity(en.getValue());
             if (owner instanceof LivingEntity le && charge != null) summonFx(mc, le, charge.tickCount);
         }
+    }
+
+    /** Esta entidade esta segurando o Arco de Ki agora? */
+    public static boolean isCharging(Entity owner) {
+        return CHARGING.containsKey(owner.getId());
     }
 
     /** {puxada 0..1, escala 0..1, invocacao 0..1} ou null se essa entidade nao esta com o arco. */

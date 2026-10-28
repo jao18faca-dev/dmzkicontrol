@@ -129,6 +129,7 @@ public final class ClientSetup {
             SealAnimations.clientTick();
             CerealianEyeClient.clientTick();
             KiBowRenderer.clientTick();
+            ArmAnimDriver.clientTick();
             SealFxRenderer.clientTick();
             if (mc.player != null && mc.player.tickCount % 20 == 0) SealAnimations.ensureInjected();
         }

@@ -112,18 +112,14 @@ public final class SealAnimations {
             case SealAnimS2C.LASER -> {
                 // troca a pose instantanea do ki blast do DMZ por um "dedo apontado" suave
                 NO_SHOOT_POSE.put(player.getId(), mc.level.getGameTime() + 16);
-                if (((Object) player) instanceof IPlayerAnimatable anim && ensureInjected()) {
-                    try {
-                        anim.dragonminez$setShootingKi(false);
-                        anim.dragonminez$playKiAnimation(LASER_ANIM, false);
-                    } catch (Throwable ignored) { }
+                if (((Object) player) instanceof IPlayerAnimatable anim) {
+                    try { anim.dragonminez$setShootingKi(false); } catch (Throwable ignored) { }
                 }
+                ArmAnimDriver.play(player, ArmAnimDriver.LASER, 14);
             }
             case SealAnimS2C.KIBOW_RELEASE -> {
                 // solta a corda: animacao de disparo (o controlador de ki do DMZ encerra sozinho os "_fire")
-                if (((Object) player) instanceof IPlayerAnimatable anim && ensureInjected()) {
-                    try { anim.dragonminez$playKiAnimation(KiBowRenderer.FIRE_ANIM, false); } catch (Throwable ignored) { }
-                }
+                ArmAnimDriver.play(player, ArmAnimDriver.BOW_FIRE, 14);
                 STOPS.put(player.getId(), new Object[]{mc.level.getGameTime() + 16, "ki.kibow"});
                 KiBowRenderer.onRelease(player);
             }
@@ -209,6 +205,7 @@ public final class SealAnimations {
         SEALED.clear();
         SealFxRenderer.clear();
         NO_SHOOT_POSE.clear();
+        ArmAnimDriver.clear();
         SAVED.clear();
     }
 

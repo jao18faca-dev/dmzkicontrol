@@ -39,6 +39,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Mod.EventBusSubscriber(modid = KiControlMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class CerealianHooks {
     private static final Map<UUID, Long> LAST_DODGE = new ConcurrentHashMap<>();
+    /** Lasers esperando o braco chegar: {tick de disparo, dano, cor}. */
+    private record PendingLaser(long at, float damage, int color) {}
+    private static final Map<UUID, PendingLaser> PENDING_LASERS = new ConcurrentHashMap<>();
+    private static final int LASER_DELAY_TICKS = 3;
 
     private CerealianHooks() {}
 
@@ -64,6 +68,11 @@ public final class CerealianHooks {
         if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide) return;
         if (!(event.player instanceof ServerPlayer sp)) return;
         CerealianEye.tick(sp);
+        PendingLaser laser = PENDING_LASERS.get(sp.getUUID());
+        if (laser != null && sp.level().getGameTime() >= laser.at()) {
+            PENDING_LASERS.remove(sp.getUUID());
+            if (sp.isAlive()) fireLaser(sp, laser.damage(), laser.color());
+        }
         if (sp.tickCount % 40 == 0) grantRaceKit(sp);
         if (sp.tickCount % 2 == 0 && CerealianEye.isCerealian(sp)) {
             for (AbstractKiProjectile p : sp.level().getEntitiesOfClass(AbstractKiProjectile.class, sp.getBoundingBox().inflate(6),
@@ -128,17 +137,22 @@ public final class CerealianHooks {
         if (!basic || !KiControlConfig.get().cerealian.preciseKiShot) return;
 
         event.setCanceled(true);
+        // primeiro o braco sobe e aponta (animacao), o raio sai quando o dedo chega na posicao
+        com.dmzkicontrol.network.KiControlNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> sp),
+                new com.dmzkicontrol.network.SealAnimS2C(sp.getId(), com.dmzkicontrol.network.SealAnimS2C.LASER));
+        PENDING_LASERS.put(sp.getUUID(), new PendingLaser(sp.level().getGameTime() + LASER_DELAY_TICKS, proj.getKiDamage(), kiColor(sp, proj.getColor())));
+    }
+
+    private static void fireLaser(ServerPlayer sp, float damage, int color) {
         // sempre da mao direita, na ponta do dedo (a animacao do Cerealiano aponta com o braco direito)
         Vec3 right = Vec3.directionFromRotation(0.0F, sp.getYRot() + 90.0F);
         Vec3 hand = new Vec3(sp.getX(), sp.getEyeY() - 0.42, sp.getZ()).add(right.scale(0.36)).add(sp.getViewVector(1f).scale(0.75));
-        CerealBeamEntity beam = CerealBeamEntity.fire(sp, hand, proj.getKiDamage(), kiColor(sp, proj.getColor()));
-        event.getLevel().addFreshEntity(beam);
-        com.dmzkicontrol.network.KiControlNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> sp),
-                new com.dmzkicontrol.network.SealAnimS2C(sp.getId(), com.dmzkicontrol.network.SealAnimS2C.LASER));
+        CerealBeamEntity beam = CerealBeamEntity.fire(sp, hand, damage, color);
+        sp.level().addFreshEntity(beam);
         try {
-            event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), com.dragonminez.common.init.MainSounds.KIBLAST_ATTACK.get(), SoundSource.PLAYERS, 0.9f, 1.8f);
+            sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), com.dragonminez.common.init.MainSounds.KIBLAST_ATTACK.get(), SoundSource.PLAYERS, 0.9f, 1.8f);
         } catch (Throwable t) {
-            event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.PLAYERS, 0.6f, 1.9f);
+            sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.PLAYERS, 0.6f, 1.9f);
         }
     }
 
@@ -256,5 +270,6 @@ public final class CerealianHooks {
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         CerealianEye.forget(event.getEntity().getUUID());
         LAST_DODGE.remove(event.getEntity().getUUID());
+        PENDING_LASERS.remove(event.getEntity().getUUID());
     }
 }
