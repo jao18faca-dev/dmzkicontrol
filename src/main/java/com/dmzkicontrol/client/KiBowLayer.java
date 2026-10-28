@@ -53,6 +53,6 @@ public class KiBowLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
         // so usa a mao direita se ela estiver atras da pegada e a uma distancia de quem puxa a corda
         boolean pulling = rightHand.y < grip.y - 0.12 && rightHand.distanceTo(grip) < 1.7;
         KiBowRenderer.drawBow(KiBowRenderer.pen(buffers, left), grip, fwd, up, new Vec3(camL.x(), camL.y(), camL.z()),
-                1.15f * st[1], st[0], pulling ? rightHand : null, KiFx.kiColor(player, KiBowRenderer.FALLBACK), KiFx.seed(player));
+                1.15f * st[1], st[0], st[2], pulling ? rightHand : null, KiFx.kiColor(player, KiBowRenderer.FALLBACK), KiFx.seed(player));
     }
 }
