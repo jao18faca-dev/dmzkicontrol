@@ -68,6 +68,24 @@ public final class SealEffects {
         }
     }
 
+    /**
+     * Com o selo ativo: o ki fica contido, so uma ou outra faisca fina escapa rente ao corpo e sobe
+     * devagar (no manga o Blue controlado nao tem aura, so um leve brilho em volta do corpo).
+     */
+    public static void ambient(Player p) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) return;
+        RandomSource r = p.getRandom();
+        DustParticleOptions dust = new DustParticleOptions(rgb(auraColor(p)), 0.55f);
+        double w = p.getBbWidth() * 0.55;
+        for (int i = 0; i < 2; i++) {
+            double a = r.nextDouble() * Math.PI * 2;
+            double x = p.getX() + Math.cos(a) * w, z = p.getZ() + Math.sin(a) * w;
+            double y = p.getY() + r.nextDouble() * p.getBbHeight();
+            level.addParticle(dust, x, y, z, 0, 0.02, 0);
+        }
+    }
+
     /** Aura voltando para fora (liberar) ou explodindo (perdeu o controle). */
     public static void burst(Player p, boolean violent) {
         var level = Minecraft.getInstance().level;

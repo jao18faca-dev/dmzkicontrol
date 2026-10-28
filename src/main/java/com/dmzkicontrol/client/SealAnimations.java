@@ -86,19 +86,23 @@ public final class SealAnimations {
         switch (type) {
             case SealAnimS2C.QUICK -> {
                 play(player, QUICK, 27);
+                SealFxRenderer.start(player, type);
                 FX.put(player.getId(), new long[]{SealAnimS2C.QUICK, mc.level.getGameTime()});
             }
             case SealAnimS2C.CUTSCENE -> {
                 play(player, CUTSCENE, CutsceneController.DURATION);
+                SealFxRenderer.start(player, type);
                 FX.put(player.getId(), new long[]{SealAnimS2C.CUTSCENE, mc.level.getGameTime()});
                 if (self) CutsceneController.start();
             }
             case SealAnimS2C.RELEASE -> {
                 play(player, RELEASE, 14);
+                SealFxRenderer.start(player, type);
                 SealEffects.burst(player, false);
             }
             case SealAnimS2C.BREAK -> {
                 play(player, BREAK, 18);
+                SealFxRenderer.start(player, type);
                 if (self) CutsceneController.stop();
                 SealEffects.burst(player, true);
             }
@@ -109,6 +113,7 @@ public final class SealAnimations {
             case SealAnimS2C.CANCEL -> {
                 stop(player);
                 FX.remove(player.getId());
+                SealFxRenderer.cancel(player);
                 if (self) CutsceneController.stop();
             }
             default -> { }
@@ -139,6 +144,12 @@ public final class SealAnimations {
         if (mc.level == null) { STOPS.clear(); FX.clear(); SEALED.clear(); return; }
         long now = mc.level.getGameTime();
         tickEffects(mc, now);
+        if (now % 7 == 0) {
+            for (int id : SEALED) {
+                if (mc.level.getEntity(id) instanceof AbstractClientPlayer p
+                        && !(p == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson())) SealEffects.ambient(p);
+            }
+        }
         Iterator<Map.Entry<Integer, Object[]>> it = STOPS.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Integer, Object[]> en = it.next();
@@ -178,6 +189,7 @@ public final class SealAnimations {
 
     public static void clearSealed() {
         SEALED.clear();
+        SealFxRenderer.clear();
         SAVED.clear();
     }
 

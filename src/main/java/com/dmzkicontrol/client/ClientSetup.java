@@ -129,6 +129,7 @@ public final class ClientSetup {
             SealAnimations.clientTick();
             CerealianEyeClient.clientTick();
             KiBowRenderer.clientTick();
+            SealFxRenderer.clientTick();
             if (mc.player != null && mc.player.tickCount % 20 == 0) SealAnimations.ensureInjected();
         }
 
@@ -136,6 +137,7 @@ public final class ClientSetup {
         public static void onRenderLevel(net.minecraftforge.client.event.RenderLevelStageEvent event) {
             WeakPointRenderer.render(event);
             KiBowRenderer.render(event);
+            SealFxRenderer.render(event);
         }
 
         @SubscribeEvent
