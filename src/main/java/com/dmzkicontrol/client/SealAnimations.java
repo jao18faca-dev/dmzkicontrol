@@ -52,7 +52,11 @@ public final class SealAnimations {
             BakedAnimations dmz = cache.get(DMZ_PRIMARY);
             BakedAnimations ours = cache.get(OURS);
             if (dmz == null || ours == null) return warnOnce("arquivo de animacao nao encontrado");
-            if (dmz.getAnimation(QUICK) != null) return true;
+            boolean missing = false;
+            for (String key : ours.animations().keySet()) {
+                if (dmz.getAnimation(key) != ours.getAnimation(key)) { missing = true; break; }
+            }
+            if (!missing) return true;
             Map<String, Animation> merged = new HashMap<>(dmz.animations());
             merged.putAll(ours.animations());
             cache.put(DMZ_PRIMARY, new BakedAnimations(merged));

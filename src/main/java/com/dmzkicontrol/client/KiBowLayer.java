@@ -42,6 +42,18 @@ public class KiBowLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
         Matrix4f right = new Matrix4f(pose.last().pose());
         pose.popPose();
 
+        // braco levantado pela animacao? (se nao, o arco fica na frente do corpo em vez de apontar para baixo)
+        boolean raised = Math.abs(model.leftArm.xRot) > 0.9f;
+        float[] color = KiFx.kiColor(player, KiBowRenderer.FALLBACK);
+        if (!raised) {
+            Matrix4f root = new Matrix4f(pose.last().pose());
+            Vector3f camR = new Matrix4f(root).invert().transformPosition(new Vector3f());
+            // espaco do modelo: y para baixo, frente = -z, esquerda do personagem = +x
+            KiBowRenderer.drawBow(KiBowRenderer.pen(buffers, root), new Vec3(0.30, 0.18, -0.72), new Vec3(0, 0, -1), new Vec3(0, -1, 0),
+                    new Vec3(camR.x(), camR.y(), camR.z()), 1.15f * st[1], st[0], st[2], null, color, KiFx.seed(player));
+            return;
+        }
+
         Matrix4f inv = new Matrix4f(left).invert();
         Vector3f camL = inv.transformPosition(new Vector3f());
         Vector3f rh = inv.transformPosition(right.transformPosition(new Vector3f(RIGHT_HAND)));
@@ -53,6 +65,6 @@ public class KiBowLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
         // so usa a mao direita se ela estiver atras da pegada e a uma distancia de quem puxa a corda
         boolean pulling = rightHand.y < grip.y - 0.12 && rightHand.distanceTo(grip) < 1.7;
         KiBowRenderer.drawBow(KiBowRenderer.pen(buffers, left), grip, fwd, up, new Vec3(camL.x(), camL.y(), camL.z()),
-                1.15f * st[1], st[0], st[2], pulling ? rightHand : null, KiFx.kiColor(player, KiBowRenderer.FALLBACK), KiFx.seed(player));
+                1.15f * st[1], st[0], st[2], pulling ? rightHand : null, color, KiFx.seed(player));
     }
 }

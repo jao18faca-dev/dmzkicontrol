@@ -26,6 +26,7 @@ public final class KiBowRenderer {
     public static final int FALLBACK = 0x5FD3C4;
     /** Invocacao do arco: o ki junta na mao e os bracos crescem para fora. */
     private static final float SUMMON_TICKS = 8f;
+    private static final String CAST_ANIM = "ki.kibow_cast";
     /** Puxada da corda depois da invocacao (bate com a animacao: 0,45 s a 1,3 s). */
     private static final float PULL_START = 9f;
     private static final float PULL_TICKS = 17f;
@@ -54,6 +55,19 @@ public final class KiBowRenderer {
             if (p.getOwner() != null) CHARGING.put(p.getOwner().getId(), p.getId());
         }
         SUMMONED.retainAll(CHARGING.keySet());
+        // garante a pose de puxar o arco (o DMZ manda a animacao so no inicio da carga; se ela se perder,
+        // por exemplo por um pacote que chegou antes do jogador, o arco ficaria com o braco abaixado)
+        for (Integer ownerId : CHARGING.keySet()) {
+            if (mc.level.getEntity(ownerId) instanceof net.minecraft.client.player.AbstractClientPlayer pl
+                    && ((Object) pl) instanceof com.dragonminez.client.animation.IPlayerAnimatable anim) {
+                try {
+                    if (!CAST_ANIM.equals(anim.dragonminez$getCurrentKiAnimation()) && SealAnimations.ensureInjected()) {
+                        anim.dragonminez$playKiAnimation(CAST_ANIM, true);
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+        }
         for (Map.Entry<Integer, Integer> en : CHARGING.entrySet()) {
             Entity owner = mc.level.getEntity(en.getKey());
             Entity charge = mc.level.getEntity(en.getValue());
