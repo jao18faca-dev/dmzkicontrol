@@ -15,7 +15,10 @@ public final class CutsceneOverlay implements IGuiOverlay {
 
     @Override
     public void render(ForgeGui gui, GuiGraphics g, float partialTick, int w, int h) {
-        if (!CutsceneController.isActive()) return;
+        if (!CutsceneController.isActive()) {
+            quickSeal(g, w, h, partialTick);
+            return;
+        }
         float t = CutsceneController.ticks() + partialTick;
         float dur = CutsceneController.DURATION;
 
@@ -41,7 +44,25 @@ public final class CutsceneOverlay implements IGuiOverlay {
 
         // "batimento" escrito como onomatopeia de manga
         dokun(g, w, h, sincePulse, 0f, 1.0f);
-        dokun(g, w, h, sincePulse - 7f, 0.16f, 0.7f);
+        // segundo batimento, em pe ao lado do personagem
+        if (sincePulse >= 7f && sincePulse < 19f) {
+            float k = sincePulse - 7f;
+            vertical(g, "\u30C9\u30AF\u30F3", w * 0.70f, h * 0.20f, 2.6f, -6f, fadeInOut(k, 2f, 12f), k < 4f ? (4f - k) * 0.6f : 0f, k, 0xFFFFFF);
+        }
+
+        // ゴゴゴゴ: a aura sendo puxada (dois blocos em pe, um de cada lado)
+        if (t > 6f && t < pulse + 2f) {
+            float a = fadeInOut(t - 6f, 6f, pulse + 2f - 6f);
+            float shake = 0.6f + 1.2f * Mth.clamp((t - 6f) / (pulse - 6f), 0f, 1f);
+            vertical(g, "\u30B4\u30B4\u30B4\u30B4", w * 0.76f, h * 0.16f, 2.4f, 4f, a * reveal(t - 6f, 4), shake, t - 6f, 0xFFFFFF);
+            vertical(g, "\u30B4\u30B4\u30B4", w * 0.17f, h * 0.30f, 1.8f, -4f, a * reveal(t - 12f, 3), shake * 0.8f, t - 12f, 0xFFFFFF);
+        }
+        // シーン…: silencio total depois do selo, como agua parada
+        if (sincePulse > 10f) {
+            float k = sincePulse - 10f;
+            float a = Math.min(Mth.clamp(k / 6f, 0f, 1f), Mth.clamp((dur - t) / 6f, 0f, 1f));
+            vertical(g, "\u30B7\u30FC\u30F3\u2026", w * 0.80f, h * 0.18f, 2.2f, 0f, a, 0f, k, 0xE8F8FF);
+        }
 
         // titulo
         if (t > 47) {
@@ -100,6 +121,57 @@ public final class CutsceneOverlay implements IGuiOverlay {
         int black = (alpha << 24);
         for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++) if (dx != 0 || dy != 0) g.drawString(font, txt, dx, dy, black, false);
         g.drawString(font, txt, 0, 0, (alpha << 24) | 0xFFFFFF, false);
+        g.pose().popPose();
+    }
+
+    /** Selo rapido (sem cutscene): so um ドクン em pe ao lado do personagem no seu proprio HUD. */
+    private static void quickSeal(GuiGraphics g, int w, int h, float partial) {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null || mc.options.hideGui) return;
+        float since = SealFxRenderer.localQuickSince(partial);
+        if (since < 0f || since > 14f) return;
+        vertical(g, "\u30C9\u30AF\u30F3", w * 0.66f, h * 0.24f, 2.0f, -5f, fadeInOut(since, 2f, 14f), since < 4f ? (4f - since) * 0.5f : 0f, since, 0xFFFFFF);
+    }
+
+    private static float fadeInOut(float t, float in, float total) {
+        if (t < 0f || t > total) return 0f;
+        return Math.min(Mth.clamp(t / in, 0f, 1f), Mth.clamp((total - t) / Math.min(5f, total * 0.4f), 0f, 1f));
+    }
+
+    /** Fracao de letras ja reveladas (uma a cada 2 ticks): devolve 1 quando a coluna inteira apareceu. */
+    private static float reveal(float t, int chars) {
+        return t <= 0f ? 0f : 1f;
+    }
+
+    /**
+     * Onomatopeia em pe (escrita de cima para baixo, como nos paineis de manga), com contorno preto,
+     * letras aparecendo uma a uma e tremendo.
+     */
+    private static void vertical(GuiGraphics g, String txt, float x, float y, float scale, float tilt, float alpha, float shake, float time, int color) {
+        if (alpha <= 0.02f) return;
+        var font = Minecraft.getInstance().font;
+        int a = Math.max(8, (int) (alpha * 255));
+        int shown = Math.min(txt.length(), Math.max(1, (int) (time / 2f) + 1));
+        g.pose().pushPose();
+        g.pose().translate(x, y, 0);
+        g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(tilt));
+        g.pose().scale(scale, scale, 1f);
+        float line = font.lineHeight + 2;
+        for (int i = 0; i < shown; i++) {
+            String ch = txt.substring(i, i + 1);
+            int cw = font.width(ch);
+            float jx = (float) Math.sin(time * 12.7 + i * 2.1) * shake / scale;
+            float jy = (float) Math.cos(time * 10.3 + i * 1.7) * shake / scale;
+            // a ultima letra a aparecer surge maior e encolhe
+            float pop = i == shown - 1 && shown < txt.length() ? 1.25f : 1f;
+            g.pose().pushPose();
+            g.pose().translate(-cw / 2f + jx, i * line + jy, 0);
+            if (pop != 1f) { g.pose().translate(cw / 2f, line / 2f, 0); g.pose().scale(pop, pop, 1f); g.pose().translate(-cw / 2f, -line / 2f, 0); }
+            int black = a << 24;
+            for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++) if (dx != 0 || dy != 0) g.drawString(font, ch, dx, dy, black, false);
+            g.drawString(font, ch, 0, 0, (a << 24) | (color & 0xFFFFFF), false);
+            g.pose().popPose();
+        }
         g.pose().popPose();
     }
 

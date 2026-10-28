@@ -48,6 +48,15 @@ public final class SealFxRenderer {
         ACTIVE.remove(e.getId());
     }
 
+    /** Ticks desde o pulso do selo rapido do proprio jogador (ou -1). */
+    public static float localQuickSince(float partial) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return -1f;
+        long[] v = ACTIVE.get(mc.player.getId());
+        if (v == null || v[0] != SealAnimS2C.QUICK) return -1f;
+        return mc.level.getGameTime() - v[1] + partial - pulseTick(SealAnimS2C.QUICK);
+    }
+
     public static void clear() {
         ACTIVE.clear();
     }
