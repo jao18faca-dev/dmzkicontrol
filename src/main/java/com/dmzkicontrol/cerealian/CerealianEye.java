@@ -164,7 +164,7 @@ public final class CerealianEye {
     public static double preciseHitMultiplier(ServerPlayer shooter, LivingEntity victim, Vec3 impact) {
         State st = STATES.get(shooter.getUUID());
         if (!isMarked(st, victim, shooter.level().getGameTime()) || !isCerealian(shooter)) return 1.0;
-        int idx = WeakPoints.nearest(victim, st.mask, impact, 0.5);
+        int idx = WeakPoints.nearest(victim, st.mask, impact, 0.65);
         if (idx < 0) return 1.0;
         StatsData data = AuraSealManager.stats(shooter);
         double mul = data == null ? 1.0 : formMultiplier(data);

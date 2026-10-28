@@ -95,7 +95,7 @@ public class CerealShotEntity extends Projectile {
                 EntityHitResult hit = ProjectileUtil.getEntityHitResult(this.level(), this, pos, end, box, this::canHitEntity);
                 if (hit == null) break;
                 // ponto exato onde o tiro entrou na caixa do alvo (para checar os pontos fracos)
-                Vec3 impact = hit.getEntity().getBoundingBox().inflate(0.3).clip(pos, end).orElse(null);
+                Vec3 impact = hit.getEntity().getBoundingBox().inflate(0.1).clip(pos, end).orElse(null);
                 hitEntity(hit.getEntity(), impact);
                 if (pierceLeft-- <= 0) { this.discard(); return; }
             }
