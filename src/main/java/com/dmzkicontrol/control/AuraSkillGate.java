@@ -27,10 +27,11 @@ public final class AuraSkillGate {
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer sp) || sp.tickCount % 40 != 7) return;
         KiControlConfig cfg = KiControlConfig.get();
-        String skill = cfg.requiredSkill;
-        if (skill == null || skill.isBlank() || !skill.equalsIgnoreCase("aura_control")) return;
         StatsData data = AuraSealManager.stats(sp);
         if (data == null) return;
+        clearRemovedForms(sp, data);
+        String skill = cfg.requiredSkill;
+        if (skill == null || skill.isBlank() || !skill.equalsIgnoreCase("aura_control")) return;
         int level = data.getSkills().getSkillLevel(skill);
         if (level <= 0 || sagaRequirementMet(data, cfg.auraControlRequiredSaga)) {
             if (level > 0) level = applyStoryCap(sp, data, skill, level, cfg);
@@ -109,6 +110,24 @@ public final class AuraSkillGate {
     @SubscribeEvent
     public static void onLogout(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
         KNOWN.remove(event.getEntity().getUUID());
+    }
+
+    /**
+     * Se a curadoria tirou a forma em que o jogador estava (ex.: SSJ5, Rose 3), ele volta ao normal em vez
+     * de ficar numa forma que nao existe mais.
+     */
+    private static void clearRemovedForms(ServerPlayer sp, StatsData data) {
+        try {
+            var c = data.getCharacter();
+            boolean dirty = false;
+            if (c.hasActiveForm() && c.getActiveFormData() == null) { c.clearActiveForm(sp); dirty = true; }
+            if (c.hasActiveStackForm() && c.getActiveStackFormData() == null) { c.clearActiveStackForm(sp); dirty = true; }
+            if (dirty) {
+                StatsDeltaSync.markDirty(sp);
+                sp.displayClientMessage(Component.translatable("message.dmzkicontrol.form_removed").withStyle(ChatFormatting.GRAY), true);
+            }
+        } catch (Throwable ignored) {
+        }
     }
 
     /** A ultima missao da saga exigida esta completa? (sem saga, sem modo historia ou saga inexistente = liberado) */

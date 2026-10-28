@@ -1,0 +1,72 @@
+{
+ "groupName": "godforms",
+ "formType": "godforms",
+ "forms": {
+  "supersaiyangod": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyanblue": {
+   "unlockOnSkillLevel": 2,
+   "formRequisite": "godforms.supersaiyangod",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyanblueevolved": {
+   "unlockOnSkillLevel": 3,
+   "formRequisite": "godforms.supersaiyanblue",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyanblueperfected": {
+   "unlockOnSkillLevel": 4,
+   "formRequisite": "godforms.supersaiyanblueevolved",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyanrose": {
+   "unlockOnSkillLevel": 4,
+   "formRequisite": "godforms.supersaiyangod",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyanroseevolved": {
+   "unlockOnSkillLevel": 4,
+   "formRequisite": "godforms.supersaiyanrose",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

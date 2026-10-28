@@ -1,0 +1,28 @@
+{
+ "groupName": "godkienhancement",
+ "formType": "godkienhancement",
+ "forms": {
+  "enhancewithgodki": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "controlled": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

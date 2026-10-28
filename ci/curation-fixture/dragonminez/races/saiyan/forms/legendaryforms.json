@@ -1,0 +1,61 @@
+{
+ "groupName": "legendaryforms",
+ "formType": "legendaryforms",
+ "forms": {
+  "ikari": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "ssjhybrid": {
+   "unlockOnSkillLevel": 2,
+   "formRequisite": "legendaryforms.ikari",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "ssjfullpower": {
+   "unlockOnSkillLevel": 3,
+   "formRequisite": "legendaryforms.ssjhybrid",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "ssjlegendary3": {
+   "unlockOnSkillLevel": 4,
+   "formRequisite": "legendaryforms.ssjfullpower",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "ssjlegendary4": {
+   "unlockOnSkillLevel": 5,
+   "formRequisite": "legendaryforms.ssjlegendary3",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

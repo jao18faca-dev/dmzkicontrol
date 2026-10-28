@@ -57,7 +57,9 @@ public final class CerealianHooks {
      */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onServerStarted(net.minecraftforge.event.server.ServerStartedEvent event) {
-        if (!RaceInstaller.installLate()) return;
+        boolean changed = RaceInstaller.installLate();
+        changed |= com.dmzkicontrol.compat.FormCurator.run("server");
+        if (!changed) return;
         try {
             com.dragonminez.common.config.ConfigManager.reload();
             KiControlMod.LOGGER.info("Habilidades do add-on recolocadas no skills.json depois de outro mod reescreve-lo.");
@@ -69,6 +71,7 @@ public final class CerealianHooks {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
         boolean late = RaceInstaller.installLate();
+        late |= com.dmzkicontrol.compat.FormCurator.run("server");
         boolean needsReload = late || (RaceInstaller.installedSomething() && event.getServer().isDedicatedServer());
         if (!needsReload) return;
         try {

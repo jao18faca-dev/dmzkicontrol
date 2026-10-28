@@ -1,0 +1,24 @@
+{
+ "formSkillsCosts": {
+  "superforms": {
+   "prices": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  "biogodforms": {
+   "prices": [
+    1,
+    2
+   ]
+  },
+  "cellmax": {
+   "prices": [
+    1
+   ]
+  }
+ }
+}

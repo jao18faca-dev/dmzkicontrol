@@ -1,0 +1,17 @@
+{
+ "groupName": "beastforms",
+ "formType": "beastforms",
+ "forms": {
+  "beast": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 22.85,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

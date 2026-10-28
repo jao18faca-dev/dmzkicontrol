@@ -1,0 +1,137 @@
+{
+  "_info": "Curadoria de formas do DragonMineZ Evolution. Roda a cada inicio, DEPOIS do DragonMineZ, DMZ Sparking e Dragon Block Noea: tira formas fan-made, remove repeticoes, conserta pre-requisitos/niveis e aplica o balanceamento e o visual abaixo. Para mudar numeros ou cores edite ESTE arquivo (os arquivos do DMZ sao reescritos por ele). Chave = grupo.forma.",
+  "version": 1,
+  "enabled": true,
+  "removeForms": [
+    "legendaryforms.ssjlegendary3",
+    "legendaryforms.ssjlegendary4",
+    "oozaru.supersaiyan4fp",
+    "oozaru.supersaiyan4lb",
+    "godforms.supersaiyanblueevolved",
+    "godforms.supersaiyanroseevolved",
+    "evildivineforms.supersaiyanroseevolved",
+    "evildivineforms.supersaiyanrose3",
+    "evildivineforms.supersaiyanrosefullpower",
+    "divineforms.supernamekiangod"
+  ],
+  "removeGroups": [
+    "dmzsparking_af",
+    "biogodforms",
+    "friezabiodata",
+    "piccolobiodata",
+    "mimicforms"
+  ],
+  "dedupe": [
+    ["evildivineforms.supersaiyanrose", "divinerose.supersaiyanrose", "godforms.supersaiyanrose"],
+    ["godkienhancement.controlled", "godkienhancement.enhancewithgodki"],
+    ["cellmax.corruptedgiant", "bioevolution.corruptedgiant"],
+    ["divineforms.golden", "pureprogress.orangepiccolo"],
+    ["divineforms.awakenedgoldengiant", "pureprogress.giantorangepiccolo"]
+  ],
+  "tune": {
+    "godforms.supersaiyangod": {
+      "strMultiplier": 5.0, "skpMultiplier": 5.0, "pwrMultiplier": 5.0, "defMultiplier": 3.75, "speedMultiplier": 1.12, "energyDrain": 0.20,
+      "hairColor": "#E3203F", "bodyColor2": "#E3203F", "eye1Color": "#F04A5E", "eye2Color": "#F04A5E",
+      "auraColor": "#FF4636", "extraAuraColor": "#FFC93D", "hasLightnings": false
+    },
+    "godforms.supersaiyanblue": {
+      "strMultiplier": 6.0, "skpMultiplier": 6.0, "pwrMultiplier": 6.0, "defMultiplier": 4.5, "speedMultiplier": 1.18, "energyDrain": 0.32,
+      "hairColor": "#33D6F7", "bodyColor2": "#33D6F7", "eye1Color": "#49DDF5", "eye2Color": "#49DDF5",
+      "auraColor": "#38C6FF", "extraAuraColor": "#E8FBFF", "hasLightnings": false
+    },
+    "godforms.supersaiyanblueperfected": {
+      "strMultiplier": 6.8, "skpMultiplier": 6.8, "pwrMultiplier": 6.8, "defMultiplier": 5.1, "speedMultiplier": 1.25, "energyDrain": 0.26,
+      "hairColor": "#33D6F7", "bodyColor2": "#33D6F7", "eye1Color": "#8FE9F7", "eye2Color": "#8FE9F7",
+      "auraColor": "#2AB6FF", "extraAuraColor": "#FFFFFF", "hasLightnings": false
+    },
+    "evildivineforms.supersaiyanrose": {
+      "strMultiplier": 6.0, "skpMultiplier": 6.0, "pwrMultiplier": 6.0, "defMultiplier": 4.5, "speedMultiplier": 1.18, "energyDrain": 0.32,
+      "hairColor": "#F45DB6", "bodyColor2": "#F45DB6", "eye1Color": "#BFBFC4", "eye2Color": "#BFBFC4",
+      "auraColor": "#F24FA9", "extraAuraColor": "#5A0F3F", "hasLightnings": false
+    },
+    "divinerose.supersaiyanrose": {
+      "strMultiplier": 6.0, "skpMultiplier": 6.0, "pwrMultiplier": 6.0, "defMultiplier": 4.5, "speedMultiplier": 1.18, "energyDrain": 0.32,
+      "hairColor": "#F45DB6", "bodyColor2": "#F45DB6", "eye1Color": "#BFBFC4", "eye2Color": "#BFBFC4",
+      "auraColor": "#F24FA9", "extraAuraColor": "#5A0F3F", "hasLightnings": false
+    },
+    "godforms.supersaiyanrose": {
+      "strMultiplier": 6.0, "skpMultiplier": 6.0, "pwrMultiplier": 6.0, "defMultiplier": 4.5, "speedMultiplier": 1.18, "energyDrain": 0.32,
+      "hairColor": "#F45DB6", "bodyColor2": "#F45DB6", "eye1Color": "#BFBFC4", "eye2Color": "#BFBFC4",
+      "auraColor": "#F24FA9", "extraAuraColor": "#5A0F3F", "hasLightnings": false
+    },
+    "beastforms.beast": {
+      "strMultiplier": 7.5, "skpMultiplier": 7.5, "pwrMultiplier": 7.5, "defMultiplier": 5.6, "speedMultiplier": 1.3, "energyDrain": 0.38,
+      "hairColor": "#F1F3FA", "bodyColor2": "#F1F3FA", "eye1Color": "#E3263B", "eye2Color": "#E3263B",
+      "auraColor": "#B65CFF", "extraAuraColor": "#E8346E", "hasLightnings": true, "lightningColor": "#FF4F9A"
+    },
+    "ultrainstinct.sign": {
+      "strMultiplier": 1.6, "skpMultiplier": 1.6, "pwrMultiplier": 1.6, "defMultiplier": 1.8, "speedMultiplier": 1.35, "energyDrain": 0.15,
+      "eye1Color": "#B7C2D4", "eye2Color": "#B7C2D4", "auraColor": "#D4E2FF", "extraAuraColor": "#5C8DFF", "hasLightnings": false
+    },
+    "ultrainstinct.mastered": {
+      "strMultiplier": 2.0, "skpMultiplier": 2.0, "pwrMultiplier": 2.0, "defMultiplier": 2.4, "speedMultiplier": 1.5, "energyDrain": 0.18,
+      "hairColor": "#DDE3EE", "bodyColor2": "#DDE3EE", "eye1Color": "#C9D1DD", "eye2Color": "#C9D1DD",
+      "auraColor": "#F3F7FF", "extraAuraColor": "#8DB0FF", "hasLightnings": false
+    },
+    "ultraego.sign": {
+      "strMultiplier": 1.7, "skpMultiplier": 1.7, "pwrMultiplier": 1.7, "defMultiplier": 1.5, "speedMultiplier": 1.25, "energyDrain": 0.15,
+      "hairColor": "#9A3FAE", "bodyColor2": "#9A3FAE", "eye1Color": "#F07AD8", "eye2Color": "#F07AD8",
+      "auraColor": "#B653D9", "extraAuraColor": "#E25FC6", "hasLightnings": true, "lightningColor": "#F6C4FF"
+    },
+    "ultraego.mastered": {
+      "strMultiplier": 2.2, "skpMultiplier": 2.2, "pwrMultiplier": 2.2, "defMultiplier": 1.8, "speedMultiplier": 1.35, "energyDrain": 0.18,
+      "hairColor": "#5E1A73", "bodyColor2": "#5E1A73", "eye1Color": "#E45BD0", "eye2Color": "#E45BD0",
+      "auraColor": "#9B2FCF", "extraAuraColor": "#E05CC8", "hasLightnings": true, "lightningColor": "#F2B7FF"
+    },
+    "godkienhancement.controlled": {
+      "strMultiplier": 1.1, "skpMultiplier": 1.1, "pwrMultiplier": 1.1, "defMultiplier": 1.08, "speedMultiplier": 1.05, "energyDrain": 0.08
+    },
+    "godkienhancement.enhancewithgodki": {
+      "strMultiplier": 1.1, "skpMultiplier": 1.1, "pwrMultiplier": 1.1, "defMultiplier": 1.08, "speedMultiplier": 1.05, "energyDrain": 0.08
+    },
+    "frostgodforms.golden": {
+      "strMultiplier": 1.9, "skpMultiplier": 1.9, "pwrMultiplier": 1.9, "defMultiplier": 1.7, "speedMultiplier": 1.3, "energyDrain": 0.15,
+      "bodyColor1": "#FFC72C", "bodyColor2": "#7A2BD1", "eye1Color": "#C2141B", "eye2Color": "#C2141B",
+      "auraColor": "#FFC83D", "extraAuraColor": "#FFF2B3", "hasLightnings": false
+    },
+    "frostgodforms.black": {
+      "strMultiplier": 2.4, "skpMultiplier": 2.4, "pwrMultiplier": 2.4, "defMultiplier": 2.0, "speedMultiplier": 1.45, "energyDrain": 0.17,
+      "bodyColor1": "#1B1922", "bodyColor2": "#8A2BB8", "eye1Color": "#E14795", "eye2Color": "#E14795",
+      "auraColor": "#2A1438", "extraAuraColor": "#B06BFF", "hasLightnings": true, "lightningColor": "#F4E6FF"
+    },
+    "cellmax.corruptedgiant": {
+      "strMultiplier": 7.5, "skpMultiplier": 7.5, "pwrMultiplier": 7.5, "defMultiplier": 5.2, "speedMultiplier": 0.66, "energyDrain": 0.39
+    },
+    "bioevolution.corruptedgiant": {
+      "strMultiplier": 7.5, "skpMultiplier": 7.5, "pwrMultiplier": 7.5, "defMultiplier": 5.2, "speedMultiplier": 0.66, "energyDrain": 0.39
+    },
+    "divineforms.potentialunleashed": {
+      "strMultiplier": 5.4, "skpMultiplier": 5.4, "pwrMultiplier": 5.4, "defMultiplier": 3.9, "speedMultiplier": 1.12, "energyDrain": 0.29
+    },
+    "divineforms.golden": {
+      "strMultiplier": 6.6, "skpMultiplier": 6.6, "pwrMultiplier": 6.6, "defMultiplier": 4.7, "speedMultiplier": 1.25, "energyDrain": 0.32,
+      "bodyColor1": "#F58A1F", "bodyColor2": "#B5302A", "eye1Color": "#FFD84D", "eye2Color": "#FFD84D",
+      "auraColor": "#FF8A2A", "extraAuraColor": "#FFD27A"
+    },
+    "divineforms.awakenedgoldengiant": {
+      "strMultiplier": 7.4, "skpMultiplier": 7.4, "pwrMultiplier": 7.4, "defMultiplier": 5.4, "speedMultiplier": 0.72, "energyDrain": 0.37,
+      "bodyColor1": "#F58A1F", "bodyColor2": "#B5302A", "eye1Color": "#FFD84D", "eye2Color": "#FFD84D",
+      "auraColor": "#FF8A2A", "extraAuraColor": "#FFD27A"
+    },
+    "pureprogress.orangepiccolo": {
+      "strMultiplier": 6.6, "skpMultiplier": 6.6, "pwrMultiplier": 6.6, "defMultiplier": 4.7, "speedMultiplier": 1.25, "energyDrain": 0.32
+    },
+    "pureprogress.giantorangepiccolo": {
+      "strMultiplier": 7.4, "skpMultiplier": 7.4, "pwrMultiplier": 7.4, "defMultiplier": 5.4, "speedMultiplier": 0.72, "energyDrain": 0.37
+    },
+    "cerealforms.olhodesperto": {
+      "strMultiplier": 2.2, "skpMultiplier": 2.3, "pwrMultiplier": 2.5, "defMultiplier": 1.8, "speedMultiplier": 1.08, "energyDrain": 0.15,
+      "eye1Color": "#FFC34D", "auraColor": "#FFB347", "extraAuraColor": "#FFF3D6"
+    },
+    "cerealforms.olhosgemeos": {
+      "strMultiplier": 3.6, "skpMultiplier": 3.8, "pwrMultiplier": 4.2, "defMultiplier": 2.8, "speedMultiplier": 1.15, "energyDrain": 0.42,
+      "eye1Color": "#FFC34D", "eye2Color": "#FFC34D", "auraColor": "#FF7A3D", "extraAuraColor": "#FFE2B8",
+      "hasLightnings": true, "lightningColor": "#FFD27A"
+    }
+  }
+}

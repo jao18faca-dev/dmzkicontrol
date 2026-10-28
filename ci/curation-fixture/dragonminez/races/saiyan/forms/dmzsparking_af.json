@@ -1,0 +1,17 @@
+{
+ "groupName": "dmzsparking_af",
+ "formType": "dmzsparking_af",
+ "forms": {
+  "ssj5": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

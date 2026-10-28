@@ -81,5 +81,6 @@
   "message.dmzkicontrol.goku_level_5": "Goku: \"Perfect control! With all your ki locked inside, you can even stack Kaioken on top without wasting any.\" (Aura Control Lv5)",
   "hud.dmzkicontrol.eye_power": "Battle power: %s",
   "message.dmzkicontrol.perfected_blue": "Perfected Blue: your ki is born locked inside the body — aura sealed.",
-  "message.dmzkicontrol.aura_story_cap": "Goku: \"You can't go past this yet. Aura Control level %s comes after: %s.\" (TP for the extra levels refunded)"
+  "message.dmzkicontrol.aura_story_cap": "Goku: \"You can't go past this yet. Aura Control level %s comes after: %s.\" (TP for the extra levels refunded)",
+  "message.dmzkicontrol.form_removed": "That form was removed (non-canon or duplicate); you're back to normal."
 }

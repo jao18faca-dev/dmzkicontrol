@@ -1,0 +1,18 @@
+{
+ "formSkillsCosts": {
+  "pureprogress": {
+   "prices": [
+    1,
+    2
+   ]
+  },
+  "divineforms": {
+   "prices": [
+    1,
+    2,
+    3,
+    4
+   ]
+  }
+ }
+}

@@ -29,6 +29,20 @@ public class KiControlMod {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         com.dmzkicontrol.registry.ModRegistry.register(modBus);
         modBus.addListener(this::commonSetup);
+        modBus.addListener(this::loadComplete);
+    }
+
+    /** Depois que todos os mods instalaram suas formas (Sparking instala no setup): curadoria de formas. */
+    private void loadComplete(net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent event) {
+        event.enqueueWork(() -> {
+            if (com.dmzkicontrol.compat.FormCurator.run("load")) {
+                try {
+                    com.dragonminez.common.config.ConfigManager.reload();
+                } catch (Throwable t) {
+                    LOGGER.warn("Curadoria aplicada, mas o DMZ nao recarregou agora ({}); vale no proximo inicio do mundo.", t.toString());
+                }
+            }
+        });
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -36,6 +50,6 @@ public class KiControlMod {
         event.enqueueWork(com.dmzkicontrol.cerealian.KiArrowTechnique::register);
         String dmzVersion = ModList.get().getModContainerById("dragonminez")
                 .map(c -> c.getModInfo().getVersion().toString()).orElse("?");
-        LOGGER.info("DMZ Ki Control ativo - integrado ao DragonMineZ {}", dmzVersion);
+        LOGGER.info("DragonMineZ Evolution ativo - integrado ao DragonMineZ {}", dmzVersion);
     }
 }

@@ -54,6 +54,17 @@ jobs:
           set -o pipefail
           ./gradlew build --no-daemon 2>&1 | tee /tmp/build.log
 
+      - name: Teste da curadoria de formas
+        shell: bash
+        run: |
+          set -o pipefail
+          GSON=$(find ~/.gradle -name 'gson-2*.jar' ! -name '*sources*' | head -1)
+          SLF=$(find ~/.gradle -name 'slf4j-api-*.jar' ! -name '*sources*' | head -1)
+          echo "gson=$GSON slf4j=$SLF"
+          mkdir -p /tmp/ct
+          javac -d /tmp/ct -cp "build/classes/java/main:$GSON:$SLF" ci/CurationTest.java 2>&1 | tee -a /tmp/build.log
+          java -cp "/tmp/ct:build/classes/java/main:build/resources/main:$GSON:$SLF" CurationTest ci/curation-fixture 2>&1 | tee -a /tmp/build.log
+
       - name: Publicar log se falhar (branch build-logs)
         if: failure()
         env:

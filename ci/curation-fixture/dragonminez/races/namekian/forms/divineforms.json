@@ -1,0 +1,50 @@
+{
+ "groupName": "divineforms",
+ "formType": "divineforms",
+ "forms": {
+  "potentialunleashed": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "golden": {
+   "unlockOnSkillLevel": 2,
+   "formRequisite": "divineforms.potentialunleashed",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "awakenedgoldengiant": {
+   "unlockOnSkillLevel": 3,
+   "formRequisite": "divineforms.golden",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supernamekiangod": {
+   "unlockOnSkillLevel": 4,
+   "formRequisite": "divineforms.awakenedgoldengiant",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

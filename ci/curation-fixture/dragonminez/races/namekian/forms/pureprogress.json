@@ -1,0 +1,28 @@
+{
+ "groupName": "pureprogress",
+ "formType": "pureprogress",
+ "forms": {
+  "orangepiccolo": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "giantorangepiccolo": {
+   "unlockOnSkillLevel": 2,
+   "formRequisite": "pureprogress.orangepiccolo",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

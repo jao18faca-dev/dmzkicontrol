@@ -1,0 +1,39 @@
+{
+ "formSkills": [
+  "superforms",
+  "godforms",
+  "mimicforms",
+  "biogodforms",
+  "dmzsparking_af",
+  "divinerose",
+  "evildivineforms",
+  "legendaryforms",
+  "beastforms",
+  "cellmax",
+  "pureprogress",
+  "divineforms"
+ ],
+ "stackSkills": [
+  "kaioken",
+  "friezabiodata",
+  "frostgodforms",
+  "godkienhancement"
+ ],
+ "skills": {
+  "friezabiodata": {
+   "costs": [
+    1
+   ]
+  },
+  "mimicforms": {
+   "costs": [
+    1
+   ]
+  },
+  "aura_control": {
+   "costs": [
+    1
+   ]
+  }
+ }
+}

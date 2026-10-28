@@ -1,0 +1,28 @@
+{
+ "groupName": "frostgodforms",
+ "formType": "frostgodforms",
+ "forms": {
+  "golden": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 8.5,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "black": {
+   "unlockOnSkillLevel": 2,
+   "formRequisite": "",
+   "strMultiplier": 14.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

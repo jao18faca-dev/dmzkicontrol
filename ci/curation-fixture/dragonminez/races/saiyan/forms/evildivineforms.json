@@ -1,0 +1,50 @@
+{
+ "groupName": "evildivineforms",
+ "formType": "evildivineforms",
+ "forms": {
+  "supersaiyanrose": {
+   "unlockOnSkillLevel": 1,
+   "formRequisite": "",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyanroseevolved": {
+   "unlockOnSkillLevel": 2,
+   "formRequisite": "evildivineforms.supersaiyanrose",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyanrose3": {
+   "unlockOnSkillLevel": 3,
+   "formRequisite": "evildivineforms.supersaiyanroseevolved",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyanrosefullpower": {
+   "unlockOnSkillLevel": 4,
+   "formRequisite": "evildivineforms.supersaiyanrose3",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

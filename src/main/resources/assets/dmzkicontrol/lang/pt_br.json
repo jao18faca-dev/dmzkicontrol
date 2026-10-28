@@ -81,5 +81,6 @@
   "message.dmzkicontrol.goku_level_5": "Goku: \"Controle perfeito! Com o ki todo preso no corpo, dá até pra usar o Kaioken por cima sem desperdício.\" (Aura Control Nv5)",
   "hud.dmzkicontrol.eye_power": "Poder de luta: %s",
   "message.dmzkicontrol.perfected_blue": "Blue Aperfeiçoado: o ki já nasce preso no corpo — aura selada.",
-  "message.dmzkicontrol.aura_story_cap": "Goku: \"Ainda não dá pra ir além disso. O Aura Control nível %s vem depois de: %s.\" (TP dos níveis excedentes devolvidos)"
+  "message.dmzkicontrol.aura_story_cap": "Goku: \"Ainda não dá pra ir além disso. O Aura Control nível %s vem depois de: %s.\" (TP dos níveis excedentes devolvidos)",
+  "message.dmzkicontrol.form_removed": "Essa forma foi retirada (inventada ou repetida); você voltou ao normal."
 }

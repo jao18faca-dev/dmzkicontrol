@@ -1,0 +1,61 @@
+{
+ "groupName": "oozaru",
+ "formType": "superforms",
+ "forms": {
+  "oozaru": {
+   "unlockOnSkillLevel": 0,
+   "formRequisite": "",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "goldenoozaru": {
+   "unlockOnSkillLevel": 7,
+   "formRequisite": "oozaru.oozaru",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyan4": {
+   "unlockOnSkillLevel": 8,
+   "formRequisite": "oozaru.goldenoozaru",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyan4fp": {
+   "unlockOnSkillLevel": 9,
+   "formRequisite": "oozaru.supersaiyan4",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  },
+  "supersaiyan4lb": {
+   "unlockOnSkillLevel": 10,
+   "formRequisite": "oozaru.supersaiyan4fp",
+   "strMultiplier": 1.0,
+   "skpMultiplier": 1.0,
+   "pwrMultiplier": 1.0,
+   "defMultiplier": 1.0,
+   "energyDrain": 0.1,
+   "hairColor": "",
+   "auraColor": ""
+  }
+ }
+}

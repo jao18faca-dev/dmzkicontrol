@@ -1,0 +1,60 @@
+{
+ "configVersion": "2.2.0",
+ "formSkillsCosts": {
+  "superforms": {
+   "buyFromMaster": false,
+   "prices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  "godforms": {
+   "buyFromMaster": false,
+   "prices": [
+    10,
+    20,
+    30,
+    40
+   ]
+  },
+  "evildivineforms": {
+   "buyFromMaster": false,
+   "prices": [
+    10,
+    20,
+    30,
+    40
+   ]
+  },
+  "legendaryforms": {
+   "buyFromMaster": false,
+   "prices": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+   ]
+  },
+  "dmzsparking_af": {
+   "buyFromMaster": false,
+   "prices": [
+    99
+   ]
+  },
+  "divinerose": {
+   "buyFromMaster": false,
+   "prices": [
+    50
+   ]
+  }
+ }
+}
