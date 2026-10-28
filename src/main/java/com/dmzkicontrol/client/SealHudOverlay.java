@@ -115,21 +115,29 @@ public final class SealHudOverlay implements IGuiOverlay {
             g.blit(ICON, BORDER, BORDER, 0, 0, 17, 17, 17, 17);
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-            // textos
-            float textY = CAPSULE + BORDER * 2 + FILL_H + 4;
-            String top = perfect ? "MAX" : Math.round(strain * 100f) + "%";
-            DmzStyle.text(g, Component.literal(top), CAPSULE / 2f, textY, 1.0f, 0.5f, DmzStyle.mix(color, 0xFFFFFF, 0.7f), visibility);
-            if (!ClientSealState.formKey.isEmpty()) {
-                DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.mastery_short", Math.round(ClientSealState.mastery * 100f)),
-                        CAPSULE / 2f, textY + 11, 0.8f, 0.5f, 0xBFEFFF, visibility * 0.9f);
-            }
-            if (burst > 0) {
-                DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.burst_short", (burst + 19) / 20),
-                        CAPSULE / 2f, -11, 0.8f, 0.5f, 0xFFC040, visibility);
-            }
         } finally {
             g.pose().popPose();
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        }
+
+        // textos em pixels de GUI (legiveis), alinhados para dentro da tela
+        boolean right = cfg.meterSide.get() == KiControlClientConfig.MeterSide.RIGHT;
+        float align = right ? 1f : 0f;
+        float tx = right ? x + guiW * scale : x;
+        float ty = y + (CAPSULE + BORDER * 2 + FILL_H) / 2f * scale + 3f;
+        float ts = Math.max(0.75f, scale * 0.6f);
+        int textColor = DmzStyle.mix(color, 0xFFFFFF, 0.6f);
+        Component line1 = perfect
+                ? Component.translatable("hud.dmzkicontrol.perfect_short")
+                : Component.translatable("hud.dmzkicontrol.strain_short", Math.round(strain * 100f));
+        DmzStyle.text(g, line1, tx, ty, ts, align, textColor, visibility);
+        if (!ClientSealState.formKey.isEmpty()) {
+            DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.mastery_short", Math.round(ClientSealState.mastery * 100f)),
+                    tx, ty + 10f * ts, ts * 0.85f, align, 0xD8F4FF, visibility * 0.95f);
+        }
+        if (burst > 0) {
+            DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.burst_short", (burst + 19) / 20),
+                    tx, y - 10f * ts, ts, align, 0xFFC040, visibility);
         }
     }
 

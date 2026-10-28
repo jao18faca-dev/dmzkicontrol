@@ -29,8 +29,8 @@
   "race.dragonminez.saiyan.form.godforms.supersaiyangod": "Super Saiyajin God",
   "race.dragonminez.saiyan.form.godforms.supersaiyanblue": "Super Saiyajin Blue",
   "key.dmzkicontrol.seal_aura": "Selar / Liberar Aura",
-  "hud.dmzkicontrol.mastery_short": "Dom %s%%",
-  "hud.dmzkicontrol.burst_short": "LIB %ss",
+  "hud.dmzkicontrol.mastery_short": "Domínio %s%%",
+  "hud.dmzkicontrol.burst_short": "Liberação %ss",
   "cutscene.dmzkicontrol.title": "CONTROLE DE AURA",
   "cutscene.dmzkicontrol.subtitle": "O ki agora fica preso dentro do corpo",
   "cutscene.dmzkicontrol.skip": "[%s] pular",
@@ -39,5 +39,7 @@
   "message.dmzkicontrol.milestone_50": "Metade do caminho em %s: a aura quase não vaza mais (50%%).",
   "message.dmzkicontrol.milestone_75": "Seu corpo segura o ki com naturalidade em %s (75%%).",
   "message.dmzkicontrol.cutscene_on": "Cutscene do selo: ligada",
-  "message.dmzkicontrol.cutscene_off": "Cutscene do selo: desligada (só a mão no peito)"
+  "message.dmzkicontrol.cutscene_off": "Cutscene do selo: desligada (só a mão no peito)",
+  "hud.dmzkicontrol.strain_short": "Tensão %s%%",
+  "hud.dmzkicontrol.perfect_short": "Controle MAX"
 }

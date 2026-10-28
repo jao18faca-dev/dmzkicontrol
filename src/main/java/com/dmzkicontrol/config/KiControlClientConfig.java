@@ -38,7 +38,7 @@ public final class KiControlClientConfig {
         meterSide = b.comment("Lado da tela do medidor (os medidores do DMZ ficam na esquerda).").defineEnum("side", MeterSide.RIGHT);
         offsetX = b.defineInRange("offsetX", 0, -2000, 2000);
         offsetY = b.defineInRange("offsetY", 0, -2000, 2000);
-        scale = b.defineInRange("scale", 1.0, 0.5, 3.0);
+        scale = b.comment("Tamanho do medidor (1.0 = mesmo tamanho dos medidores do DMZ).").defineInRange("meterScale", 1.6, 0.5, 4.0);
         vignette = b.comment("Brilho suave nas bordas da tela enquanto selado (fica vermelho com a tensao alta).")
                 .define("vignette", true);
         b.pop();

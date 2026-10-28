@@ -29,8 +29,8 @@
   "race.dragonminez.saiyan.form.godforms.supersaiyangod": "Super Saiyan God",
   "race.dragonminez.saiyan.form.godforms.supersaiyanblue": "Super Saiyan Blue",
   "key.dmzkicontrol.seal_aura": "Seal / Release Aura",
-  "hud.dmzkicontrol.mastery_short": "Mst %s%%",
-  "hud.dmzkicontrol.burst_short": "REL %ss",
+  "hud.dmzkicontrol.mastery_short": "Mastery %s%%",
+  "hud.dmzkicontrol.burst_short": "Release %ss",
   "cutscene.dmzkicontrol.title": "AURA CONTROL",
   "cutscene.dmzkicontrol.subtitle": "Your ki is now held inside your body",
   "cutscene.dmzkicontrol.skip": "[%s] skip",
@@ -39,5 +39,7 @@
   "message.dmzkicontrol.milestone_50": "Halfway there in %s: your aura barely leaks anymore (50%%).",
   "message.dmzkicontrol.milestone_75": "Your body holds the ki naturally in %s (75%%).",
   "message.dmzkicontrol.cutscene_on": "Seal cutscene: on",
-  "message.dmzkicontrol.cutscene_off": "Seal cutscene: off (hand on chest only)"
+  "message.dmzkicontrol.cutscene_off": "Seal cutscene: off (hand on chest only)",
+  "hud.dmzkicontrol.strain_short": "Strain %s%%",
+  "hud.dmzkicontrol.perfect_short": "Control MAX"
 }
