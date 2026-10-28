@@ -150,6 +150,19 @@ public class KiControlConfig {
         /** Trecho do id da forma "Olhos Gemeos" e quanto ela multiplica os bonus do olho. */
         public String twinEyesForm = "olhosgemeos";
         public double twinEyesMultiplier = 2.0;
+        /** Troca a bola de ki basica dos Cerealianos por um tiro fino e preciso. */
+        public boolean preciseKiShot = true;
+        /** Passiva "Leitura de Trajetoria": chance de desviar de projeteis (base + por nivel da Mira). */
+        public double dodgeChanceBase = 0.06;
+        public double dodgeChancePerLevel = 0.03;
+        /** Intervalo minimo entre duas esquivas, em segundos. */
+        public double dodgeCooldownSeconds = 3.0;
+        /** Passiva "Olhar Preciso": chance de critico extra por nivel da Mira (0.015 = +1,5 pontos). */
+        public double critChancePerLevel = 0.015;
+        /** Custo em TP de cada nivel da Mira (o nivel 1 vem de graca para todo Cerealiano). */
+        public java.util.List<Integer> eyeSkillCosts = new java.util.ArrayList<>(java.util.List.of(8000, 24000, 60000, 120000));
+        /** Nivel da Mira que libera a Flecha de Ki. */
+        public int kiArrowUnlockLevel = 2;
     }
 
     // ------------------------------------------------------------------ geral

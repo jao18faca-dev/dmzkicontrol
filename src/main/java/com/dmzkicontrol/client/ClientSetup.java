@@ -76,6 +76,11 @@ public final class ClientSetup {
         }
 
         @SubscribeEvent
+        public static void onRegisterRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_SHOT.get(), CerealShotRenderer::new);
+        }
+
+        @SubscribeEvent
         public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
             event.register(SEAL_KEY);
             event.register(CerealianEyeClient.EYE_KEY);
@@ -105,6 +110,11 @@ public final class ClientSetup {
             CutsceneController.clientTick();
             SealAnimations.clientTick();
             CerealianEyeClient.clientTick();
+        }
+
+        @SubscribeEvent
+        public static void onRenderLevel(net.minecraftforge.client.event.RenderLevelStageEvent event) {
+            WeakPointRenderer.render(event);
         }
 
         @SubscribeEvent

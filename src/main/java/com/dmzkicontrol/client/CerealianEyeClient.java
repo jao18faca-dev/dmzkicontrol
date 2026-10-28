@@ -54,6 +54,7 @@ public final class CerealianEyeClient implements IGuiOverlay {
     private static boolean wasDown;
     private static float zoom, zoomO;
     private static int markedId = -1;
+    private static int markMask;
     private static long markEnd;
     private static final Set<Integer> GLOWING = new HashSet<>();
 
@@ -68,7 +69,42 @@ public final class CerealianEyeClient implements IGuiOverlay {
                 .orElse(false);
     }
 
-    public static void onMark(int id, int ticks) {
+    public static boolean isActive() {
+        return active;
+    }
+
+    public static float zoom(float partial) {
+        return Mth.lerp(partial, zoomO, zoom);
+    }
+
+    public static int markedId() {
+        var level = Minecraft.getInstance().level;
+        return level != null && level.getGameTime() < markEnd ? markedId : -1;
+    }
+
+    public static int markMask() {
+        return markMask;
+    }
+
+    /** Nivel do olho no cliente: skill Mira (sincronizada pelo DMZ) + Mira Cereal equipada. */
+    public static int eyeLevel() {
+        var p = Minecraft.getInstance().player;
+        if (p == null) return 1;
+        int lvl = StatsProvider.get(StatsCapability.INSTANCE, p).resolve()
+                .map(d -> d.getSkills().getSkillLevel(com.dmzkicontrol.cerealian.CerealianEye.SKILL)).orElse(1);
+        lvl = Math.max(1, Math.min(4, lvl));
+        if (com.dmzkicontrol.cerealian.CerealScopeItem.isWearing(p)) lvl++;
+        return Math.min(com.dmzkicontrol.cerealian.WeakPoints.MAX, lvl);
+    }
+
+    public static double range() {
+        var p = Minecraft.getInstance().player;
+        double r = KiControlConfig.get().cerealian.eyeRange + 8.0 * (eyeLevel() - 1);
+        return p != null && com.dmzkicontrol.cerealian.CerealScopeItem.isWearing(p) ? r + 16.0 : r;
+    }
+
+    public static void onMark(int id, int ticks, int mask) {
+        markMask = mask;
         markedId = id;
         var level = Minecraft.getInstance().level;
         markEnd = level == null ? 0 : level.getGameTime() + ticks;
@@ -107,7 +143,7 @@ public final class CerealianEyeClient implements IGuiOverlay {
     /** Contorno (so no seu cliente) em todos com ki ao alcance do olho. */
     private static void updateGlow(Minecraft mc) {
         if (mc.level == null || mc.player == null) return;
-        double range = KiControlConfig.get().cerealian.eyeRange;
+        double range = range();
         Set<Integer> now = new HashSet<>();
         for (LivingEntity e : mc.level.getEntitiesOfClass(LivingEntity.class, mc.player.getBoundingBox().inflate(range),
                 e -> e != mc.player && e.isAlive() && !e.isSpectator())) {
@@ -133,6 +169,7 @@ public final class CerealianEyeClient implements IGuiOverlay {
     }
 
     public static void reset() {
+        markMask = 0;
         active = false;
         wasDown = false;
         zoom = zoomO = 0f;
@@ -180,10 +217,10 @@ public final class CerealianEyeClient implements IGuiOverlay {
         g.fill(cx, cy + r - 2, cx + 1, cy + r + 7, col);
         g.fill(cx, cy, cx + 1, cy + 1, DmzStyle.argb(z, 0xFFFFFF));
 
-        DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.eye_title"), cx, 8f, 1.2f, 0.5f, BRONZE, z);
+        DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.eye_title", eyeLevel()), cx, 8f, 1.2f, 0.5f, BRONZE, z);
 
         // alvo na mira
-        LivingEntity target = lookTarget(mc, KiControlConfig.get().cerealian.eyeRange, partialTick);
+        LivingEntity target = lookTarget(mc, range(), partialTick);
         float ty = cy + r + 12;
         if (target != null) {
             int dist = Math.round(mc.player.distanceTo(target));
@@ -196,7 +233,8 @@ public final class CerealianEyeClient implements IGuiOverlay {
             Entity marked = level.getEntity(markedId);
             if (marked != null) {
                 int secs = (int) Math.ceil((markEnd - level.getGameTime()) / 20.0);
-                DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.eye_marked", marked.getDisplayName(), secs),
+                DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.eye_marked", marked.getDisplayName(),
+                                Integer.bitCount(markMask), eyeLevel(), secs),
                         cx, ty, 0.9f, 0.5f, 0xFF7050, z);
             }
         }

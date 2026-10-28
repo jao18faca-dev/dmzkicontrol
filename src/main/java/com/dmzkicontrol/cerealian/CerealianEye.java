@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -29,20 +30,20 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Olho Cereal (habilidade racial dos Cerealianos), lado do servidor.
  *
- * <ul>
- *   <li>Segurando a tecla: o olho fica ativo (gasta um pouco de ki por segundo) e marca o ponto
- *       fraco de quem estiver na mira.</li>
- *   <li>O primeiro golpe corpo a corpo/strike no alvo marcado causa dano extra e ignora parte da defesa.</li>
- *   <li>Tiros de longe (rajadas de ki, flechas...) ganham bonus de atirador conforme a distancia.</li>
- *   <li>As formas Olho Desperto e Olhos Gemeos multiplicam esses bonus.</li>
- * </ul>
+ * <p>A skill "Mira" (cereal_eye, niveis 1-4 comprados com TP no menu de skills do DMZ) define
+ * quantos pontos fracos o olho enxerga no corpo do alvo. Segurando a tecla, o alvo na mira fica
+ * marcado com esses pontos. Cada golpe corpo a corpo consome um ponto (dano extra + ignora defesa);
+ * um tiro que acerta perto de um ponto e um "tiro preciso" (bonus maior). Tiros de longe ganham
+ * bonus de atirador. As formas da raca e a Mira Cereal (item) fortalecem tudo isso.
  */
 public final class CerealianEye {
+    public static final String SKILL = "cereal_eye";
     private static final Map<UUID, State> STATES = new ConcurrentHashMap<>();
 
     private static final class State {
         boolean active;
         int markedId = -1;
+        int mask;
         long markUntil;
         int ticker;
     }
@@ -56,6 +57,14 @@ public final class CerealianEye {
         return race != null && race.toLowerCase(Locale.ROOT).equals(KiControlConfig.get().cerealian.raceKey.toLowerCase(Locale.ROOT));
     }
 
+    /** Nivel da Mira (1-4) + 1 com a Mira Cereal equipada. */
+    public static int eyeLevel(Player p) {
+        StatsData data = AuraSealManager.stats(p);
+        int lvl = data == null ? 1 : Math.max(1, Math.min(4, data.getSkills().getSkillLevel(SKILL)));
+        if (CerealScopeItem.isWearing(p)) lvl++;
+        return Math.min(WeakPoints.MAX, lvl);
+    }
+
     /** Multiplicador dos bonus pelo estado do olho (formas da raca). */
     public static double formMultiplier(StatsData data) {
         KiControlConfig.Cerealian c = KiControlConfig.get().cerealian;
@@ -67,6 +76,11 @@ public final class CerealianEye {
         return 1.0;
     }
 
+    public static double range(Player p) {
+        double r = KiControlConfig.get().cerealian.eyeRange + 8.0 * (eyeLevel(p) - 1);
+        return CerealScopeItem.isWearing(p) ? r + 16.0 : r;
+    }
+
     public static void setActive(ServerPlayer sp, boolean active) {
         State st = STATES.computeIfAbsent(sp.getUUID(), id -> new State());
         if (active && !isCerealian(sp)) {
@@ -76,15 +90,15 @@ public final class CerealianEye {
         if (active == st.active) return;
         st.active = active;
         st.ticker = 0;
-        if (active) sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.SPYGLASS_USE, SoundSource.PLAYERS, 1.0f, 0.8f);
-        else sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.SPYGLASS_STOP_USING, SoundSource.PLAYERS, 1.0f, 0.8f);
+        sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(),
+                active ? SoundEvents.SPYGLASS_USE : SoundEvents.SPYGLASS_STOP_USING, SoundSource.PLAYERS, 1.0f, 0.8f);
     }
 
     public static void tick(ServerPlayer sp) {
         State st = STATES.get(sp.getUUID());
         if (st == null) return;
         long now = sp.level().getGameTime();
-        if (st.markedId >= 0 && now > st.markUntil) clearMark(sp, st);
+        if (st.markedId >= 0 && (now > st.markUntil || st.mask == 0)) clearMark(sp, st);
         if (!st.active) return;
         if (!isCerealian(sp) || !sp.isAlive()) { st.active = false; return; }
 
@@ -92,7 +106,8 @@ public final class CerealianEye {
         KiControlConfig.Cerealian c = KiControlConfig.get().cerealian;
         if (++st.ticker % 20 == 0 && data != null && !sp.isCreative()) {
             var res = data.getResources();
-            float cost = (float) (data.getMaxEnergy() * c.eyeKiCostPercentPerSecond / 100.0);
+            double pct = c.eyeKiCostPercentPerSecond * (1.0 - 0.1 * (eyeLevel(sp) - 1)) * (CerealScopeItem.isWearing(sp) ? 0.5 : 1.0);
+            float cost = (float) (data.getMaxEnergy() * Math.max(0.0, pct) / 100.0);
             if (res.getCurrentEnergy() < cost) {
                 st.active = false;
                 sp.displayClientMessage(Component.translatable("message.dmzkicontrol.eye_no_ki").withStyle(ChatFormatting.RED), true);
@@ -100,14 +115,17 @@ public final class CerealianEye {
             }
             res.setCurrentEnergy(res.getCurrentEnergy() - cost);
         }
-        if (st.ticker % 5 == 0) {
-            LivingEntity target = lookTarget(sp, c.eyeRange);
-            if (target != null && target.getId() != st.markedId) {
-                st.markedId = target.getId();
-                sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.NOTE_BLOCK_HAT.value(), SoundSource.PLAYERS, 0.6f, 1.8f);
-                send(sp, st.markedId, (int) (c.markSeconds * 20));
+        if (st.ticker % 4 == 0) {
+            LivingEntity target = lookTarget(sp, range(sp));
+            if (target != null) {
+                if (target.getId() != st.markedId) {
+                    st.markedId = target.getId();
+                    st.mask = (1 << eyeLevel(sp)) - 1;
+                    sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.NOTE_BLOCK_HAT.value(), SoundSource.PLAYERS, 0.6f, 1.8f);
+                }
+                st.markUntil = now + (long) (c.markSeconds * 20);
+                send(sp, st);
             }
-            if (target != null) st.markUntil = now + (long) (c.markSeconds * 20);
         }
     }
 
@@ -115,8 +133,7 @@ public final class CerealianEye {
         Vec3 eye = sp.getEyePosition();
         Vec3 look = sp.getViewVector(1.0f);
         Vec3 end = eye.add(look.scale(range));
-        var blockHit = sp.level().clip(new net.minecraft.world.level.ClipContext(eye, end,
-                net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, sp));
+        var blockHit = sp.level().clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, sp));
         double max = blockHit.getLocation().distanceToSqr(eye);
         AABB box = sp.getBoundingBox().expandTowards(look.scale(range)).inflate(1.0);
         EntityHitResult hit = ProjectileUtil.getEntityHitResult(sp, eye, end, box,
@@ -124,21 +141,46 @@ public final class CerealianEye {
         return hit != null && hit.getEntity() instanceof LivingEntity le ? le : null;
     }
 
-    /** Golpe corpo a corpo/strike: consome a marca e devolve o multiplicador de dano (1 = nada). */
+    private static boolean isMarked(State st, Entity victim, long now) {
+        return st != null && st.markedId == victim.getId() && now <= st.markUntil && st.mask != 0;
+    }
+
+    /** Golpe corpo a corpo/strike no alvo marcado: consome um ponto fraco. {multDano, penetracao} ou null. */
     public static double[] consumeWeakPoint(ServerPlayer attacker, Entity victim) {
         State st = STATES.get(attacker.getUUID());
-        if (st == null || st.markedId != victim.getId() || attacker.level().getGameTime() > st.markUntil) return null;
+        if (!isMarked(st, victim, attacker.level().getGameTime())) return null;
         StatsData data = AuraSealManager.stats(attacker);
         if (data == null || !isCerealian(attacker)) return null;
         KiControlConfig.Cerealian c = KiControlConfig.get().cerealian;
         double mul = formMultiplier(data);
-        clearMark(attacker, st);
-        if (attacker.level() instanceof ServerLevel sl) {
-            sl.sendParticles(ParticleTypes.CRIT, victim.getX(), victim.getY() + victim.getBbHeight() * 0.6, victim.getZ(), 18, 0.3, 0.4, 0.3, 0.3);
-            sl.playSound(null, victim.getX(), victim.getY(), victim.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.0f, 0.7f);
-        }
-        attacker.displayClientMessage(Component.translatable("message.dmzkicontrol.eye_weak_point").withStyle(ChatFormatting.GOLD), true);
+        int bit = Integer.numberOfTrailingZeros(st.mask);
+        st.mask &= ~(1 << bit);
+        weakPointFx(attacker, victim instanceof LivingEntity le ? WeakPoints.position(le, bit, 1.0f) : victim.position());
+        send(attacker, st);
         return new double[]{1.0 + c.weakPointDamageBonus * mul, c.weakPointDefensePenetration * mul};
+    }
+
+    /** Tiro que entrou perto de um ponto fraco ativo: "tiro preciso". Devolve o multiplicador (1 = nada). */
+    public static double preciseHitMultiplier(ServerPlayer shooter, LivingEntity victim, Vec3 impact) {
+        State st = STATES.get(shooter.getUUID());
+        if (!isMarked(st, victim, shooter.level().getGameTime()) || !isCerealian(shooter)) return 1.0;
+        int idx = WeakPoints.nearest(victim, st.mask, impact, 0.5);
+        if (idx < 0) return 1.0;
+        StatsData data = AuraSealManager.stats(shooter);
+        double mul = data == null ? 1.0 : formMultiplier(data);
+        st.mask &= ~(1 << idx);
+        weakPointFx(shooter, WeakPoints.position(victim, idx, 1.0f));
+        shooter.displayClientMessage(Component.translatable("message.dmzkicontrol.eye_precise").withStyle(ChatFormatting.GOLD), true);
+        send(shooter, st);
+        return 1.0 + KiControlConfig.get().cerealian.weakPointDamageBonus * 1.5 * mul;
+    }
+
+    private static void weakPointFx(ServerPlayer p, Vec3 at) {
+        if (p.level() instanceof ServerLevel sl) {
+            sl.sendParticles(ParticleTypes.CRIT, at.x, at.y, at.z, 16, 0.15, 0.15, 0.15, 0.35);
+            sl.playSound(null, at.x, at.y, at.z, SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.0f, 0.7f);
+        }
+        p.displayClientMessage(Component.translatable("message.dmzkicontrol.eye_weak_point").withStyle(ChatFormatting.GOLD), true);
     }
 
     /** Bonus de atirador: tiro (projetil) de longe. Devolve o multiplicador (1 = nada). */
@@ -155,11 +197,13 @@ public final class CerealianEye {
 
     private static void clearMark(ServerPlayer sp, State st) {
         st.markedId = -1;
-        send(sp, -1, 0);
+        st.mask = 0;
+        send(sp, st);
     }
 
-    private static void send(ServerPlayer sp, int id, int ticks) {
-        KiControlNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EyeMarkS2C(id, ticks));
+    private static void send(ServerPlayer sp, State st) {
+        int ticks = (int) Math.max(0, st.markUntil - sp.level().getGameTime());
+        KiControlNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EyeMarkS2C(st.markedId, ticks, st.mask));
     }
 
     public static void forget(UUID id) {

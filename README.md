@@ -47,12 +47,25 @@ O add-on instala a raça **Cerealiano** no sistema de raças do DMZ (`config/dra
   - **Olho Desperto**, nível 1;
   - **Olhos Gêmeos**, nível 2, que exige 50% de domínio no Olho Desperto.
   - O Poder do Desejo fica para uma próxima versão.
+- **Cabelo verde-água** por padrão.
 - **Olho Cereal** (segure **B**): gasta um pouco de ki por segundo e dá:
   - zoom de atirador;
   - contorno em todos que têm ki ao seu redor, mesmo atrás das paredes;
-  - marcação do **ponto fraco** de quem está na mira. O primeiro golpe corpo a corpo nesse alvo causa +25% de dano e ignora 20% da defesa.
-  - Tiros de longe (rajadas de ki e flechas) ganham até +30% de dano, conforme a distância.
+  - **círculos vermelhos nos pontos fracos** de quem está na mira. Cada golpe corpo a corpo consome um ponto (+25% de dano, ignora 20% da defesa). Um tiro que acerta em cima de um ponto é um **tiro preciso** (+37,5%).
+  - Tiros de longe ganham até +30% de dano, conforme a distância.
   - As formas multiplicam os bônus do olho: ×1,5 no Olho Desperto e ×2 nos Olhos Gêmeos.
+- **Skill Mira** (menu de skills do DMZ, só para Cerealianos): nível 1 de graça, níveis 2 a 4 com TP. Cada nível revela mais um ponto fraco (coração → cabeça → costelas → coluna), aumenta o alcance e reduz o ki gasto. O nível 2 libera a **Flecha de Ki**.
+- **Flecha de Ki:** técnica do DMZ exclusiva dos Cerealianos. É uma flecha de luz que atravessa até 3 alvos.
+- **Tiro de ki:** a rajada básica dos Cerealianos vira um tiro fino, rápido e sem espalhar, em vez de uma bola de ki.
+- **Passivas:**
+  - **Leitura de Trajetória:** chance de desviar de projéteis, 9% a 18% conforme a Mira.
+  - **Olhar Preciso:** +1,5% de crítico por nível da Mira.
+- **Mira Cereal** (item): a lente de atirador. Vai na cabeça ou no slot Head Tech, como o scouter. Para Cerealianos dá +1 ponto fraco, +16 blocos de alcance e metade do ki gasto. Receita:
+  ```
+   [ametista]
+  [ouro][luneta][ouro]
+   [redstone]
+  ```
 - Os valores ficam no bloco `cerealian` de `config/dmzkicontrol.json`.
 
 ## Comandos

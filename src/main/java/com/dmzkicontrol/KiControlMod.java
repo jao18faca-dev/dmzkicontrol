@@ -26,11 +26,14 @@ public class KiControlMod {
         KiControlConfig.load();
         com.dmzkicontrol.race.RaceInstaller.installAll();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, KiControlClientConfig.SPEC);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        com.dmzkicontrol.registry.ModRegistry.register(modBus);
+        modBus.addListener(this::commonSetup);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(KiControlNetwork::register);
+        event.enqueueWork(com.dmzkicontrol.cerealian.KiArrowTechnique::register);
         String dmzVersion = ModList.get().getModContainerById("dragonminez")
                 .map(c -> c.getModInfo().getVersion().toString()).orElse("?");
         LOGGER.info("DMZ Ki Control ativo - integrado ao DragonMineZ {}", dmzVersion);
