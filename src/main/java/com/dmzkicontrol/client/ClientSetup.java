@@ -87,6 +87,7 @@ public final class ClientSetup {
                 var renderer = event.getSkin(skin);
                 if (renderer instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer pr) {
                     pr.addLayer(new CerealPartsLayer(pr, event.getEntityModels().bakeLayer(CerealPartsLayer.LAYER)));
+                    pr.addLayer(new KiBowLayer(pr));
                 }
             }
         }
@@ -94,6 +95,7 @@ public final class ClientSetup {
         @SubscribeEvent
         public static void onRegisterRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_SHOT.get(), CerealShotRenderer::new);
+            event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_BEAM.get(), CerealBeamRenderer::new);
         }
 
         @SubscribeEvent
@@ -126,6 +128,7 @@ public final class ClientSetup {
             CutsceneController.clientTick();
             SealAnimations.clientTick();
             CerealianEyeClient.clientTick();
+            KiBowRenderer.clientTick();
             if (mc.player != null && mc.player.tickCount % 20 == 0) SealAnimations.ensureInjected();
         }
 

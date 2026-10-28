@@ -99,7 +99,7 @@ public final class SealAnimations {
                 SealEffects.burst(player, true);
             }
             case SealAnimS2C.KIBOW_RELEASE -> {
-                STOPS.put(player.getId(), new Object[]{mc.level.getGameTime() + 12, "ki.kibow"});
+                STOPS.put(player.getId(), new Object[]{mc.level.getGameTime() + 14, "ki.kibow"});
                 KiBowRenderer.onRelease(player);
             }
             case SealAnimS2C.CANCEL -> {

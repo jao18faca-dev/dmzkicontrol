@@ -128,10 +128,10 @@ public final class CerealianHooks {
         if (!basic || !KiControlConfig.get().cerealian.preciseKiShot) return;
 
         event.setCanceled(true);
-        CerealShotEntity shot = CerealShotEntity.create(sp, proj.position(), proj.getKiDamage(), kiColor(sp, proj.getColor()), false, 0);
-        event.getLevel().addFreshEntity(shot);
+        CerealBeamEntity beam = CerealBeamEntity.fire(sp, proj.position(), proj.getKiDamage(), kiColor(sp, proj.getColor()));
+        event.getLevel().addFreshEntity(beam);
         try {
-            event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), com.dragonminez.common.init.MainSounds.KIBLAST_ATTACK.get(), SoundSource.PLAYERS, 0.9f, 1.5f);
+            event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), com.dragonminez.common.init.MainSounds.KIBLAST_ATTACK.get(), SoundSource.PLAYERS, 0.9f, 1.8f);
         } catch (Throwable t) {
             event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.PLAYERS, 0.6f, 1.9f);
         }
@@ -206,7 +206,7 @@ public final class CerealianHooks {
         Entity direct = event.getSource().getDirectEntity();
         if (!(event.getSource().getEntity() instanceof ServerPlayer shooter) || direct == null || direct == shooter) return;
         double mul = CerealianEye.sniperMultiplier(shooter, event.getEntity());
-        if (!(direct instanceof CerealShotEntity)) {
+        if (!(direct instanceof CerealShotEntity) && !(direct instanceof CerealBeamEntity)) {
             mul *= CerealianEye.preciseHitMultiplier(shooter, event.getEntity(), direct.position());
         }
         if (mul > 1.0) event.setAmount((float) (event.getAmount() * mul));

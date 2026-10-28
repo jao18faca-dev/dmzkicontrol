@@ -29,6 +29,14 @@ public final class ModRegistry {
                     .updateInterval(1)
                     .build("cereal_shot"));
 
+    public static final RegistryObject<EntityType<com.dmzkicontrol.cerealian.CerealBeamEntity>> CEREAL_BEAM = ENTITIES.register("cereal_beam",
+            () -> EntityType.Builder.<com.dmzkicontrol.cerealian.CerealBeamEntity>of(com.dmzkicontrol.cerealian.CerealBeamEntity::new, MobCategory.MISC)
+                    .sized(0.2f, 0.2f)
+                    .clientTrackingRange(10)
+                    .updateInterval(20)
+                    .noSave()
+                    .build("cereal_beam"));
+
     private ModRegistry() {}
 
     public static void register(IEventBus modBus) {
