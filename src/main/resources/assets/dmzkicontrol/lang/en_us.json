@@ -41,5 +41,17 @@
   "message.dmzkicontrol.cutscene_on": "Seal cutscene: on",
   "message.dmzkicontrol.cutscene_off": "Seal cutscene: off (hand on chest only)",
   "hud.dmzkicontrol.strain_short": "Strain %s%%",
-  "hud.dmzkicontrol.perfect_short": "Control MAX"
+  "hud.dmzkicontrol.perfect_short": "Control MAX",
+  "key.dmzkicontrol.cereal_eye": "Cereal Eye (hold)",
+  "race.dragonminez.cerealian": "Cerealian",
+  "race.dragonminez.cerealian.desc": "A nearly extinct people from planet Cereal. A Cerealian's right eye sees ki and enemy weak points, making them the finest snipers in the universe. Hold B to use the Cereal Eye.",
+  "race.dragonminez.cerealian.group.cerealforms": "Cereal Eye",
+  "race.dragonminez.cerealian.form.cerealforms.olhodesperto": "Awakened Eye",
+  "race.dragonminez.cerealian.form.cerealforms.olhosgemeos": "Twin Eyes",
+  "hud.dmzkicontrol.eye_title": "CEREAL EYE",
+  "hud.dmzkicontrol.eye_target": "%s · %sm",
+  "hud.dmzkicontrol.eye_marked": "Weak point: %s (%ss)",
+  "message.dmzkicontrol.eye_not_cerealian": "Only Cerealians have the Cereal Eye.",
+  "message.dmzkicontrol.eye_no_ki": "Not enough ki to keep the Cereal Eye open.",
+  "message.dmzkicontrol.eye_weak_point": "Weak point hit!"
 }

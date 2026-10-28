@@ -41,5 +41,17 @@
   "message.dmzkicontrol.cutscene_on": "Cutscene do selo: ligada",
   "message.dmzkicontrol.cutscene_off": "Cutscene do selo: desligada (só a mão no peito)",
   "hud.dmzkicontrol.strain_short": "Tensão %s%%",
-  "hud.dmzkicontrol.perfect_short": "Controle MAX"
+  "hud.dmzkicontrol.perfect_short": "Controle MAX",
+  "key.dmzkicontrol.cereal_eye": "Olho Cereal (segurar)",
+  "race.dragonminez.cerealian": "Cerealiano",
+  "race.dragonminez.cerealian.desc": "Povo do planeta Cereal, quase extinto. O olho direito dos Cerealianos enxerga o ki e os pontos fracos dos inimigos, fazendo deles os melhores atiradores do universo. Segure B para usar o Olho Cereal.",
+  "race.dragonminez.cerealian.group.cerealforms": "Olho Cereal",
+  "race.dragonminez.cerealian.form.cerealforms.olhodesperto": "Olho Desperto",
+  "race.dragonminez.cerealian.form.cerealforms.olhosgemeos": "Olhos Gêmeos",
+  "hud.dmzkicontrol.eye_title": "OLHO CEREAL",
+  "hud.dmzkicontrol.eye_target": "%s · %sm",
+  "hud.dmzkicontrol.eye_marked": "Ponto fraco: %s (%ss)",
+  "message.dmzkicontrol.eye_not_cerealian": "Só Cerealianos têm o Olho Cereal.",
+  "message.dmzkicontrol.eye_no_ki": "Ki insuficiente para manter o Olho Cereal.",
+  "message.dmzkicontrol.eye_weak_point": "Ponto fraco atingido!"
 }

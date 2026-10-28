@@ -24,6 +24,7 @@ public class KiControlMod {
 
     public KiControlMod() {
         KiControlConfig.load();
+        com.dmzkicontrol.race.RaceInstaller.installAll();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, KiControlClientConfig.SPEC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
     }

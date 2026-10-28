@@ -1,0 +1,79 @@
+{
+  "configVersion": "2.2.0",
+  "hasGender": true,
+  "useVanillaSkin": false,
+  "customModel": "human",
+  "isLayered": true,
+  "headBones": [
+    "ears1",
+    "hair"
+  ],
+  "racialSkill": "cerealian",
+  "hasSaiyanTail": false,
+  "auraType": "kakarot",
+  "auraType3D": "userPreference",
+  "aura3DStyle": {
+    "size": [
+      1.1,
+      1.17,
+      1.02
+    ],
+    "flamePeaks": 12,
+    "waveFrequency": 2.0,
+    "waveSpeed": 5.0,
+    "waveAmplitude": 0.75,
+    "noiseDetail": 0.1,
+    "upwardBias": 0.54,
+    "coreAlpha": 0.05,
+    "rimAlpha": 1.0,
+    "rimPower": 4.0,
+    "rimThreshold": 0.05,
+    "coreColor": "",
+    "rimColor": "",
+    "noiseColor": "",
+    "bloomIntensity": 1.0,
+    "spikeDensity": 32,
+    "spikeBurstRate": 3.0,
+    "spikeRarity": 3.0,
+    "bandStart": 0.5,
+    "secondBorderColor": ""
+  },
+  "defaultModelScaling": [
+    0.9,
+    0.9,
+    0.9
+  ],
+  "defaultBodyType": 1,
+  "slimBodyTypes": [
+    2
+  ],
+  "defaultHairType": 28,
+  "defaultEyesType": 0,
+  "defaultNoseType": 0,
+  "defaultMouthType": 0,
+  "defaultTattooType": 0,
+  "defaultBodyColor": "#E9AE97",
+  "defaultBodyColor2": "#E9AE97",
+  "defaultBodyColor3": "#E9AE97",
+  "defaultHairColor": "#F1E4DF",
+  "defaultEye1Color": "#C8873A",
+  "defaultEye2Color": "#3B2C27",
+  "defaultAuraColor": "#FF8A4C",
+  "formSkillsCosts": {
+    "legendaryforms": {
+      "buyFromMaster": false,
+      "prices": []
+    },
+    "godforms": {
+      "buyFromMaster": false,
+      "prices": []
+    },
+    "superforms": {
+      "buyFromMaster": false,
+      "prices": [
+        16000,
+        64000
+      ]
+    }
+  }
+}

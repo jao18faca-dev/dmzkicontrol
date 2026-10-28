@@ -39,6 +39,22 @@ O medidor mostra a tensão, as marcas de 50% e 90%, o domínio e a Liberação. 
 Enquanto o selo está ativo, as bordas da tela ganham um brilho suave, que fica vermelho com a tensão alta.
 Lado, posição, escala e brilho ficam em `config/dmzkicontrol-client.toml`.
 
+## Raça Cerealiana (Granolah)
+O add-on instala a raça **Cerealiano** no sistema de raças do DMZ (`config/dragonminez/races/cerealian/`). Ele só cria os arquivos que estiverem faltando, então suas edições são mantidas. Para voltar aos padrões, apague a pasta.
+- **Aparência:** modelo humano com orelhas pontudas e cabelo editável, um pouco mais baixo, e heterocromia (um olho bronze). As cores podem ser trocadas na criação do personagem.
+- **Atributos:** voltados para precisão de ki (escala maior de PWR e SKP) e com um pouco menos de vida.
+- **Formas** (skill *Formas Super*):
+  - **Olho Desperto**, nível 1;
+  - **Olhos Gêmeos**, nível 2, que exige 50% de domínio no Olho Desperto.
+  - O Poder do Desejo fica para uma próxima versão.
+- **Olho Cereal** (segure **B**): gasta um pouco de ki por segundo e dá:
+  - zoom de atirador;
+  - contorno em todos que têm ki ao seu redor, mesmo atrás das paredes;
+  - marcação do **ponto fraco** de quem está na mira. O primeiro golpe corpo a corpo nesse alvo causa +25% de dano e ignora 20% da defesa.
+  - Tiros de longe (rajadas de ki e flechas) ganham até +30% de dano, conforme a distância.
+  - As formas multiplicam os bônus do olho: ×1,5 no Olho Desperto e ×2 nos Olhos Gêmeos.
+- Os valores ficam no bloco `cerealian` de `config/dmzkicontrol.json`.
+
 ## Comandos
 | Comando | O que faz |
 |---|---|

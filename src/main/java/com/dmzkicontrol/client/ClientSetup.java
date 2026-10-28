@@ -78,11 +78,13 @@ public final class ClientSetup {
         @SubscribeEvent
         public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
             event.register(SEAL_KEY);
+            event.register(CerealianEyeClient.EYE_KEY);
         }
 
         @SubscribeEvent
         public static void onRegisterOverlays(RegisterGuiOverlaysEvent event) {
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "aura_seal", SealHudOverlay.INSTANCE);
+            event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "cereal_eye", CerealianEyeClient.OVERLAY);
             event.registerAboveAll("aura_cutscene", CutsceneOverlay.INSTANCE);
         }
     }
@@ -102,6 +104,7 @@ public final class ClientSetup {
 
             CutsceneController.clientTick();
             SealAnimations.clientTick();
+            CerealianEyeClient.clientTick();
         }
 
         @SubscribeEvent
@@ -119,6 +122,7 @@ public final class ClientSetup {
         @SubscribeEvent(priority = EventPriority.LOWEST)
         public static void onFov(ViewportEvent.ComputeFov event) {
             CutsceneController.onFov(event);
+            CerealianEyeClient.onFov(event);
         }
 
         /** Durante a cena o personagem fica parado. */
@@ -151,6 +155,7 @@ public final class ClientSetup {
         public static void onClientClone(ClientPlayerNetworkEvent.Clone event) {
             SealAnimations.clearSealed();
             CutsceneController.stop();
+            CerealianEyeClient.reset();
         }
 
         @SubscribeEvent
@@ -158,6 +163,7 @@ public final class ClientSetup {
             ClientSealState.reset();
             CutsceneController.resetSession();
             SealAnimations.clearSealed();
+            CerealianEyeClient.reset();
         }
     }
 }

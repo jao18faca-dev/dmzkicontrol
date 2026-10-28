@@ -122,6 +122,36 @@ public class KiControlConfig {
         public double cooldownSeconds = 30.0;
     }
 
+    /** Modulo da raca Cerealiana (Granolah). */
+    public static class Cerealian {
+        /** Instala os arquivos da raca em config/dragonminez/races/cerealian (so os que faltarem). */
+        public boolean installRace = true;
+        /** Chave da raca no DMZ. */
+        public String raceKey = "cerealian";
+        /** Olho Cereal: ki gasto por segundo segurando a tecla (% do ki maximo). */
+        public double eyeKiCostPercentPerSecond = 0.8;
+        /** Alcance da mira e da visao de ki, em blocos. */
+        public double eyeRange = 64.0;
+        /** Dano extra do primeiro golpe no ponto fraco marcado (0.25 = +25%). */
+        public double weakPointDamageBonus = 0.25;
+        /** Penetracao de defesa extra nesse golpe (0.20 = ignora +20% da defesa). */
+        public double weakPointDefensePenetration = 0.20;
+        /** Segundos que a marca do ponto fraco dura depois de mirar. */
+        public double markSeconds = 10.0;
+        /** Tiros (rajadas de ki, flechas...) a partir desta distancia ganham bonus de atirador. */
+        public double sniperMinDistance = 12.0;
+        /** Distancia em que o bonus de atirador chega ao maximo. */
+        public double sniperMaxDistance = 48.0;
+        /** Bonus maximo de dano de tiro a longa distancia (0.30 = +30%). */
+        public double sniperMaxBonus = 0.30;
+        /** Trecho do id da forma "Olho Desperto" e quanto ela multiplica os bonus do olho. */
+        public String awakenedEyeForm = "olhodesperto";
+        public double awakenedEyeMultiplier = 1.5;
+        /** Trecho do id da forma "Olhos Gemeos" e quanto ela multiplica os bonus do olho. */
+        public String twinEyesForm = "olhosgemeos";
+        public double twinEyesMultiplier = 2.0;
+    }
+
     // ------------------------------------------------------------------ geral
 
     /** Skill do DMZ exigida para usar o selo ("kicontrol", vendida pelos mestres). Vazio = sem exigencia. */
@@ -157,6 +187,7 @@ public class KiControlConfig {
 
     public Strain strain = new Strain();
     public Mastery mastery = new Mastery();
+    public Cerealian cerealian = new Cerealian();
     public Burst burst = new Burst();
 
     public Tier defaultTier = new Tier(0.35, 0.04, 0.02, 1.0);
@@ -227,6 +258,7 @@ public class KiControlConfig {
         if (requiredSkill == null) requiredSkill = "";
         if (strain == null) strain = new Strain();
         if (mastery == null) mastery = new Mastery();
+        if (cerealian == null) cerealian = new Cerealian();
         if (burst == null) burst = new Burst();
         if (defaultTier == null) defaultTier = new Tier(0.35, 0.04, 0.02, 1.0);
         if (rules == null) rules = new ArrayList<>();
