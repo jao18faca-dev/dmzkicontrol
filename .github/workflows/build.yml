@@ -63,7 +63,7 @@ jobs:
           echo "gson=$GSON slf4j=$SLF"
           mkdir -p /tmp/ct
           javac -d /tmp/ct -cp "build/classes/java/main:$GSON:$SLF" ci/CurationTest.java 2>&1 | tee -a /tmp/build.log
-          java -cp "/tmp/ct:build/classes/java/main:build/resources/main:$GSON:$SLF" CurationTest ci/curation-fixture 2>&1 | tee -a /tmp/build.log
+          java -cp "/tmp/ct:build/classes/java/main:build/resources/main:$GSON:$SLF" CurationTest ci/curation-fixture 2>&1 | tee /tmp/curadoria.txt | tee -a /tmp/build.log
 
       - name: Publicar log se falhar (branch build-logs)
         if: failure()
@@ -101,6 +101,7 @@ jobs:
           git rm -rf -q .
           git clean -fdxq
           cp /tmp/pub/*.jar .
+          cp /tmp/curadoria.txt TESTE-CURADORIA.txt 2>/dev/null || true
           printf 'Jar gerado a partir de %s\n' "$GITHUB_SHA" > LEIA-ME.txt
           git add -A
           git commit -q -m "build $VERSION ($GITHUB_SHA)"
