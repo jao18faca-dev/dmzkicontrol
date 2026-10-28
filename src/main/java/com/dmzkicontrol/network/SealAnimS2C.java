@@ -31,7 +31,7 @@ public record SealAnimS2C(int entityId, byte type) {
     }
 
     public static void handle(SealAnimS2C m, Supplier<NetworkEvent.Context> ctx) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> SealAnimations.onPacket(m.entityId, m.type));
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> SealAnimations.onPacket(m.entityId, m.type)));
         ctx.get().setPacketHandled(true);
     }
 }

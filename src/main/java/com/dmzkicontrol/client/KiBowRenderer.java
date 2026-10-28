@@ -49,10 +49,13 @@ public final class KiBowRenderer {
     public static void clientTick() {
         Minecraft mc = Minecraft.getInstance();
         CHARGING.clear();
-        if (mc.level == null || mc.player == null) { RELEASED.clear(); return; }
+        if (mc.level == null || mc.player == null) { RELEASED.clear(); SUMMONED.clear(); return; }
+        long now = mc.level.getGameTime();
+        RELEASED.entrySet().removeIf(en -> now - en.getValue() > RELEASE_TICKS || now < en.getValue());
         for (AbstractKiProjectile p : mc.level.getEntitiesOfClass(AbstractKiProjectile.class, mc.player.getBoundingBox().inflate(128),
                 e -> KiArrowTechnique.ID.equals(e.getTechniqueId()) && !e.isFiring())) {
-            if (p.getOwner() != null) CHARGING.put(p.getOwner().getId(), p.getId());
+            // logo depois de soltar a bola de carga ainda pode existir por um tick: nao conta como nova carga
+            if (p.getOwner() != null && !RELEASED.containsKey(p.getOwner().getId())) CHARGING.put(p.getOwner().getId(), p.getId());
         }
         SUMMONED.retainAll(CHARGING.keySet());
         // garante a pose de puxar o arco (o DMZ manda a animacao so no inicio da carga; se ela se perder,
@@ -73,8 +76,6 @@ public final class KiBowRenderer {
             Entity charge = mc.level.getEntity(en.getValue());
             if (owner instanceof LivingEntity le && charge != null) summonFx(mc, le, charge.tickCount);
         }
-        long now = mc.level.getGameTime();
-        RELEASED.entrySet().removeIf(en -> now - en.getValue() > RELEASE_TICKS);
     }
 
     /** {puxada 0..1, escala 0..1, invocacao 0..1} ou null se essa entidade nao esta com o arco. */

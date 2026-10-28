@@ -99,7 +99,7 @@ public final class RaceInstaller {
             }
             // versao anterior herdava as orelhas da Glind ("ears1"); os Cerealianos tem as proprias
             JsonElement bones = obj.get("headBones");
-            if (bones != null && bones.isJsonArray() && bones.toString().contains("ears1")) {
+            if (bones != null && bones.isJsonArray() && bones.toString().replace(" ", "").equals("[\"ears1\",\"hair\"]")) {
                 JsonArray only = new JsonArray();
                 only.add("hair");
                 obj.add("headBones", only);

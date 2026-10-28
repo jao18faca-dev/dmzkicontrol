@@ -38,7 +38,7 @@ public final class KiArrowTechnique {
             data.calculateDerivedValues();
             PredefinedTechniques.REGISTRY.put(ID, data);
         } catch (Throwable t) {
-            KiControlMod.LOGGER.error("Nao foi possivel registrar a Flecha de Ki no DMZ", t);
+            KiControlMod.LOGGER.error("Nao foi possivel registrar o Arco de Ki no DMZ", t);
         }
     }
 }

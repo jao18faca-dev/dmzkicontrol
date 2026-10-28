@@ -1,4 +1,8 @@
-# DMZ Ki Control: Controle Perfeito de Aura
+# DragonMineZ Evolution
+
+Add-on de expansao para o DragonMineZ (antigo "DMZ Ki Control"). O id interno continua `dmzkicontrol` para manter configs, itens e mundos.
+
+## Selamento de Aura
 
 Add-on para **DragonMineZ 2.2.x** (Forge 1.20.1) inspirado no Goku da saga Goku Black.
 Ele **prende a aura dentro do corpo** para não desperdiçar ki e consegue manter o
@@ -14,7 +18,7 @@ O add-on segue as regras da [wiki de Add-on Development](https://wiki.dragonmine
 
 1. Aprenda a skill **Controle de Ki** (`kicontrol`) com um mestre (Roshi, Goku, Kaioh, Vegeta…).
 2. Transforme-se em qualquer forma.
-3. Aperte **N** (dá para trocar em *Controles → DMZ Ki Control*; o G é a tecla de transformação do DMZ) ou use o botão **Selar Aura** no Menu Utilitário do DMZ.
+3. Aperte **N** (dá para trocar em *Controles → DragonMineZ Evolution*; o G é a tecla de transformação do DMZ) ou use o botão **Selar Aura** no Menu Utilitário do DMZ.
    - Com a **cutscene** ligada, a câmera contorna o personagem enquanto ele leva a mão ao peito e puxa a aura para dentro. Aperte N de novo para pular.
    - Com a cutscene desligada, ele só leva a mão ao peito e sela. Para alternar, clique com o **botão direito** em *Selar Aura* no Menu Utilitário ou mude `cutscene.mode` em `config/dmzkicontrol-client.toml` (`ALWAYS`, `ONCE_PER_SESSION` ou `OFF`).
 4. Com a aura selada:

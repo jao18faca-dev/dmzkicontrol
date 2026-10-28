@@ -13,7 +13,7 @@ public record EyeStateC2S(boolean active) {
     public static EyeStateC2S decode(FriendlyByteBuf buf) { return new EyeStateC2S(buf.readBoolean()); }
     public static void handle(EyeStateC2S m, Supplier<NetworkEvent.Context> ctx) {
         ServerPlayer sp = ctx.get().getSender();
-        if (sp != null) CerealianEye.setActive(sp, m.active);
+        if (sp != null) ctx.get().enqueueWork(() -> CerealianEye.setActive(sp, m.active));
         ctx.get().setPacketHandled(true);
     }
 }

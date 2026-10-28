@@ -23,7 +23,8 @@ public record ToggleSealC2S(boolean cinematic) {
 
     public static void handle(ToggleSealC2S msg, Supplier<NetworkEvent.Context> ctx) {
         ServerPlayer sender = ctx.get().getSender();
-        if (sender != null) AuraSealManager.requestToggle(sender, msg.cinematic);
+        // roda na thread do servidor (o handler e chamado na thread de rede)
+        if (sender != null) ctx.get().enqueueWork(() -> AuraSealManager.requestToggle(sender, msg.cinematic));
         ctx.get().setPacketHandled(true);
     }
 }

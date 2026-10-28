@@ -19,7 +19,7 @@ public record EyeMarkS2C(int entityId, int ticks, int mask) {
         return new EyeMarkS2C(buf.readVarInt() - 1, buf.readVarInt(), buf.readVarInt());
     }
     public static void handle(EyeMarkS2C m, Supplier<NetworkEvent.Context> ctx) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> CerealianEyeClient.onMark(m.entityId, m.ticks, m.mask));
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> CerealianEyeClient.onMark(m.entityId, m.ticks, m.mask)));
         ctx.get().setPacketHandled(true);
     }
 }

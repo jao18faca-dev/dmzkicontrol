@@ -35,7 +35,7 @@ public record SealStateS2C(boolean sealed, boolean pending, String formKey, bool
     }
 
     public static void handle(SealStateS2C m, Supplier<NetworkEvent.Context> ctx) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSealState.update(m));
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSealState.update(m)));
         ctx.get().setPacketHandled(true);
     }
 }

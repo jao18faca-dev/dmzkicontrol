@@ -81,7 +81,7 @@ public final class CerealianHooks {
         boolean changed = false;
         // tira as orelhas de Glind que ficaram salvas em personagens criados na versao anterior
         String bone = data.getCharacter().getActiveHeadBone();
-        if (bone != null && bone.contains("ears")) {
+        if (bone != null && bone.contains("ears") && !headBoneAllowed(data.getCharacter().getRaceName(), bone)) {
             data.getCharacter().setActiveHeadBone("hair");
             StatsDeltaSync.markDirty(sp);
         }
@@ -134,6 +134,19 @@ public final class CerealianHooks {
             event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), com.dragonminez.common.init.MainSounds.KIBLAST_ATTACK.get(), SoundSource.PLAYERS, 0.9f, 1.8f);
         } catch (Throwable t) {
             event.getLevel().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.PLAYERS, 0.6f, 1.9f);
+        }
+    }
+
+    /** A config da raca ainda permite essa combinacao de partes da cabeca? (o dono pode ter readicionado orelhas) */
+    private static boolean headBoneAllowed(String race, String bone) {
+        try {
+            var cfg = com.dragonminez.common.config.ConfigManager.getRaceCharacter(race.toLowerCase(java.util.Locale.ROOT));
+            if (cfg == null || cfg.getHeadBones() == null) return false;
+            java.util.List<String> allowed = java.util.Arrays.asList(cfg.getHeadBones());
+            for (String token : bone.split("\\+")) if (!token.isEmpty() && !allowed.contains(token)) return false;
+            return true;
+        } catch (Throwable t) {
+            return false;
         }
     }
 

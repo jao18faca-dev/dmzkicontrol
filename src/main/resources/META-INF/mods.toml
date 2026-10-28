@@ -6,14 +6,13 @@ issueTrackerURL=""
 [[mods]]
 modId="dmzkicontrol"
 version="${version}"
-displayName="DMZ Ki Control - Controle Perfeito de Aura"
+displayName="DragonMineZ Evolution"
 authors="jaqkcson"
 description='''
-Add-on para DragonMineZ inspirado no Goku da saga Black: prenda a aura dentro do corpo
-(Selamento de Aura) para gastar muito menos ki mantendo uma transformacao (principalmente
-o Super Saiyajin Blue), ganhar precisao e um pouco mais de poder.
-O dominio cresce por forma com o tempo de pratica. Sem dominio, segurar o ki por tempo demais
-causa tensao interna e a aura explode para fora.
+Add-on de expansao para o DragonMineZ.
+- Selamento de Aura (saga Black): prenda a aura no corpo para gastar menos ki nas transformacoes, com dominio, tensao e cutscene.
+- Raca Cerealiana (Granolah): Olho Cereal com pontos fracos, skill Mira (4 niveis), formas Olho Desperto e Olhos Gemeos,
+  laser de ki preciso, Arco de Ki carregavel com flecha explosiva, passivas de esquiva e critico e a Mira Cereal (item).
 '''
 
 [[dependencies.dmzkicontrol]]

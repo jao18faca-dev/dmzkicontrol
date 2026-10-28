@@ -1,5 +1,5 @@
 {
-  "key.categories.dmzkicontrol": "DMZ Ki Control",
+  "key.categories.dmzkicontrol": "DragonMineZ Evolution",
   "menu.dmzkicontrol.seal": "Seal Aura",
   "menu.dmzkicontrol.on": "SEALED",
   "menu.dmzkicontrol.off": "Free",
@@ -24,7 +24,7 @@
   "message.dmzkicontrol.list_empty": "You haven't trained the seal in any form yet.",
   "message.dmzkicontrol.mastery_set": "Mastery set for %s player(s).",
   "message.dmzkicontrol.mastery_reset": "Mastery reset for %s player(s).",
-  "message.dmzkicontrol.reloaded": "DMZ Ki Control config reloaded.",
+  "message.dmzkicontrol.reloaded": "DragonMineZ Evolution config reloaded.",
   "race.dragonminez.saiyan.group.godforms": "God Forms",
   "race.dragonminez.saiyan.form.godforms.supersaiyangod": "Super Saiyan God",
   "race.dragonminez.saiyan.form.godforms.supersaiyanblue": "Super Saiyan Blue",
@@ -66,5 +66,7 @@
   "message.dmzkicontrol.eye_precise": "Precise shot on a weak point!",
   "message.dmzkicontrol.eye_dodge": "Trajectory Reading: you dodged!",
   "message.dmzkicontrol.eye_learned": "Your Cerealian eye awakened: Aim skill (level 1). Hold B to aim.",
-  "message.dmzkicontrol.ki_arrow_learned": "You learned Ki Bow! Equip it in the ki techniques menu."
+  "message.dmzkicontrol.ki_arrow_learned": "You learned Ki Bow! Equip it in the ki techniques menu.",
+  "entity.dmzkicontrol.cereal_shot": "Ki Arrow",
+  "entity.dmzkicontrol.cereal_beam": "Cerealian Laser"
 }

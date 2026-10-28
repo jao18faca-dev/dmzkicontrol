@@ -11,7 +11,7 @@ group = "com.dmzkicontrol"
 version = prop("mod_version")
 
 base {
-    archivesName.set("dmzkicontrol")
+    archivesName.set("DragonMineZ-Evolution")
 }
 
 java {

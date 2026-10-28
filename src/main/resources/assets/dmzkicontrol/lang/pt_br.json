@@ -1,5 +1,5 @@
 {
-  "key.categories.dmzkicontrol": "DMZ Ki Control",
+  "key.categories.dmzkicontrol": "DragonMineZ Evolution",
   "menu.dmzkicontrol.seal": "Selar Aura",
   "menu.dmzkicontrol.on": "SELADA",
   "menu.dmzkicontrol.off": "Livre",
@@ -24,7 +24,7 @@
   "message.dmzkicontrol.list_empty": "Você ainda não treinou o selo em nenhuma forma.",
   "message.dmzkicontrol.mastery_set": "Domínio definido para %s jogador(es).",
   "message.dmzkicontrol.mastery_reset": "Domínio zerado para %s jogador(es).",
-  "message.dmzkicontrol.reloaded": "Config do DMZ Ki Control recarregada.",
+  "message.dmzkicontrol.reloaded": "Config do DragonMineZ Evolution recarregada.",
   "race.dragonminez.saiyan.group.godforms": "Formas Divinas",
   "race.dragonminez.saiyan.form.godforms.supersaiyangod": "Super Saiyajin God",
   "race.dragonminez.saiyan.form.godforms.supersaiyanblue": "Super Saiyajin Blue",
@@ -66,5 +66,7 @@
   "message.dmzkicontrol.eye_precise": "Tiro preciso no ponto fraco!",
   "message.dmzkicontrol.eye_dodge": "Leitura de Trajetória: você desviou!",
   "message.dmzkicontrol.eye_learned": "Seu olho cerealiano despertou: skill Mira (nível 1). Segure B para mirar.",
-  "message.dmzkicontrol.ki_arrow_learned": "Você aprendeu o Arco de Ki! Segure para carregar o arco e solte para disparar. Equipe-o no menu de técnicas de ki."
+  "message.dmzkicontrol.ki_arrow_learned": "Você aprendeu o Arco de Ki! Segure para carregar o arco e solte para disparar. Equipe-o no menu de técnicas de ki.",
+  "entity.dmzkicontrol.cereal_shot": "Flecha de Ki",
+  "entity.dmzkicontrol.cereal_beam": "Laser Cerealiano"
 }
