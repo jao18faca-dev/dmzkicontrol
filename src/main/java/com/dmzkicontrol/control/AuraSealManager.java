@@ -241,7 +241,21 @@ public final class AuraSealManager {
         double relief = Math.pow(1.0 - m / free, Math.max(0.1, st.curve));
         double formMul = Math.max(0.1, c.tierFor(key).trainTimeMultiplier);
         double levelMul = KiControlConfig.perLevel(c.auraLevelStrain, auraLevel(p), 1.0);
-        return st.fillPercentPerSecond / 100.0 * formMul * relief * Math.max(0.0, levelMul);
+        return st.fillPercentPerSecond / 100.0 * formMul * relief * Math.max(0.0, levelMul) * drainFactor(p);
+    }
+
+    /**
+     * Formas que gastam muito ki forcam mais o selo: quanto maior o upkeep da forma (em % do ki maximo
+     * por segundo, o custo cheio do DMZ antes da reducao do selo), mais rapido a tensao enche.
+     */
+    public static double drainFactor(Player p) {
+        KiControlConfig.Strain st = KiControlConfig.get().strain;
+        StatsData data = stats(p);
+        if (data == null || st.drainWeight <= 0) return 1.0;
+        double max = data.getMaxEnergy();
+        if (max <= 0) return 1.0;
+        double pct = Math.max(0.0, data.getEffectiveEnergyDrain()) / max * 100.0;
+        return Math.min(Math.max(1.0, st.drainMaxFactor), 1.0 + st.drainWeight * pct);
     }
 
     /** Nome do efeito de multiplicador que o selo coloca no sistema de efeitos do DMZ. */

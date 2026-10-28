@@ -74,6 +74,10 @@ public class KiControlConfig {
         public boolean enabled = true;
         /** % de tensao por segundo selado com 0% de dominio (x trainTimeMultiplier do tier: o Blue cansa o dobro). */
         public double fillPercentPerSecond = 1.6;
+        /** Peso do custo da forma: tensao x (1 + peso x %kiMaximo/s que a forma gasta). Ex.: forma de 4%/s com 0.5 = x3. */
+        public double drainWeight = 0.5;
+        /** Limite desse multiplicador. */
+        public double drainMaxFactor = 4.0;
         /** Curva do alivio pelo dominio: taxa = fill x (1 - dominio/strainFreeMastery)^curve. */
         public double curve = 1.5;
         /** A partir deste dominio (0..1) o selo nao cansa mais: controle perfeito. */
