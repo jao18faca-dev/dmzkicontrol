@@ -25,6 +25,18 @@ public final class IntegrationHooks {
     private IntegrationHooks() {}
 
     /**
+     * Usado pelo mixin no Dragon Block Noea: true = o desvio automatico do Instinto Superior do Noea
+     * nao acontece, sobrando so o desvio do DMZ Sparking.
+     */
+    public static boolean blockNoeaUltraDodge() {
+        try {
+            return !KiControlConfig.get().integrations.noeaUltraInstinctDodge && AddonCompat.sparking();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /**
      * Blue Aperfeicoado (DMZ Sparking): no manga e o Blue com o ki todo preso no corpo. Quem tem o Aura
      * Control no nivel exigido ja transforma com a aura selada, sem cutscene.
      */

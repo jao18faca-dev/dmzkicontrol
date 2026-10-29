@@ -24,6 +24,9 @@ repositories {
     maven("https://maven.theillusivec4.top/")                          // Curios
     flatDir { dirs("libs") }                                            // jar do DragonMineZ
     mavenCentral()
+    maven("https://repo.spongepowered.org/repository/maven-public/") { // anotacoes do Mixin
+        content { includeGroup("org.spongepowered") }
+    }
 }
 
 minecraft {
@@ -59,6 +62,9 @@ dependencies {
 
     // DragonMineZ: libs/dragonminez-<dmz_version>.jar (o jar SEM "-slim")
     implementation(fg.deobf("local:dragonminez:${prop("dmz_version")}"))
+
+    // Anotacoes do Mixin (o Forge ja traz o Mixin em jogo; aqui e so para compilar)
+    compileOnly("org.spongepowered:mixin:0.8.5")
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -75,8 +81,10 @@ tasks.named<Jar>("jar") {
     manifest {
         attributes(
             "Specification-Title" to "dmzkicontrol",
-            "Implementation-Title" to "DMZ Ki Control",
-            "Implementation-Version" to project.version
+            "Implementation-Title" to "DragonMineZ Evolution",
+            "Implementation-Version" to project.version,
+            // mixin opcional no Dragon Block Noea (so o desvio do Instinto Superior)
+            "MixinConfigs" to "dmzkicontrol.mixins.json"
         )
     }
     finalizedBy("reobfJar")

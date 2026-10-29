@@ -300,6 +300,12 @@ public class KiControlConfig {
         public boolean perfectedBlueAutoSeal = true;
         /** Olho Cereal mostra o poder de luta do alvo (usa o calculo do DMZ e dos add-ons instalados). */
         public boolean eyeShowsBattlePower = true;
+        /**
+         * Desvio automatico do Instinto Superior do Dragon Block Noea. Com o DMZ Sparking instalado, o
+         * Instinto Superior ja tem o desvio do Sparking (esquiva do DMZ melhorada); os dois juntos
+         * davam desvio dobrado. false = so o do Sparking. Sem o Sparking, o do Noea continua valendo.
+         */
+        public boolean noeaUltraInstinctDodge = false;
     }
 
     public Integrations integrations = new Integrations();

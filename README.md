@@ -151,4 +151,7 @@ Licença: GPL-3.0-or-later, a mesma família do DragonMineZ.
   acompanham a licao do Whis e o arco do Black), a meditacao (meditar selado treina o dominio e alivia a tensao)
   e ao Blue Aperfeicoado (ja transforma com a aura selada). Feito com permissao do autor; nenhum codigo ou asset
   do Sparking e incluido neste mod.
+- Com os dois instalados, o Instinto Superior usa so o desvio do Sparking (o desvio automatico do Noea e
+  desligado por um mixin opcional; volta com `integrations.noeaUltraInstinctDodge: true` em
+  `config/dmzkicontrol.json`). A raiva crescente do Ultra Ego do Noea continua igual.
 - **DragonMineZ**, base de tudo.
