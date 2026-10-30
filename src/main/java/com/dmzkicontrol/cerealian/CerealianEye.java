@@ -89,9 +89,25 @@ public final class CerealianEye {
         }
         if (active == st.active) return;
         st.active = active;
+        broadcastEye(sp, active);
         st.ticker = 0;
         sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(),
                 active ? SoundEvents.SPYGLASS_USE : SoundEvents.SPYGLASS_STOP_USING, SoundSource.PLAYERS, 1.0f, 0.8f);
+    }
+
+    /** Avisa quem esta vendo (e o proprio jogador) para mostrar/esconder a mira no olho. */
+    private static void broadcastEye(ServerPlayer sp, boolean on) {
+        KiControlNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> sp),
+                new com.dmzkicontrol.network.SealAnimS2C(sp.getId(), on ? com.dmzkicontrol.network.SealAnimS2C.EYE_ON : com.dmzkicontrol.network.SealAnimS2C.EYE_OFF));
+    }
+
+    /** Quem passa a ver um Cerealiano com o olho ligado tambem ve a mira. */
+    public static void onStartTracking(ServerPlayer viewer, Player target) {
+        State st = STATES.get(target.getUUID());
+        if (st != null && st.active) {
+            KiControlNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> viewer),
+                    new com.dmzkicontrol.network.SealAnimS2C(target.getId(), com.dmzkicontrol.network.SealAnimS2C.EYE_ON));
+        }
     }
 
     public static void tick(ServerPlayer sp) {
@@ -100,7 +116,7 @@ public final class CerealianEye {
         long now = sp.level().getGameTime();
         if (st.markedId >= 0 && (now > st.markUntil || st.mask == 0)) clearMark(sp, st);
         if (!st.active) return;
-        if (!isCerealian(sp) || !sp.isAlive()) { st.active = false; return; }
+        if (!isCerealian(sp) || !sp.isAlive()) { st.active = false; broadcastEye(sp, false); return; }
 
         StatsData data = AuraSealManager.stats(sp);
         KiControlConfig.Cerealian c = KiControlConfig.get().cerealian;
@@ -110,6 +126,7 @@ public final class CerealianEye {
             float cost = (float) (data.getMaxEnergy() * Math.max(0.0, pct) / 100.0);
             if (res.getCurrentEnergy() < cost) {
                 st.active = false;
+                broadcastEye(sp, false);
                 sp.displayClientMessage(Component.translatable("message.dmzkicontrol.eye_no_ki").withStyle(ChatFormatting.RED), true);
                 return;
             }

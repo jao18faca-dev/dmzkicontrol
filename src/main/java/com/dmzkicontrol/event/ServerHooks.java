@@ -164,6 +164,7 @@ public final class ServerHooks {
     public static void onStartTracking(PlayerEvent.StartTracking event) {
         if (event.getEntity() instanceof ServerPlayer viewer && event.getTarget() instanceof Player target) {
             AuraSealManager.onStartTracking(viewer, target);
+            com.dmzkicontrol.cerealian.CerealianEye.onStartTracking(viewer, target);
         }
     }
 

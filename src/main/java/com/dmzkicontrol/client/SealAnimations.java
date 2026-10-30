@@ -82,6 +82,7 @@ public final class SealAnimations {
         if (mc.level == null) return;
         if (type == SealAnimS2C.SEALED_ON) { SEALED.add(entityId); return; }
         if (type == SealAnimS2C.SEALED_OFF) { SEALED.remove(entityId); return; }
+        if (type == SealAnimS2C.EYE_ON || type == SealAnimS2C.EYE_OFF) { EyeReticleRenderer.set(entityId, type == SealAnimS2C.EYE_ON); return; }
         Entity e = mc.level.getEntity(entityId);
         if (!(e instanceof AbstractClientPlayer player)) return;
         boolean self = mc.player != null && player.getId() == mc.player.getId();
@@ -208,6 +209,7 @@ public final class SealAnimations {
 
     public static void clearSealed() {
         SEALED.clear();
+        EyeReticleRenderer.clear();
         SealFxRenderer.clear();
         NO_SHOOT_POSE.clear();
         ArmAnimDriver.clear();

@@ -145,6 +145,7 @@ public final class ClientSetup {
             KiBowRenderer.render(event);
             SealFxRenderer.render(event);
             KiVision.render(event);
+            EyeReticleRenderer.render(event);
         }
 
         /** Visao de ki: o mundo apaga em volta (neblina escura de poucos blocos). */
@@ -230,6 +231,7 @@ public final class ClientSetup {
             ClientSealState.reset();
             CutsceneController.resetSession();
             SealAnimations.clearSealed();
+            EyeReticleRenderer.clear();
             CerealianEyeClient.reset();
             KiVision.reset();
             BubblesHud.reset();

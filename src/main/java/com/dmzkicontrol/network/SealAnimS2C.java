@@ -21,6 +21,9 @@ public record SealAnimS2C(int entityId, byte type) {
     /** Arco de Ki disparado: encerra a pose de arco depois da animacao de soltar. */
     public static final byte KIBOW_RELEASE = 7;
     public static final byte LASER = 8;
+    /** Olho Cereal ligado/desligado: mira magica flutuando na frente do olho. */
+    public static final byte EYE_ON = 9;
+    public static final byte EYE_OFF = 10;
 
     public static void encode(SealAnimS2C m, FriendlyByteBuf buf) {
         buf.writeVarInt(m.entityId);
