@@ -341,8 +341,16 @@ public final class BubblesTraining {
             double r = 4 + level.random.nextDouble() * 3;
             int x = Mth.floor(kai.getX() + Math.cos(ang) * r);
             int z = Mth.floor(kai.getZ() + Math.sin(ang) * r);
-            int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-            if (Math.abs(y - kai.getY()) > 6) y = Mth.floor(kai.getY());
+            // nunca pede um chunk que nao esteja carregado (isso gera o chunk na hora e pode segurar o servidor)
+            int y = Mth.floor(kai.getY());
+            BlockPos column = new BlockPos(x, y, z);
+            if (level.isLoaded(column)) {
+                int h = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+                if (Math.abs(h - kai.getY()) <= 6) y = h;
+            } else {
+                x = Mth.floor(kai.getX());
+                z = Mth.floor(kai.getZ());
+            }
             b.moveTo(x + 0.5, y, z + 0.5, level.random.nextFloat() * 360f, 0f);
             b.setHome(kai.blockPosition());
             level.addFreshEntity(b);

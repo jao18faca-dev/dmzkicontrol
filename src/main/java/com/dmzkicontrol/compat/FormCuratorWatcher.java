@@ -1,8 +1,6 @@
 package com.dmzkicontrol.compat;
 
 import com.dmzkicontrol.KiControlMod;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,14 +16,17 @@ import java.util.stream.Stream;
  * Outros add-ons recolocam formas em momentos diferentes (o DMZ Sparking, por exemplo, reinstala as dele
  * depois que o servidor sobe e de novo quando o jogador entra no mundo), desfazendo a curadoria.
  *
- * <p>Com o servidor rodando, a cada 5 segundos olhamos se algum arquivo de forma/preco do DMZ mudou.
- * Se mudou, a curadoria roda de novo, o DMZ recarrega e os jogadores recebem a config nova.
+ * <p>Com o servidor rodando, a cada minuto olhamos se algum arquivo de forma/preco do DMZ mudou e, se
+ * mudou, arrumamos os arquivos (sem recarregar o DMZ). Se o mesmo mod desfaz tudo de novo seguidamente,
+ * a vigia para ate o proximo inicio, para nunca brigar com ele.
  */
 @Mod.EventBusSubscriber(modid = KiControlMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class FormCuratorWatcher {
-    private static final int EVERY_TICKS = 100;
+    private static final int EVERY_TICKS = 1200; // 1 minuto
     private static long lastSignature = Long.MIN_VALUE;
     private static int ticks;
+    private static int streak;
+    private static boolean stopped;
 
     private FormCuratorWatcher() {}
 
@@ -50,25 +51,21 @@ public final class FormCuratorWatcher {
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+        if (event.phase != TickEvent.Phase.END || stopped) return;
         if (++ticks < EVERY_TICKS) return;
         ticks = 0;
         long sig = signature();
         if (sig == lastSignature) return;
-        boolean first = lastSignature == Long.MIN_VALUE;
-        boolean changed = FormCurator.run(first ? "servidor" : "outro mod mexeu nas formas");
+        // So arruma os ARQUIVOS (valem no proximo inicio). Nunca recarrega o DMZ daqui: o DMZ Sparking
+        // recoloca algumas formas a cada recarga, e recarregar de novo virava um ciclo sem fim que
+        // travava o servidor (3.8.4).
+        boolean changed = FormCurator.run("arquivos mexidos por outro mod");
         lastSignature = signature();
-        if (!changed) return;
-        try {
-            com.dragonminez.common.config.ConfigManager.reload();
-            MinecraftServer server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
-            if (server != null) {
-                for (ServerPlayer sp : server.getPlayerList().getPlayers()) {
-                    try { com.dragonminez.common.config.ConfigManager.sendConfigSync(sp); } catch (Throwable ignored) { }
-                }
-            }
-        } catch (Throwable t) {
-            KiControlMod.LOGGER.warn("Curadoria refeita, mas nao consegui recarregar o DMZ ({}). Rode /dmzreload config.", t.toString());
+        streak = changed ? streak + 1 : 0;
+        if (streak >= 3) {
+            stopped = true;
+            KiControlMod.LOGGER.warn("Curadoria: outro mod recoloca as mesmas formas toda hora; a vigia parou ate o proximo inicio "
+                    + "(no DMZ Sparking, installForms = false em config/dmzsparking/common.toml evita isso).");
         }
     }
 
@@ -76,5 +73,7 @@ public final class FormCuratorWatcher {
     public static void onServerStopped(ServerStoppedEvent event) {
         lastSignature = Long.MIN_VALUE;
         ticks = 0;
+        streak = 0;
+        stopped = false;
     }
 }
