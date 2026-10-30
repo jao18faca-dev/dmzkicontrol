@@ -54,7 +54,7 @@ public final class Scene {
         JsonArray su = o.has("sub") ? o.getAsJsonArray("sub") : null;
         subT = su != null ? su.get(0).getAsInt() : titleT + 6;
         subD = su != null ? su.get(1).getAsInt() : titleD - 6;
-        String k = id.replace(':', '.').replace('*', 'any');
+        String k = id.replace(":", ".").replace("*", "any");
         titleKey = "scene.dmzkicontrol." + k + ".title";
         subKey = "scene.dmzkicontrol." + k + ".sub";
     }
