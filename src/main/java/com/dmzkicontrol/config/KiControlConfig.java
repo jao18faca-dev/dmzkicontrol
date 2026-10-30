@@ -173,7 +173,7 @@ public class KiControlConfig {
         /** Desejo ao Toronbo: parte da vida maxima entregue para sempre (0.10 = -10%; 0 = sem custo). */
         public double toronboLifeCost = 0.10;
         /** TP que o Toronbo da a quem nao e Cerealiano (ou ja fez o desejo) ao pedir para ser o mais forte. */
-        public int toronboOtherRaceTp = 150000;
+        public int toronboOtherRaceTp = 5000000;
         /** Troca a bola de ki basica dos Cerealianos por um tiro fino e preciso. */
         public boolean preciseKiShot = true;
         /** Tempo mirando com a mao antes do laser sair (ticks; 20 = 1 s). */
@@ -523,6 +523,8 @@ public class KiControlConfig {
         if (strain == null) strain = new Strain();
         if (mastery == null) mastery = new Mastery();
         if (cerealian == null) cerealian = new Cerealian();
+        // 3.12 dava so 150 mil TP; agora igual ao desejo de TP do Porunga
+        if (cerealian.toronboOtherRaceTp == 150000) cerealian.toronboOtherRaceTp = 5000000;
         if (burst == null) burst = new Burst();
         if (defaultTier == null) defaultTier = new Tier(0.35, 0.04, 0.02, 1.0);
         if (rules == null) rules = new ArrayList<>();
