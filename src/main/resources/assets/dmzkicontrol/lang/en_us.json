@@ -480,5 +480,6 @@
   "scene.dmzkicontrol.generic.title": "TRANSFORMATION",
   "scene.dmzkicontrol.generic.sub": "The ki explodes and the body changes.",
   "key.dmzkicontrol.skip_scene": "Skip transformation cutscene",
-  "scene.dmzkicontrol.skip": "%s: skip"
+  "scene.dmzkicontrol.skip": "%s: skip",
+  "message.dmzkicontrol.cereal_radar": "Monaito: \"Take this radar. It finds the two Cereal Dragon Balls.\""
 }

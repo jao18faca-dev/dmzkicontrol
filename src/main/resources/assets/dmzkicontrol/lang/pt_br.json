@@ -480,5 +480,6 @@
   "scene.dmzkicontrol.generic.title": "TRANSFORMAÇÃO",
   "scene.dmzkicontrol.generic.sub": "O ki explode e o corpo muda.",
   "key.dmzkicontrol.skip_scene": "Pular cutscene de transformação",
-  "scene.dmzkicontrol.skip": "%s: pular"
+  "scene.dmzkicontrol.skip": "%s: pular",
+  "message.dmzkicontrol.cereal_radar": "Monaito: \"Leve este radar. Ele acha as duas Esferas do Dragão de Cereal.\""
 }

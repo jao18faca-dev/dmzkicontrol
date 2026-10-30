@@ -2,16 +2,12 @@ package com.dmzkicontrol.mixin;
 
 import com.dragonminez.common.dragonball.DragonBallPackManager;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Esferas do Dragao de Cereal e o Toronbo: o DMZ 2.2 monta os conjuntos de esferas, radares e dragoes
@@ -34,13 +30,13 @@ public abstract class DragonBallPackMixin {
     private static void dmzkicontrol$addCerealPack(CallbackInfoReturnable<DragonBallPackManager.LoadedDefinitions> cir) {
         DragonBallPackManager.LoadedDefinitions loaded = cir.getReturnValue();
         if (loaded == null) return;
+        int added = 0;
         for (String file : DMZK_FILES) {
-            String res = "/dmzkicontrol_dragonballs/cereal/" + file;
-            // um pacote que o dono colocou na pasta dragonballs/ com o mesmo id tem prioridade
-            try (InputStream in = DragonBallPackMixin.class.getResourceAsStream(res)) {
-                if (in == null) continue;
-                JsonObject root = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
+            try {
+                JsonObject root = com.dmzkicontrol.compat.CerealPack.read(file);
+                if (root == null) continue;
                 String id = root.has("id") ? root.get("id").getAsString() : (root.has("dragon") ? root.get("dragon").getAsString() : "");
+                // um pacote que o dono colocou na pasta dragonballs/ com o mesmo id tem prioridade
                 if (file.equals("definitions/ballset.json") && loaded.ballSets.containsKey(id)) continue;
                 if (file.equals("definitions/radar.json") && loaded.radars.containsKey(id)) continue;
                 if (file.equals("definitions/dragon.json") && loaded.dragons.containsKey(id)) continue;
@@ -48,9 +44,11 @@ public abstract class DragonBallPackMixin {
                 if (file.equals("assets/ballset.json") && loaded.ballSetAssets.containsKey(id)) continue;
                 if (file.equals("assets/dragon.json") && loaded.dragonAssets.containsKey(id)) continue;
                 readDefinition("dmzkicontrol/dragonballs/cereal/" + file, root, loaded);
+                added++;
             } catch (Throwable t) {
-                System.err.println("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + res + " nao lido: " + t);
+                System.err.println("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + file + " nao lido: " + t);
             }
         }
+        System.out.println("[DragonMineZ Evolution] Esferas de Cereal e Toronbo: " + added + " definicoes adicionadas ao DMZ.");
     }
 }
