@@ -110,6 +110,11 @@ public final class FormCurator {
                 com.google.gson.JsonArray mine = cfg.getAsJsonArray(key);
                 for (JsonElement e : def.getAsJsonArray(key)) if (!mine.contains(e)) mine.add(e);
             }
+            if (def.has("order") && def.get("order").isJsonObject()) {
+                if (!cfg.has("order") || !cfg.get("order").isJsonObject()) cfg.add("order", new JsonObject());
+                JsonObject mine = cfg.getAsJsonObject("order");
+                for (Map.Entry<String, JsonElement> e : def.getAsJsonObject("order").entrySet()) if (!mine.has(e.getKey())) mine.add(e.getKey(), e.getValue());
+            }
             if (def.has("tune")) {
                 if (!cfg.has("tune") || !cfg.get("tune").isJsonObject()) cfg.add("tune", new JsonObject());
                 JsonObject mine = cfg.getAsJsonObject("tune");
@@ -178,6 +183,7 @@ public final class FormCurator {
             int fixedReqs = repairRequisites(files, removed);
             Map<String, Integer> newMax = compactLevels(files, touched);
             int tuned = tune(files, cfg);
+            tuned += order(files, cfg);
 
             int written = 0, moved = 0;
             Path backup = dmz.resolve("_removidos_evolution");
@@ -346,6 +352,37 @@ public final class FormCurator {
                 }
                 if (changed) { f.dirty = true; count++; }
             }
+        }
+        return count;
+    }
+
+    /**
+     * Ordem das formas dentro de um grupo (a ordem em que o DMZ mostra na arvore). Ex.: o Ultra Ego vinha
+     * com o Dominado antes do Sinal. As formas listadas vem primeiro, na ordem dada; as outras depois, como estavam.
+     */
+    private static int order(List<FormFile> files, JsonObject cfg) {
+        if (!cfg.has("order") || !cfg.get("order").isJsonObject()) return 0;
+        JsonObject order = cfg.getAsJsonObject("order");
+        int count = 0;
+        for (FormFile f : files) {
+            if (f.delete || !order.has(f.group) || !order.get(f.group).isJsonArray()) continue;
+            JsonObject forms = f.root.has("forms") && f.root.get("forms").isJsonObject() ? f.root.getAsJsonObject("forms") : null;
+            if (forms == null) continue;
+            List<String> current = new ArrayList<>(forms.keySet());
+            List<String> wanted = new ArrayList<>();
+            for (JsonElement e : order.getAsJsonArray(f.group)) {
+                String name = e.getAsString();
+                for (String k : current) if (k.equalsIgnoreCase(name) && !wanted.contains(k)) wanted.add(k);
+            }
+            for (String k : current) if (!wanted.contains(k)) wanted.add(k);
+            if (wanted.equals(current)) continue;
+            // reordena no mesmo objeto (f.forms continua valendo)
+            Map<String, JsonElement> copy = new LinkedHashMap<>();
+            for (String k : wanted) copy.put(k, forms.get(k));
+            for (String k : current) forms.remove(k);
+            for (Map.Entry<String, JsonElement> e : copy.entrySet()) forms.add(e.getKey(), e.getValue());
+            f.dirty = true;
+            count++;
         }
         return count;
     }

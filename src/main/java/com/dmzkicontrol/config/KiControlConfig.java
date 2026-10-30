@@ -310,6 +310,8 @@ public class KiControlConfig {
          * davam desvio dobrado. false = so o do Sparking. Sem o Sparking, o do Noea continua valendo.
          */
         public boolean noeaUltraInstinctDodge = false;
+        /** Quem ganhou o Ultra Ego pela carreira de destruidor do DMZ Sparking tambem passa no portao do Noea. */
+        public boolean sparkingUltraEgoPassesNoea = true;
     }
 
     public Integrations integrations = new Integrations();

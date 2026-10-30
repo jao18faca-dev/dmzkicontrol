@@ -4,7 +4,8 @@
   "package": "com.dmzkicontrol.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "NoeaUltraDodgeMixin"
+    "NoeaUltraDodgeMixin",
+    "NoeaUltraEgoGateMixin"
   ],
   "injectors": {
     "defaultRequire": 0

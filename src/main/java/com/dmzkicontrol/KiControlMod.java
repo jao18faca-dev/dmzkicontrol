@@ -35,7 +35,9 @@ public class KiControlMod {
     /** Depois que todos os mods instalaram suas formas (Sparking instala no setup): curadoria de formas. */
     private void loadComplete(net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent event) {
         event.enqueueWork(() -> {
-            if (com.dmzkicontrol.compat.FormCurator.run("load")) {
+            boolean changed = com.dmzkicontrol.compat.FormCurator.run("load");
+            changed |= com.dmzkicontrol.race.RaceInstaller.installLate(); // Cerealiano nas habilidades de todas as racas
+            if (changed) {
                 try {
                     com.dragonminez.common.config.ConfigManager.reload();
                 } catch (Throwable t) {

@@ -58,6 +58,7 @@ public final class RaceInstaller {
         changed |= install("cerealian", c.raceKey, CEREALIAN_FILES);
         changed |= patchCerealianDefaults(c.raceKey);
         changed |= ensureEyeSkill(c);
+        changed |= ensureRaceAccess(c.raceKey);
         return changed;
     }
 
@@ -189,6 +190,46 @@ public final class RaceInstaller {
             return true;
         } catch (Exception e) {
             KiControlMod.LOGGER.warn("Nao consegui adicionar a skill da Mira ao {}: {}", file, e.toString());
+            return false;
+        }
+    }
+
+    /** Racas "mortais" de base: uma habilidade liberada para todas elas e para todo mundo (ex.: Ki Divino). */
+    private static final String[] MORTAL_RACES = {"saiyan", "human", "namekian", "frostdemon", "majin", "bioandroid"};
+
+    /**
+     * Outros add-ons (DMZ Sparking, Dragon Block Noea) gravam listas de racas nas habilidades que liberam para
+     * "todo mundo" (Ki Divino, formas criadas...), mas so com as racas que conheciam. Se a lista tem todas as
+     * racas mortais de base e nao tem a nossa, a nossa entra. Habilidades exclusivas de uma raca nao mudam.
+     */
+    private static boolean ensureRaceAccess(String raceKey) {
+        Path file = dmzDir().resolve("skills.json");
+        if (!Files.exists(file) || raceKey == null || raceKey.isBlank()) return false;
+        try {
+            JsonObject root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8)).getAsJsonObject();
+            if (!root.has("skills") || !root.get("skills").isJsonObject()) return false;
+            java.util.List<String> added = new java.util.ArrayList<>();
+            for (var e : root.getAsJsonObject("skills").entrySet()) {
+                if (!e.getValue().isJsonObject()) continue;
+                JsonObject skill = e.getValue().getAsJsonObject();
+                if (!skill.has("allowedRaces") || !skill.get("allowedRaces").isJsonArray()) continue;
+                JsonArray races = skill.getAsJsonArray("allowedRaces");
+                if (races.isEmpty()) continue; // vazia = todas as racas
+                java.util.Set<String> have = new java.util.HashSet<>();
+                for (var r : races) have.add(r.getAsString().toLowerCase(java.util.Locale.ROOT));
+                if (have.contains("all") || have.contains(raceKey)) continue;
+                boolean everyone = true;
+                for (String m : MORTAL_RACES) if (!have.contains(m)) { everyone = false; break; }
+                if (!everyone) continue;
+                races.add(raceKey);
+                added.add(e.getKey());
+            }
+            if (added.isEmpty()) return false;
+            Files.writeString(file, GSON.toJson(root), StandardCharsets.UTF_8);
+            KiControlMod.LOGGER.info("Raca '{}' liberada nas habilidades de todas as racas: {}", raceKey, added);
+            return true;
+        } catch (Exception e) {
+            KiControlMod.LOGGER.warn("Nao consegui liberar a raca {} no {}: {}", raceKey, file, e.toString());
             return false;
         }
     }

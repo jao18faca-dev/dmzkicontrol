@@ -24,6 +24,17 @@ public final class IntegrationHooks {
 
     private IntegrationHooks() {}
 
+    /** Usado pelo mixin no portao do Ultra Ego do Noea: ja tem o Ultra Ego, vindo da carreira do Sparking? */
+    public static boolean ultraEgoFromSparking(net.minecraft.server.level.ServerPlayer sp) {
+        try {
+            if (sp == null || !KiControlConfig.get().integrations.sparkingUltraEgoPassesNoea || !AddonCompat.sparking()) return false;
+            var data = AuraSealManager.stats(sp);
+            return data != null && data.getSkills().getSkillLevel("ultraego") > 0;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     /**
      * Usado pelo mixin no Dragon Block Noea: true = o desvio automatico do Instinto Superior do Noea
      * nao acontece, sobrando so o desvio do DMZ Sparking.

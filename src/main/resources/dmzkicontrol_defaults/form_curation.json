@@ -1,6 +1,6 @@
 {
   "_info": "Curadoria de formas do DragonMineZ Evolution. Roda a cada inicio, DEPOIS do DragonMineZ, DMZ Sparking e Dragon Block Noea: tira formas fan-made, remove repeticoes, conserta pre-requisitos/niveis e aplica o balanceamento e o visual abaixo. Para mudar numeros ou cores edite ESTE arquivo (os arquivos do DMZ sao reescritos por ele). Chave = grupo.forma.",
-  "version": 2,
+  "version": 3,
   "enabled": true,
   "removeForms": [
     "legendaryforms.ssjlegendary3",
@@ -29,6 +29,10 @@
     ["divineforms.awakenedgoldengiant", "pureprogress.giantorangepiccolo"],
     ["oozaru.supersaiyan4", "supersaiyan.supersaiyan4"]
   ],
+  "order": {
+    "ultraego": ["sign", "mastered"],
+    "ultrainstinct": ["sign", "mastered"]
+  },
   "tune": {
     "godforms.supersaiyangod": {
       "strMultiplier": 5.0, "skpMultiplier": 5.0, "pwrMultiplier": 5.0, "defMultiplier": 3.75, "speedMultiplier": 1.12, "energyDrain": 0.20,

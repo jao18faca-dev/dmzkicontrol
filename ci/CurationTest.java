@@ -82,6 +82,9 @@ public class CurationTest {
         check(skills.getAsJsonObject("skills").has("aura_control") && !skills.getAsJsonObject("skills").has("mimicforms"), "skills: Aura Control fica, Super Majin sai");
         check(Files.exists(cfg.resolve("dragonminez/_removidos_evolution/races/saiyan/forms/dmzsparking_af.json")), "backup dos grupos removidos existe");
 
+        check(new ArrayList<>(forms("forms/ultraego.json").keySet()).equals(List.of("sign", "mastered")), "Ultra Ego na ordem certa (Sinal antes do Dominado)");
+        check(forms("forms/ultraego.json").getAsJsonObject("mastered").get("unlockOnSkillLevel").getAsInt() == 1, "Ultra Ego: niveis de desbloqueio intactos");
+
         boolean again = FormCurator.run(cfg, "teste-2");
         check(!again, "segunda passada nao muda nada (idempotente)");
 
@@ -97,6 +100,7 @@ public class CurationTest {
         v1.addProperty("version", 1);
         var dd = v1.getAsJsonArray("dedupe");
         for (int i = dd.size() - 1; i >= 0; i--) if (dd.get(i).toString().contains("supersaiyan4")) dd.remove(i);
+        v1.remove("order");
         v1.addProperty("meuCampo", "fica");
         Files.writeString(old.resolve("dmzkicontrol_forms.json"), v1.toString());
         Path saved = cfg;
@@ -105,6 +109,7 @@ public class CurationTest {
         JsonObject up = JsonParser.parseString(Files.readString(old.resolve("dmzkicontrol_forms.json"))).getAsJsonObject();
         check(up.get("version").getAsInt() >= 2 && up.getAsJsonArray("dedupe").toString().contains("supersaiyan.supersaiyan4"), "arquivo antigo atualizado com a regra nova");
         check(up.has("meuCampo"), "o que o dono mudou no arquivo fica");
+        check(up.has("order") && up.getAsJsonObject("order").has("ultraego"), "arquivo antigo ganha a regra de ordem");
         check(!forms("races/saiyan/forms/supersaiyan.json").has("supersaiyan4"), "regra nova ja aplicada no arquivo antigo");
         cfg = saved;
 
