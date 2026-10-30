@@ -51,7 +51,7 @@ public final class ChargeMovement {
         float speed = (float) Math.max(0.0, cfg.chargingMoveSpeed);
         float forward = (in.up == in.down ? 0f : (in.up ? 1f : -1f)) * speed;
         float strafe = (in.left == in.right ? 0f : (in.left ? 1f : -1f)) * speed;
-        if (p.isMovingSlowly()) {
+        if (mc.player.isMovingSlowly()) {
             forward *= 0.3f;
             strafe *= 0.3f;
         }
