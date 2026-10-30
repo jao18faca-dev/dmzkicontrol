@@ -364,6 +364,16 @@ public class KiControlConfig {
 
     public Bubbles bubbles = new Bubbles();
 
+    /** Movimento enquanto carrega o ki (o DMZ deixa o personagem parado). */
+    public static class Movement {
+        /** true = da para andar, correr, pular e voar carregando o ki. */
+        public boolean moveWhileChargingKi = true;
+        /** Velocidade enquanto carrega (1.0 = normal). */
+        public double chargingMoveSpeed = 1.0;
+    }
+
+    public Movement movement = new Movement();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -478,6 +488,7 @@ public class KiControlConfig {
         if (integrations == null) integrations = new Integrations();
         if (kiVision == null) kiVision = new KiVision();
         if (bubbles == null) bubbles = new Bubbles();
+        if (movement == null) movement = new Movement();
         if (auraControlRequiredSaga == null) auraControlRequiredSaga = "";
         if (auraLevelEfficiency == null || auraLevelEfficiency.isEmpty()) auraLevelEfficiency = new ArrayList<>(List.of(0.60, 0.70, 0.80, 0.90, 1.00));
         if (auraLevelTrainSpeed == null || auraLevelTrainSpeed.isEmpty()) auraLevelTrainSpeed = new ArrayList<>(List.of(1.00, 1.15, 1.30, 1.45, 1.60));

@@ -184,6 +184,12 @@ public final class ClientSetup {
             CerealianEyeClient.onFov(event);
         }
 
+        /** Roda depois do DMZ: libera andar enquanto carrega o ki. */
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onMovementCharge(MovementInputUpdateEvent event) {
+            ChargeMovement.onMovement(event);
+        }
+
         /** Durante a cena o personagem fica parado. */
         @SubscribeEvent
         public static void onMovement(MovementInputUpdateEvent event) {
