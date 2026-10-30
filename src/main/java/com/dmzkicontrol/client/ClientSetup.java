@@ -108,6 +108,7 @@ public final class ClientSetup {
         public static void onRegisterOverlays(RegisterGuiOverlaysEvent event) {
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "aura_seal", SealHudOverlay.INSTANCE);
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "cereal_eye", CerealianEyeClient.OVERLAY);
+            event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "ki_vision", KiVision.OVERLAY);
             event.registerAboveAll("aura_cutscene", CutsceneOverlay.INSTANCE);
         }
     }
@@ -131,6 +132,7 @@ public final class ClientSetup {
             KiBowRenderer.clientTick();
             ArmAnimDriver.clientTick();
             SealFxRenderer.clientTick();
+            KiVision.clientTick();
             if (mc.player != null && mc.player.tickCount % 20 == 0) SealAnimations.ensureInjected();
         }
 
@@ -139,6 +141,23 @@ public final class ClientSetup {
             WeakPointRenderer.render(event);
             KiBowRenderer.render(event);
             SealFxRenderer.render(event);
+            KiVision.render(event);
+        }
+
+        /** Visao de ki: o mundo apaga em volta (neblina escura de poucos blocos). */
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onFog(ViewportEvent.RenderFog event) {
+            KiVision.onFog(event);
+        }
+
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onFogColor(ViewportEvent.ComputeFogColor event) {
+            KiVision.onFogColor(event);
+        }
+
+        @SubscribeEvent
+        public static void onNameTag(net.minecraftforge.client.event.RenderNameTagEvent event) {
+            KiVision.onNameTag(event);
         }
 
         @SubscribeEvent
@@ -193,6 +212,7 @@ public final class ClientSetup {
             SealAnimations.clearSealed();
             CutsceneController.stop();
             CerealianEyeClient.reset();
+            KiVision.reset();
         }
 
         @SubscribeEvent
@@ -201,6 +221,7 @@ public final class ClientSetup {
             CutsceneController.resetSession();
             SealAnimations.clearSealed();
             CerealianEyeClient.reset();
+            KiVision.reset();
         }
     }
 }

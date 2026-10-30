@@ -72,6 +72,21 @@ O add-on instala a raça **Cerealiano** no sistema de raças do DMZ (`config/dra
   ```
 - Os valores ficam no bloco `cerealian` de `config/dmzkicontrol.json`.
 
+## Luta às cegas (visão de ki)
+
+Sem enxergar, você sente o ki. O mundo apaga (só um contorno de poucos blocos em volta, para não cair
+de penhasco) e quem está por perto aparece como uma silhueta brilhando na cor do próprio ki, até
+através das paredes. Quanto mais forte em relação a você, mais brilha; ki maligno (mobs hostis) aparece
+vermelho. Rajadas de ki aparecem como riscos de luz e uma onda de ki sai de você de tempos em tempos.
+Quem está com a aura selada (Aura Control) quase some. É só para jogadores.
+
+- **Venda de Treino** (1 lã preta + 2 linhas): na cabeça, liga a visão de ki. Em combate o TP que o DMZ
+  dá rende +20% (+5% por nível do Ki Sense, até +50%).
+- **Taiyoken:** quem tem Ki Sense não fica cego de vez. O clarão passa rápido e você luta de olhos
+  fechados pelo ki até a cegueira acabar, como o Goku contra o Tenshinhan.
+- Alcance: 6 blocos + 6 por nível do Ki Sense (até 48). Tudo ajustável em `kiVision` no
+  `config/dmzkicontrol.json`.
+
 ## Comandos
 | Comando | O que faz |
 |---|---|

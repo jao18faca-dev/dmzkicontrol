@@ -82,5 +82,11 @@
   "hud.dmzkicontrol.eye_power": "Battle power: %s",
   "message.dmzkicontrol.perfected_blue": "Perfected Blue: your ki is born locked inside the body — aura sealed.",
   "message.dmzkicontrol.aura_story_cap": "Goku: \"You can't go past this yet. Aura Control level %s comes after: %s.\" (TP for the extra levels refunded)",
-  "message.dmzkicontrol.form_removed": "That form was removed (non-canon or duplicate); you're back to normal."
+  "message.dmzkicontrol.form_removed": "That form was removed (non-canon or duplicate); you're back to normal.",
+  "item.dmzkicontrol.blindfold": "Training Blindfold",
+  "item.dmzkicontrol.blindfold.tip1": "Fight without sight: you only sense ki",
+  "item.dmzkicontrol.blindfold.tip2": "Range grows with Ki Sense. In combat: +20% TP (more with Ki Sense)",
+  "item.dmzkicontrol.blindfold.tip3": "With Ki Sense, Solar Flare won't blind you either: you switch to ki vision",
+  "hud.dmzkicontrol.kivision": "Sensing ki",
+  "hud.dmzkicontrol.kivision_time": "Sensing ki — %ss"
 }

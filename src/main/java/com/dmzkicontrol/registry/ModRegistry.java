@@ -22,6 +22,10 @@ public final class ModRegistry {
     public static final RegistryObject<Item> CEREAL_SCOPE = ITEMS.register("cereal_scope",
             () -> new CerealScopeItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
+    /** Venda de Treino: luta as cegas sentindo o ki. */
+    public static final RegistryObject<Item> BLINDFOLD = ITEMS.register("blindfold",
+            () -> new com.dmzkicontrol.kivision.BlindfoldItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+
     public static final RegistryObject<EntityType<CerealShotEntity>> CEREAL_SHOT = ENTITIES.register("cereal_shot",
             () -> EntityType.Builder.<CerealShotEntity>of(CerealShotEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
@@ -46,6 +50,9 @@ public final class ModRegistry {
     }
 
     private static void addToTabs(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) event.accept(CEREAL_SCOPE);
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(CEREAL_SCOPE);
+            event.accept(BLINDFOLD);
+        }
     }
 }

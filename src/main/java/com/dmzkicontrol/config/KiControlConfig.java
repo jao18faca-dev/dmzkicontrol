@@ -310,6 +310,32 @@ public class KiControlConfig {
 
     public Integrations integrations = new Integrations();
 
+    /**
+     * Visao de ki (luta as cegas). So para jogadores: sem enxergar, voce sente o ki de quem esta perto.
+     * Liga com a Venda de Treino ou quando um Taiyoken te cega e voce tem Ki Sense.
+     */
+    public static class KiVision {
+        public boolean enabled = true;
+        /** Ticks do clarao do Taiyoken antes de fechar os olhos e sentir o ki (20 = 1 s). */
+        public int taiyokenFlashTicks = 8;
+        /** Alcance para sentir o ki, em blocos: base + por nivel do Ki Sense, ate o maximo. */
+        public double baseRange = 6.0;
+        public double rangePerKiSenseLevel = 6.0;
+        public double maxRange = 48.0;
+        /** Quantos blocos em volta ainda se enxerga (so o contorno, para nao cair de penhasco). */
+        public double sightBlocks = 2.5;
+        /** Quem esta com a aura selada aparece com esta fracao do brilho e do alcance. */
+        public double sealedVisibility = 0.3;
+        /** Venda de Treino: TP extra ganho em combate (0.20 = +20%), mais um tanto por nivel do Ki Sense. */
+        public double blindfoldTpBonus = 0.20;
+        public double blindfoldTpBonusPerKiSense = 0.05;
+        public double blindfoldTpBonusMax = 0.50;
+        /** Conta como "em combate" ate estes ticks depois de bater ou apanhar. */
+        public int combatWindowTicks = 100;
+    }
+
+    public KiVision kiVision = new KiVision();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -422,6 +448,7 @@ public class KiControlConfig {
         if (auraControlTeachers == null) auraControlTeachers = new ArrayList<>();
         if (auraLevelStoryRequirements == null) auraLevelStoryRequirements = new LinkedHashMap<>();
         if (integrations == null) integrations = new Integrations();
+        if (kiVision == null) kiVision = new KiVision();
         if (auraControlRequiredSaga == null) auraControlRequiredSaga = "";
         if (auraLevelEfficiency == null || auraLevelEfficiency.isEmpty()) auraLevelEfficiency = new ArrayList<>(List.of(0.60, 0.70, 0.80, 0.90, 1.00));
         if (auraLevelTrainSpeed == null || auraLevelTrainSpeed.isEmpty()) auraLevelTrainSpeed = new ArrayList<>(List.of(1.00, 1.15, 1.30, 1.45, 1.60));

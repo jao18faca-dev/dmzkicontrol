@@ -82,5 +82,11 @@
   "hud.dmzkicontrol.eye_power": "Poder de luta: %s",
   "message.dmzkicontrol.perfected_blue": "Blue Aperfeiçoado: o ki já nasce preso no corpo — aura selada.",
   "message.dmzkicontrol.aura_story_cap": "Goku: \"Ainda não dá pra ir além disso. O Aura Control nível %s vem depois de: %s.\" (TP dos níveis excedentes devolvidos)",
-  "message.dmzkicontrol.form_removed": "Essa forma foi retirada (inventada ou repetida); você voltou ao normal."
+  "message.dmzkicontrol.form_removed": "Essa forma foi retirada (inventada ou repetida); você voltou ao normal.",
+  "item.dmzkicontrol.blindfold": "Venda de Treino",
+  "item.dmzkicontrol.blindfold.tip1": "Lute sem enxergar: você só sente o ki",
+  "item.dmzkicontrol.blindfold.tip2": "Alcance pelo nível do Ki Sense. Em combate rende +20% de TP (mais com Ki Sense)",
+  "item.dmzkicontrol.blindfold.tip3": "Com Ki Sense, o Taiyoken também não te cega: você entra na visão de ki",
+  "hud.dmzkicontrol.kivision": "Sentindo o ki",
+  "hud.dmzkicontrol.kivision_time": "Sentindo o ki — %ss"
 }

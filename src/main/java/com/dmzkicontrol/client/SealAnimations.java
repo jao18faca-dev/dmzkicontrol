@@ -201,6 +201,11 @@ public final class SealAnimations {
         }
     }
 
+    /** Este jogador esta com a aura selada (visto pelo cliente)? */
+    public static boolean isSealed(int entityId) {
+        return SEALED.contains(entityId);
+    }
+
     public static void clearSealed() {
         SEALED.clear();
         SealFxRenderer.clear();

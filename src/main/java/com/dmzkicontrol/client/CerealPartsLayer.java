@@ -35,14 +35,17 @@ public class CerealPartsLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(new ResourceLocation(KiControlMod.MODID, "cereal_parts"), "main");
     private static final ResourceLocation EARS_TEX = new ResourceLocation(KiControlMod.MODID, "textures/entity/cereal_ears.png");
     private static final ResourceLocation SCOPE_TEX = new ResourceLocation(KiControlMod.MODID, "textures/entity/cereal_scope.png");
+    private static final ResourceLocation BLINDFOLD_TEX = new ResourceLocation(KiControlMod.MODID, "textures/entity/blindfold.png");
 
     private final ModelPart ears;
     private final ModelPart scope;
+    private final ModelPart blindfold;
 
     public CerealPartsLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent, ModelPart root) {
         super(parent);
         this.ears = root.getChild("ears");
         this.scope = root.getChild("scope");
+        this.blindfold = root.getChild("blindfold");
     }
 
     private static float rad(float deg) {
@@ -84,13 +87,31 @@ public class CerealPartsLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
                 .addBox(-3.1F, -5.1F, -7.2F, 2, 2, 1), PartPose.ZERO);
         scope.addOrReplaceChild("buckle", CubeListBuilder.create().texOffs(48, 16)
                 .addBox(4.3F, -7.0F, -1.5F, 1, 3, 3), PartPose.ZERO);
+
+        // ---- Venda de Treino: faixa nos olhos, no com duas pontas caindo atras
+        PartDefinition fold = root.addOrReplaceChild("blindfold", CubeListBuilder.create(), PartPose.ZERO);
+        fold.addOrReplaceChild("cloth", CubeListBuilder.create().texOffs(0, 0)
+                .addBox(-4.0F, -5.2F, -4.0F, 8, 2, 8, new CubeDeformation(0.55F)), PartPose.ZERO);
+        fold.addOrReplaceChild("knot", CubeListBuilder.create().texOffs(0, 12)
+                .addBox(-1.5F, -5.7F, 4.3F, 3, 3, 1), PartPose.ZERO);
+        fold.addOrReplaceChild("tail_left", CubeListBuilder.create().texOffs(10, 12)
+                .addBox(-0.5F, 0.0F, -0.5F, 1, 5, 1), PartPose.offsetAndRotation(-0.9F, -4.4F, 5.0F, rad(22), 0F, rad(14)));
+        fold.addOrReplaceChild("tail_right", CubeListBuilder.create().texOffs(14, 12)
+                .addBox(-0.5F, 0.0F, -0.5F, 1, 5, 1), PartPose.offsetAndRotation(0.9F, -4.4F, 5.0F, rad(18), 0F, rad(-12)));
         return LayerDefinition.create(mesh, 64, 64);
     }
 
     @Override
     public void render(PoseStack pose, MultiBufferSource buffers, int light, AbstractClientPlayer player,
                        float limbSwing, float limbSwingAmount, float partial, float age, float headYaw, float headPitch) {
-        if (player.isInvisible() || !CerealScopeItem.isWearing(player)) return;
+        if (player.isInvisible()) return;
+        if (com.dmzkicontrol.kivision.BlindfoldItem.isWearing(player)) {
+            pose.pushPose();
+            this.getParentModel().head.translateAndRotate(pose);
+            blindfold.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(BLINDFOLD_TEX)), light, OverlayTexture.NO_OVERLAY);
+            pose.popPose();
+        }
+        if (!CerealScopeItem.isWearing(player)) return;
         pose.pushPose();
         this.getParentModel().head.translateAndRotate(pose);
         scope.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SCOPE_TEX)), light, OverlayTexture.NO_OVERLAY);
