@@ -44,7 +44,7 @@ public final class ModRegistry {
     /** Bubbles, o macaco do Senhor Kaioh (treino de pegar o Bubbles). */
     public static final RegistryObject<EntityType<com.dmzkicontrol.kaio.BubblesEntity>> BUBBLES = ENTITIES.register("bubbles",
             () -> EntityType.Builder.<com.dmzkicontrol.kaio.BubblesEntity>of(com.dmzkicontrol.kaio.BubblesEntity::new, MobCategory.CREATURE)
-                    .sized(0.5f, 0.85f)
+                    .sized(0.75f, 0.95f)
                     .clientTrackingRange(10)
                     .build("bubbles"));
 
