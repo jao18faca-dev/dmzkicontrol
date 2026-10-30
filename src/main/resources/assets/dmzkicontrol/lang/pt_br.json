@@ -45,7 +45,7 @@
   "key.dmzkicontrol.cereal_eye": "Olho Cereal (segurar)",
   "race.dragonminez.cerealian": "Cerealiano",
   "race.dragonminez.cerealian.desc": "Povo do planeta Cereal, quase extinto. O olho direito dos Cerealianos enxerga o ki e os pontos fracos dos inimigos, fazendo deles os melhores atiradores do universo. Segure B para usar o Olho Cereal.",
-  "race.dragonminez.cerealian.group.cerealforms": "Olho Cereal",
+  "race.dragonminez.cerealian.group.cerealforms": "Poder Cerealiano",
   "race.dragonminez.cerealian.form.cerealforms.olhodesperto": "Olho Desperto",
   "race.dragonminez.cerealian.form.cerealforms.olhosgemeos": "Olhos Gêmeos",
   "hud.dmzkicontrol.eye_title": "OLHO CEREAL · MIRA %s",
@@ -245,5 +245,7 @@
   "item.dmzkicontrol.scouter_recording": "Gravador do Scouter",
   "gui.dmzkicontrol.spacepod.cereal": "Planeta Cereal",
   "biome.dmzkicontrol.cereal_ridges": "Cumes de Cereal",
-  "biome.dmzkicontrol.cereal_dunes": "Dunas de Cereal"
+  "biome.dmzkicontrol.cereal_dunes": "Dunas de Cereal",
+  "race.dragonminez.cerealian.form.cerealforms.poderdodesejo": "Poder do Desejo",
+  "race.dragonminez.cerealian.form.cerealforms.alemdolimite": "Além do Limite"
 }

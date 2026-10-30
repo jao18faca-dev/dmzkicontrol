@@ -4,7 +4,9 @@
   "useVanillaSkin": false,
   "customModel": "human",
   "isLayered": true,
-  "headBones": ["hair"],
+  "headBones": [
+    "hair"
+  ],
   "racialSkill": "cerealian",
   "hasSaiyanTail": false,
   "auraType": "kakarot",
@@ -69,7 +71,9 @@
       "buyFromMaster": false,
       "prices": [
         16000,
-        64000
+        64000,
+        96000,
+        140000
       ]
     }
   }

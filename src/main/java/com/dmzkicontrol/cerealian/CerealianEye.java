@@ -71,6 +71,8 @@ public final class CerealianEye {
         String key = AuraSealManager.formKey(data);
         if (key == null) return 1.0;
         String k = key.toLowerCase(Locale.ROOT);
+        if (c.limitForm != null && !c.limitForm.isEmpty() && k.contains(c.limitForm)) return c.limitMultiplier;
+        if (c.wishForm != null && !c.wishForm.isEmpty() && k.contains(c.wishForm)) return c.wishMultiplier;
         if (!c.twinEyesForm.isEmpty() && k.contains(c.twinEyesForm)) return c.twinEyesMultiplier;
         if (!c.awakenedEyeForm.isEmpty() && k.contains(c.awakenedEyeForm)) return c.awakenedEyeMultiplier;
         return 1.0;

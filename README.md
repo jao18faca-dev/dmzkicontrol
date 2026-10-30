@@ -50,7 +50,9 @@ O add-on instala a raça **Cerealiano** no sistema de raças do DMZ (`config/dra
 - **Formas** (skill *Formas Super*):
   - **Olho Desperto**, nível 1;
   - **Olhos Gêmeos**, nível 2, que exige 50% de domínio no Olho Desperto.
-  - O Poder do Desejo fica para uma próxima versão.
+  - **Poder do Desejo**, nível 3: o Granolah depois do desejo às Esferas de Cereal. Cabelo longo (o estado SSJ3 do seu cabelo), corpo um pouco maior e aura verde. Libera na missão 14 da saga do Granolah.
+  - **Além do Limite**, nível 4: queimar a própria vida para ir além, como o Granolah contra o Gas. Gasta vida enquanto estiver ativa (como o Kaioken). Exige 50% de domínio no Poder do Desejo e libera na missão 26 da saga do Granolah.
+  - Quem já tinha a raça instalada ganha as duas formas e os preços dos níveis novos sem perder o que editou. Se você apagar uma delas, ela não volta.
 - **Cabelo verde-água** por padrão.
 - **Olho Cereal** (segure **B**): gasta um pouco de ki por segundo e dá:
   - zoom de atirador;

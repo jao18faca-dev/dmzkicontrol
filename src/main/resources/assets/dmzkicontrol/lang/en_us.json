@@ -45,7 +45,7 @@
   "key.dmzkicontrol.cereal_eye": "Cereal Eye (hold)",
   "race.dragonminez.cerealian": "Cerealian",
   "race.dragonminez.cerealian.desc": "A nearly extinct people from planet Cereal. A Cerealian's right eye sees ki and enemy weak points, making them the finest snipers in the universe. Hold B to use the Cereal Eye.",
-  "race.dragonminez.cerealian.group.cerealforms": "Cereal Eye",
+  "race.dragonminez.cerealian.group.cerealforms": "Cerealian Power",
   "race.dragonminez.cerealian.form.cerealforms.olhodesperto": "Awakened Eye",
   "race.dragonminez.cerealian.form.cerealforms.olhosgemeos": "Twin Eyes",
   "hud.dmzkicontrol.eye_title": "CEREAL EYE · AIM %s",
@@ -245,5 +245,7 @@
   "item.dmzkicontrol.scouter_recording": "Scouter Recording",
   "gui.dmzkicontrol.spacepod.cereal": "Cereal Planet",
   "biome.dmzkicontrol.cereal_ridges": "Cereal Ridges",
-  "biome.dmzkicontrol.cereal_dunes": "Cereal Dunes"
+  "biome.dmzkicontrol.cereal_dunes": "Cereal Dunes",
+  "race.dragonminez.cerealian.form.cerealforms.poderdodesejo": "Power of the Wish",
+  "race.dragonminez.cerealian.form.cerealforms.alemdolimite": "Beyond the Limit"
 }

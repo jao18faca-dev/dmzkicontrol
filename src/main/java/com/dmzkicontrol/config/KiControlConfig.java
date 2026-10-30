@@ -164,6 +164,12 @@ public class KiControlConfig {
         /** Trecho do id da forma "Olhos Gemeos" e quanto ela multiplica os bonus do olho. */
         public String twinEyesForm = "olhosgemeos";
         public double twinEyesMultiplier = 2.0;
+        /** Poder do Desejo (o Granolah depois do desejo as Esferas de Cereal): bonus do olho. */
+        public String wishForm = "poderdodesejo";
+        public double wishMultiplier = 2.3;
+        /** Alem do Limite (queimando a propria vida): bonus do olho. */
+        public String limitForm = "alemdolimite";
+        public double limitMultiplier = 2.6;
         /** Troca a bola de ki basica dos Cerealianos por um tiro fino e preciso. */
         public boolean preciseKiShot = true;
         /** Tempo mirando com a mao antes do laser sair (ticks; 20 = 1 s). */

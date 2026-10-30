@@ -57,6 +57,7 @@ public final class RaceInstaller {
         boolean changed = aura;
         changed |= install("cerealian", c.raceKey, CEREALIAN_FILES);
         changed |= patchCerealianDefaults(c.raceKey);
+        changed |= addNewCerealianForms(c.raceKey);
         changed |= ensureEyeSkill(c);
         changed |= ensureRaceAccess(c.raceKey);
         return changed;
@@ -86,6 +87,88 @@ public final class RaceInstaller {
             }
         }
         return changed;
+    }
+
+    /**
+     * Formas novas da raca (Poder do Desejo e Alem do Limite) em quem ja tinha o cerealforms.json antigo:
+     * acrescenta so as que faltam e os precos dos niveis novos. Cada forma entra uma vez so
+     * (config/dmzkicontrol_state.json): se o dono apagar, nao volta.
+     */
+    private static boolean addNewCerealianForms(String raceKey) {
+        Path dir = dmzDir().resolve("races").resolve(raceKey);
+        Path formsFile = dir.resolve("forms").resolve("cerealforms.json");
+        Path charFile = dir.resolve("character.json");
+        Path stateFile = FMLPaths.CONFIGDIR.get().resolve("dmzkicontrol_state.json");
+        if (!Files.exists(formsFile)) return false;
+        try (InputStream in = RaceInstaller.class.getResourceAsStream("/dmzkicontrol_defaults/races/cerealian/forms/cerealforms.json");
+             InputStream inChar = RaceInstaller.class.getResourceAsStream("/dmzkicontrol_defaults/races/cerealian/character.json")) {
+            if (in == null || inChar == null) return false;
+            JsonObject bundled = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("forms");
+            JsonObject bundledChar = JsonParser.parseString(new String(inChar.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonObject state = Files.exists(stateFile) ? JsonParser.parseString(Files.readString(stateFile, StandardCharsets.UTF_8)).getAsJsonObject() : new JsonObject();
+            JsonArray done = state.has("cerealianFormsAdded") && state.get("cerealianFormsAdded").isJsonArray() ? state.getAsJsonArray("cerealianFormsAdded") : new JsonArray();
+            java.util.Set<String> doneSet = new java.util.HashSet<>();
+            for (JsonElement e : done) doneSet.add(e.getAsString());
+
+            JsonObject root = JsonParser.parseString(Files.readString(formsFile, StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonObject forms = root.getAsJsonObject("forms");
+            boolean formsDirty = false, stateDirty = false;
+            for (String name : new String[]{"olhodesperto", "olhosgemeos"}) if (!doneSet.contains(name)) { done.add(name); doneSet.add(name); stateDirty = true; }
+            for (java.util.Map.Entry<String, JsonElement> e : bundled.entrySet()) {
+                if (doneSet.contains(e.getKey())) continue;
+                if (!forms.has(e.getKey())) {
+                    JsonObject f = e.getValue().getAsJsonObject().deepCopy();
+                    // nivel logo depois do ultimo que o arquivo do dono ja tem
+                    int max = 0;
+                    for (java.util.Map.Entry<String, JsonElement> o : forms.entrySet()) {
+                        JsonObject of = o.getValue().getAsJsonObject();
+                        if (of.has("unlockOnSkillLevel")) max = Math.max(max, of.get("unlockOnSkillLevel").getAsInt());
+                    }
+                    f.addProperty("unlockOnSkillLevel", Math.max(f.get("unlockOnSkillLevel").getAsInt(), max + 1));
+                    forms.add(e.getKey(), f);
+                    formsDirty = true;
+                    KiControlMod.LOGGER.info("Raca '{}': forma nova {} (nivel {})", raceKey, e.getKey(), f.get("unlockOnSkillLevel").getAsInt());
+                }
+                done.add(e.getKey());
+                doneSet.add(e.getKey());
+                stateDirty = true;
+            }
+            if (formsDirty) Files.writeString(formsFile, GSON.toJson(root), StandardCharsets.UTF_8);
+
+            boolean charDirty = false;
+            if (formsDirty && Files.exists(charFile)) {
+                JsonObject ch = JsonParser.parseString(Files.readString(charFile, StandardCharsets.UTF_8)).getAsJsonObject();
+                int levels = 0;
+                for (java.util.Map.Entry<String, JsonElement> o : forms.entrySet()) {
+                    JsonObject of = o.getValue().getAsJsonObject();
+                    if (of.has("unlockOnSkillLevel")) levels = Math.max(levels, of.get("unlockOnSkillLevel").getAsInt());
+                }
+                JsonArray want = bundledChar.getAsJsonObject("formSkillsCosts").getAsJsonObject("superforms").getAsJsonArray("prices");
+                JsonObject costs = ch.has("formSkillsCosts") ? ch.getAsJsonObject("formSkillsCosts") : new JsonObject();
+                JsonObject sf = costs.has("superforms") ? costs.getAsJsonObject("superforms") : new JsonObject();
+                JsonArray prices = sf.has("prices") && sf.get("prices").isJsonArray() ? sf.getAsJsonArray("prices") : new JsonArray();
+                while (prices.size() < levels) {
+                    int i = prices.size();
+                    long last = prices.size() == 0 ? 16000 : prices.get(prices.size() - 1).getAsLong();
+                    prices.add(i < want.size() ? want.get(i).getAsLong() : last * 2);
+                    charDirty = true;
+                }
+                if (charDirty) {
+                    sf.add("prices", prices);
+                    costs.add("superforms", sf);
+                    ch.add("formSkillsCosts", costs);
+                    Files.writeString(charFile, GSON.toJson(ch), StandardCharsets.UTF_8);
+                }
+            }
+            if (stateDirty) {
+                state.add("cerealianFormsAdded", done);
+                Files.writeString(stateFile, GSON.toJson(state), StandardCharsets.UTF_8);
+            }
+            return formsDirty || charDirty;
+        } catch (Exception e) {
+            KiControlMod.LOGGER.warn("Nao consegui acrescentar as formas novas dos Cerealianos: {}", e.toString());
+            return false;
+        }
     }
 
     /** Cabelo verde-agua: atualiza o padrao antigo (so se ainda estiver no valor original). */
