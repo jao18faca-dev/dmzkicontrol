@@ -135,7 +135,8 @@ Duas sagas do Dragon Ball Super vindas do **DMZ Ultra**, de DarkForest (usadas c
 
 Como entram no jogo:
 - Ao abrir o mundo, o add-on escreve as sagas em `world/dragonminez/sagas` e `world/dragonminez/quests`. Arquivo que você editou não é sobrescrito.
-- Com o DMZ Sparking, a saga do Moro abre depois do filme do Broly. Sem o Sparking, abre depois da saga do Buu. A do Granolah vem depois da do Moro.
+- Com o DMZ Sparking, as duas fazem parte da **história principal do Sparking**: a do Moro abre depois do Torneio do Poder, aparece nas páginas Agora e Episódios e logo abaixo do Torneio na árvore de missões, e a história continua por ela (os filmes do Broly e do Super Hero seguem opcionais). Nível pedido e força dos inimigos acompanham a escala do Sparking (medida no último chefe do Torneio do mundo). Sem o Sparking, abre depois da saga do Buu, na escala do DMZ. A do Granolah vem depois da do Moro.
+- Para manter fora da história do Sparking: `sagas.sparkingStory = false`; para manter a escala antiga: `sagas.sparkingScale = false`.
 - O nível e a força dos inimigos continuam a curva do Sparking (sem saltos).
 - Jaco fica na Casa do Kame; Merus e Granolah, na casa do Goku. Monaito e outro Granolah ficam no **Planeta Cereal**, que a nave espacial libera depois da primeira missão do Granolah. Os do Planeta Cereal aparecem depois de reabrir o mundo uma vez.
 - Os inimigos usam o sistema de inimigos de saga do próprio DMZ (voo, aura, ki, combos).

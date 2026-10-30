@@ -6,7 +6,8 @@
   "mixins": [
     "NoeaUltraDodgeMixin",
     "NoeaUltraEgoGateMixin",
-    "DragonBallPackMixin"
+    "DragonBallPackMixin",
+    "SparkingSagaOrderMixin"
   ],
   "injectors": {
     "defaultRequire": 0

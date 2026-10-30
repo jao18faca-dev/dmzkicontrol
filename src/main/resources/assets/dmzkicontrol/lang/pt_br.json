@@ -481,5 +481,11 @@
   "scene.dmzkicontrol.generic.sub": "O ki explode e o corpo muda.",
   "key.dmzkicontrol.skip_scene": "Pular cutscene de transformação",
   "scene.dmzkicontrol.skip": "%s: pular",
-  "message.dmzkicontrol.cereal_radar": "Monaito: \"Leve este radar. Ele acha as duas Esferas do Dragão de Cereal.\""
+  "message.dmzkicontrol.cereal_radar": "Monaito: \"Leve este radar. Ele acha as duas Esferas do Dragão de Cereal.\"",
+  "gui.dmzsparking.menu.now.guide.chapter.dmzkicontrol_s1_moro": "O Prisioneiro da Patrulha Galáctica - Moro, o devorador de planetas, foge da prisão da Patrulha. Merus, Namek Novo e o Instinto Superior.",
+  "gui.dmzsparking.menu.now.guide.bridge.dmzkicontrol_s1_moro": "Depois disso, a Patrulha Galáctica vem à Terra: um prisioneiro antigo fugiu e o Jaco precisa de ajuda. Fale com o Jaco perto da casa do Mestre Kame.",
+  "gui.dmzsparking.menu.now.guide.chapter.dmzkicontrol_s2_granolah": "Granolah, o Sobrevivente - o último cerealiano, os Heeters e o desejo às Esferas de Cereal. Termina com o retorno de Frieza.",
+  "gui.dmzsparking.menu.now.guide.bridge.dmzkicontrol_s2_granolah": "Depois disso, um caçador de recompensas chega à Terra procurando os Saiyajins: o Granolah. Fale com ele perto da casa do Goku.",
+  "gui.dmzsparking.menu.now.guide.side.dmzsparking_s5_top": "Os filmes do Broly e do Super Hero continuam abertos na árvore de missões, fora da história principal.",
+  "gui.dmzsparking.menu.now.guide.side.dmzkicontrol_s1_moro": "A história principal segue para o Planeta Cereal."
 }

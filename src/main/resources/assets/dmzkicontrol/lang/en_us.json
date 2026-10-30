@@ -481,5 +481,11 @@
   "scene.dmzkicontrol.generic.sub": "The ki explodes and the body changes.",
   "key.dmzkicontrol.skip_scene": "Skip transformation cutscene",
   "scene.dmzkicontrol.skip": "%s: skip",
-  "message.dmzkicontrol.cereal_radar": "Monaito: \"Take this radar. It finds the two Cereal Dragon Balls.\""
+  "message.dmzkicontrol.cereal_radar": "Monaito: \"Take this radar. It finds the two Cereal Dragon Balls.\"",
+  "gui.dmzsparking.menu.now.guide.chapter.dmzkicontrol_s1_moro": "The Galactic Patrol Prisoner - Moro, the planet eater, escapes the Patrol's prison. Merus, New Namek and Ultra Instinct.",
+  "gui.dmzsparking.menu.now.guide.bridge.dmzkicontrol_s1_moro": "After this, the Galactic Patrol comes to Earth: an ancient prisoner has escaped and Jaco needs help. Talk to Jaco near Master Roshi's house.",
+  "gui.dmzsparking.menu.now.guide.chapter.dmzkicontrol_s2_granolah": "Granolah the Survivor - the last Cerealian, the Heeters and the wish to the Cereal Dragon Balls. It ends with Frieza's return.",
+  "gui.dmzsparking.menu.now.guide.bridge.dmzkicontrol_s2_granolah": "After this, a bounty hunter arrives on Earth looking for the Saiyans: Granolah. Talk to him near Goku's house.",
+  "gui.dmzsparking.menu.now.guide.side.dmzsparking_s5_top": "The Broly and Super Hero films stay open in the quest tree, outside the main story.",
+  "gui.dmzsparking.menu.now.guide.side.dmzkicontrol_s1_moro": "The main story moves on to Planet Cereal."
 }

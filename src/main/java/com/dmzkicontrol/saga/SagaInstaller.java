@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 /**
  * Escreve as sagas do Moro e do Granolah na pasta do mundo, no formato que o DMZ 2.2 le
- * (world/dragonminez/sagas e world/dragonminez/quests), encadeadas depois do filme do Broly do DMZ Sparking
+ * (world/dragonminez/sagas e world/dragonminez/quests), encadeadas depois do Torneio do Poder do DMZ Sparking
  * (ou depois da saga do Buu, sem o Sparking). Roda antes do DMZ carregar as missoes (ServerStarting).
  * Arquivo que o dono do mundo editou fica como esta (livro-caixa em world/dmzkicontrol/sagas_written.json).
  */
@@ -36,8 +36,9 @@ import java.util.stream.Stream;
 public final class SagaInstaller {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final String ROOT = "/dmzkicontrol_sagas/";
-    private static final String SPARKING_BROLY = "dmzsparking_s6_broly";
-    private static final int SPARKING_BROLY_LAST = 5;
+    /** Com o DMZ Sparking, Moro e Granolah seguem o Torneio do Poder dele (a historia principal; os filmes sao a parte). */
+    private static final String SPARKING_TOP = "dmzsparking_s5_top";
+    private static final String SPARKING_ANY = "dmzsparking_s1_beerus";
 
     private SagaInstaller() {}
 
@@ -49,6 +50,8 @@ public final class SagaInstaller {
         Path dmz = world.resolve("dragonminez");
         try {
             JsonObject previous = previousCondition(dmz);
+            SparkingScale scale = previous != null && SPARKING_TOP.equals(previous.get("sagaId").getAsString())
+                    && KiControlConfig.get().sagas.sparkingScale ? SparkingScale.read(dmz, SPARKING_TOP) : null;
             if (previous == null) {
                 KiControlMod.LOGGER.warn("[Sagas] Nao achei onde encaixar as sagas do Moro e do Granolah (nem o Broly do Sparking nem a saga do Buu) - ficam para o proximo inicio.");
                 return;
@@ -78,6 +81,7 @@ public final class SagaInstaller {
                 for (JsonElement q : quests) {
                     String stem = q.getAsString();
                     JsonObject quest = jar("quests/" + folder + "/" + stem + ".json");
+                    if (scale != null) scale.apply(quest);
                     JsonObject pre = quest.getAsJsonObject("prerequisites");
                     if (pre != null) {
                         JsonArray conds = pre.getAsJsonArray("conditions");
@@ -95,7 +99,8 @@ public final class SagaInstaller {
                 prevSaga = id;
             }
             ledger.save();
-            KiControlMod.LOGGER.info("[Sagas] Moro e Granolah: {} arquivos escritos, {} editados pelo dono mantidos (depois de {}).", written, kept, previous.get("sagaId").getAsString());
+            KiControlMod.LOGGER.info("[Sagas] Moro e Granolah: {} arquivos escritos, {} editados pelo dono mantidos (depois de {}{}).", written, kept,
+                    previous.get("sagaId").getAsString() + ":" + previous.get("questId").getAsInt(), scale != null ? ", na escala do Sparking: " + scale : "");
         } catch (Exception ex) {
             KiControlMod.LOGGER.error("[Sagas] Sagas do Moro e do Granolah nao instaladas: {}", ex.toString());
         }
@@ -108,25 +113,46 @@ public final class SagaInstaller {
         CerealNpcs.install(event.getServer().getWorldPath(LevelResource.ROOT), true);
     }
 
-    /** Ultima missao antes da saga do Moro: o fim do filme do Broly (Sparking) ou o fim da saga do Buu (so o DMZ). */
+    /** Ultima missao antes da saga do Moro: o fim do Torneio do Poder (Sparking) ou o fim da saga do Buu (so o DMZ). */
     private static JsonObject previousCondition(Path dmz) {
-        if (ModList.get().isLoaded("dmzsparking") || Files.isRegularFile(dmz.resolve("sagas").resolve(SPARKING_BROLY + ".json"))) {
-            return condition(SPARKING_BROLY, SPARKING_BROLY_LAST);
+        if (ModList.get().isLoaded("dmzsparking") || Files.isRegularFile(dmz.resolve("sagas").resolve(SPARKING_ANY + ".json"))) {
+            int last = lastQuestId(dmz.resolve("quests").resolve(questFolder(dmz, SPARKING_TOP, "dmzsparking_saga_top")));
+            return condition(SPARKING_TOP, last > 0 ? last : 36);
         }
-        Path buu = dmz.resolve("quests").resolve("saga_buu");
-        if (!Files.isDirectory(buu)) return null;
-        int last = 0;
-        try (Stream<Path> files = Files.list(buu)) {
+        int last = lastQuestId(dmz.resolve("quests").resolve("saga_buu"));
+        return last > 0 ? condition("buu_saga", last) : null;
+    }
+
+    static String questFolder(Path dmz, String sagaId, String fallback) {
+        try {
+            Path f = dmz.resolve("sagas").resolve(sagaId + ".json");
+            if (Files.isRegularFile(f)) {
+                JsonObject o = JsonParser.parseString(Files.readString(f, StandardCharsets.UTF_8)).getAsJsonObject();
+                if (o.has("questFolder")) return o.get("questFolder").getAsString();
+            }
+        } catch (Exception ignored) {}
+        return fallback;
+    }
+
+    static java.util.List<JsonObject> quests(Path folder) {
+        java.util.List<JsonObject> out = new java.util.ArrayList<>();
+        if (!Files.isDirectory(folder)) return out;
+        try (Stream<Path> files = Files.list(folder)) {
             for (Path p : files.filter(f -> f.toString().endsWith(".json")).toList()) {
                 try {
-                    JsonObject q = JsonParser.parseString(Files.readString(p, StandardCharsets.UTF_8)).getAsJsonObject();
-                    if (q.has("id") && q.get("id").isJsonPrimitive() && q.get("id").getAsJsonPrimitive().isNumber()) last = Math.max(last, q.get("id").getAsInt());
+                    out.add(JsonParser.parseString(Files.readString(p, StandardCharsets.UTF_8)).getAsJsonObject());
                 } catch (Exception ignored) {}
             }
-        } catch (Exception e) {
-            return null;
+        } catch (Exception ignored) {}
+        return out;
+    }
+
+    private static int lastQuestId(Path folder) {
+        int last = 0;
+        for (JsonObject q : quests(folder)) {
+            if (q.has("id") && q.get("id").isJsonPrimitive() && q.get("id").getAsJsonPrimitive().isNumber()) last = Math.max(last, q.get("id").getAsInt());
         }
-        return last > 0 ? condition("buu_saga", last) : null;
+        return last;
     }
 
     static JsonObject condition(String saga, int quest) {

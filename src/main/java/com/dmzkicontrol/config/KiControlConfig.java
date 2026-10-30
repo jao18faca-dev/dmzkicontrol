@@ -396,6 +396,11 @@ public class KiControlConfig {
         public boolean installMoroAndGranolah = true;
         /** true = coloca o Monaito e o Granolah no Planeta Cereal (aparecem depois de reabrir o mundo). */
         public boolean cerealNpcs = true;
+        /** true = com o DMZ Sparking, Moro e Granolah entram na historia principal dele (depois do Torneio do Poder):
+         *  aparecem nas paginas Agora/Episodios, logo abaixo da saga do Torneio na arvore e a historia continua nelas. */
+        public boolean sparkingStory = true;
+        /** true = com o DMZ Sparking, nivel e forca dos inimigos seguem a escala do Sparking (a do Torneio do Poder). */
+        public boolean sparkingScale = true;
     }
 
     public Sagas sagas = new Sagas();
