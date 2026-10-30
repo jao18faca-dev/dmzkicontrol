@@ -121,18 +121,18 @@ public final class EyeReticleRenderer {
         float grow = 0.6f + 0.4f * a;
 
         // perto: anel fino + miolo
-        ring(vc, m, near, right, up, 0.055f * s * grow, 0.012f * s, 24, rgb, 0.85f * a, 0f, 0);
-        disc(vc, m, near, right, up, 0.012f * s, 12, rgb, 0.9f * a);
+        ring(vc, m, near, right, up, 0.050f * s * grow, 0.0045f * s, 32, rgb, 0.9f * a, 0f, 0);
+        disc(vc, m, near, right, up, 0.010f * s, 12, rgb, 0.9f * a);
         // longe: anel maior girando, com 4 marcas e tracos
         float spin = time * 0.06f;
-        ring(vc, m, far, right, up, 0.10f * s * grow, 0.010f * s, 40, rgb, 0.7f * a, 0f, 0);
-        ring(vc, m, far, right, up, 0.075f * s * grow, 0.008f * s, 32, rgb, 0.55f * a, -spin * 1.6f, 8); // tracejado
+        ring(vc, m, far, right, up, 0.10f * s * grow, 0.004f * s, 48, rgb, 0.8f * a, 0f, 0);
+        ring(vc, m, far, right, up, 0.078f * s * grow, 0.003f * s, 48, rgb, 0.6f * a, -spin * 1.6f, 12); // tracejado
         for (int i = 0; i < 4; i++) {
             float ang = spin + i * Mth.HALF_PI;
-            tick(vc, m, far, right, up, ang, 0.085f * s * grow, 0.13f * s * grow, 0.011f * s, rgb, 0.85f * a);
+            tick(vc, m, far, right, up, ang, 0.092f * s * grow, 0.135f * s * grow, 0.0045f * s, rgb, 0.9f * a);
         }
         // brilho suave atras do circulo de longe
-        disc(vc, m, far, right, up, 0.09f * s * grow, 20, rgb, 0.12f * a);
+        disc(vc, m, far, right, up, 0.095f * s * grow, 24, rgb, 0.10f * a);
     }
 
     private static Vec3 at(Vec3 c, Vec3 right, Vec3 up, float ang, float r) {
