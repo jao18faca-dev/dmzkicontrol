@@ -170,6 +170,10 @@ public class KiControlConfig {
         /** Alem do Limite (queimando a propria vida): bonus do olho. */
         public String limitForm = "alemdolimite";
         public double limitMultiplier = 2.6;
+        /** Desejo ao Toronbo: parte da vida maxima entregue para sempre (0.10 = -10%; 0 = sem custo). */
+        public double toronboLifeCost = 0.10;
+        /** TP que o Toronbo da a quem nao e Cerealiano (ou ja fez o desejo) ao pedir para ser o mais forte. */
+        public int toronboOtherRaceTp = 150000;
         /** Troca a bola de ki basica dos Cerealianos por um tiro fino e preciso. */
         public boolean preciseKiShot = true;
         /** Tempo mirando com a mao antes do laser sair (ticks; 20 = 1 s). */

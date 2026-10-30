@@ -37,6 +37,11 @@
   {
    "type": "TPS",
    "amount": 180000
+  },
+  {
+   "type": "ITEM",
+   "item": "dragonminez:cereal_dball_radar",
+   "count": 1
   }
  ]
 }

@@ -1,0 +1,15 @@
+{
+  "id": "cereal",
+  "asset_definition": "cereal_ballset",
+  "blocks": {
+    "1": "cereal_dball1",
+    "2": "cereal_dball2"
+  },
+  "copies": 1,
+  "dimensions": [
+    "dmzkicontrol:cereal"
+  ],
+  "display_name": "Cereal Dragon Ball",
+  "spawn_range": 400,
+  "summon_radius": 5
+}

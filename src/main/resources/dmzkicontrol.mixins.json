@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "NoeaUltraDodgeMixin",
-    "NoeaUltraEgoGateMixin"
+    "NoeaUltraEgoGateMixin",
+    "DragonBallPackMixin"
   ],
   "injectors": {
     "defaultRequire": 0

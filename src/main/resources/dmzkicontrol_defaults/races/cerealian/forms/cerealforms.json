@@ -389,7 +389,7 @@
       "formRequisite": "",
       "formRequisiteType": "all",
       "levelRequisite": 0,
-      "sagaRequisite": "dmzkicontrol_s2_granolah:14",
+      "sagaRequisite": "",
       "unlockOnMastery": 0.0,
       "stackOnMastery": 25.0,
       "instantTransformOnMastery": 40.0,

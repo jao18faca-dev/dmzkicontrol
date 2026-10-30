@@ -1,0 +1,32 @@
+{
+  "dragon": "toronbo",
+  "wishes": [
+    {
+      "type": "command",
+      "name": "wish.toronbo.strongest.name",
+      "description": "wish.toronbo.strongest.desc",
+      "commands": [
+        "dmzkicontrol desejo_toronbo %player%"
+      ],
+      "repeatable": false
+    },
+    {
+      "type": "item_list_wish",
+      "name": "wish.toronbo.senzu.name",
+      "description": "wish.toronbo.senzu.desc",
+      "items": [
+        {
+          "count": 8,
+          "itemId": "dragonminez:senzu_bean",
+          "itemType": "generic_item"
+        }
+      ]
+    },
+    {
+      "type": "tps",
+      "name": "wish.toronbo.tps.name",
+      "description": "wish.toronbo.tps.desc",
+      "amount": 150000
+    }
+  ]
+}

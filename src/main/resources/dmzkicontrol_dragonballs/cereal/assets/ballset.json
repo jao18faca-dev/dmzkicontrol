@@ -1,0 +1,8 @@
+{
+  "id": "cereal_ballset",
+  "animation": "dragonminez:animations/block/dball.animation.json",
+  "flat_texture_prefix": "dragonminez:block/custom/dballblock",
+  "geo_model": "dmzkicontrol:geo/block/cereal_dball.geo.json",
+  "geo_texture_prefix": "dragonminez:textures/block/custom/dballblock",
+  "inventory_texture_format": "dragonminez:item/dball%d"
+}

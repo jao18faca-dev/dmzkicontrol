@@ -58,6 +58,7 @@ public final class RaceInstaller {
         changed |= install("cerealian", c.raceKey, CEREALIAN_FILES);
         changed |= patchCerealianDefaults(c.raceKey);
         changed |= addNewCerealianForms(c.raceKey);
+        changed |= gateWishByToronbo(c.raceKey);
         changed |= ensureEyeSkill(c);
         changed |= ensureRaceAccess(c.raceKey);
         return changed;
@@ -167,6 +168,52 @@ public final class RaceInstaller {
             return formsDirty || charDirty;
         } catch (Exception e) {
             KiControlMod.LOGGER.warn("Nao consegui acrescentar as formas novas dos Cerealianos: {}", e.toString());
+            return false;
+        }
+    }
+
+    /**
+     * 3.12: o Poder do Desejo passou a vir do desejo ao Toronbo (Esferas de Cereal), nao da compra com TP nem
+     * da missao. Corrige uma vez so o que a 3.11 tinha escrito, se ainda estiver no valor dela.
+     */
+    private static boolean gateWishByToronbo(String raceKey) {
+        Path dir = dmzDir().resolve("races").resolve(raceKey);
+        Path formsFile = dir.resolve("forms").resolve("cerealforms.json");
+        Path charFile = dir.resolve("character.json");
+        Path stateFile = FMLPaths.CONFIGDIR.get().resolve("dmzkicontrol_state.json");
+        try {
+            JsonObject state = Files.exists(stateFile) ? JsonParser.parseString(Files.readString(stateFile, StandardCharsets.UTF_8)).getAsJsonObject() : new JsonObject();
+            if (state.has("toronboGate")) return false;
+            boolean changed = false;
+            if (Files.exists(formsFile)) {
+                JsonObject root = JsonParser.parseString(Files.readString(formsFile, StandardCharsets.UTF_8)).getAsJsonObject();
+                JsonObject forms = root.getAsJsonObject("forms");
+                if (forms != null && forms.has("poderdodesejo")) {
+                    JsonObject f = forms.getAsJsonObject("poderdodesejo");
+                    if (f.has("sagaRequisite") && "dmzkicontrol_s2_granolah:14".equals(f.get("sagaRequisite").getAsString())) {
+                        f.addProperty("sagaRequisite", "");
+                        Files.writeString(formsFile, GSON.toJson(root), StandardCharsets.UTF_8);
+                        changed = true;
+                    }
+                }
+            }
+            if (Files.exists(charFile)) {
+                JsonObject ch = JsonParser.parseString(Files.readString(charFile, StandardCharsets.UTF_8)).getAsJsonObject();
+                JsonObject costs = ch.has("formSkillsCosts") ? ch.getAsJsonObject("formSkillsCosts") : null;
+                JsonObject sf = costs != null && costs.has("superforms") ? costs.getAsJsonObject("superforms") : null;
+                JsonArray prices = sf != null && sf.has("prices") && sf.get("prices").isJsonArray() ? sf.getAsJsonArray("prices") : null;
+                if (prices != null && prices.size() >= 3 && prices.get(2).getAsInt() == 96000) {
+                    prices.set(2, new com.google.gson.JsonPrimitive(-1));
+                    Files.writeString(charFile, GSON.toJson(ch), StandardCharsets.UTF_8);
+                    changed = true;
+                }
+            }
+            state.addProperty("toronboGate", true);
+            Files.writeString(stateFile, GSON.toJson(state), StandardCharsets.UTF_8);
+            if (changed) KiControlMod.LOGGER.info("Raca '{}': Poder do Desejo agora vem do desejo ao Toronbo.", raceKey);
+            return changed;
+        } catch (Exception e) {
+            KiControlMod.LOGGER.warn("Nao consegui ajustar o Poder do Desejo para o desejo ao Toronbo: {}", e.toString());
             return false;
         }
     }

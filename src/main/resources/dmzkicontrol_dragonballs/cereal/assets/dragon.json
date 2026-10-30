@@ -1,0 +1,7 @@
+{
+  "id": "toronbo",
+  "renderer_type": "default",
+  "model": "dmzkicontrol:geo/entity/toronbo.geo.json",
+  "texture": "dmzkicontrol:textures/entity/toronbo.png",
+  "animation": "dmzkicontrol:animations/entity/toronbo.animation.json"
+}

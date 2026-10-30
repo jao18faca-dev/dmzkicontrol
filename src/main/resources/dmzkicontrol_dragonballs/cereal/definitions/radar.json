@@ -1,0 +1,15 @@
+{
+  "id": "cereal_radar",
+  "asset_definition": "namek_radar",
+  "ball_set": "cereal",
+  "dimensions": [
+    "dmzkicontrol:cereal"
+  ],
+  "display_name": "Cereal Dragon Radar",
+  "item_registry_name": "cereal_dball_radar",
+  "ranges": [
+    150,
+    300
+  ],
+  "tooltip_key": "item.dragonminez.cereal_dball_radar.tooltip"
+}
