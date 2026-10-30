@@ -84,11 +84,42 @@ public final class FormCurator {
                 }
             }
             JsonObject cfg = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8)).getAsJsonObject();
+            if (upgrade(cfg)) Files.writeString(file, GSON.toJson(cfg), StandardCharsets.UTF_8);
             if (cfg.has("enabled") && !cfg.get("enabled").getAsBoolean()) return null;
             return cfg;
         } catch (Exception e) {
             LOGGER.warn("Curadoria de formas: nao consegui ler {} ({}); nada foi alterado.", file, e.toString());
             return null;
+        }
+    }
+
+    /**
+     * Arquivo de curadoria de uma versao antiga: acrescenta so as entradas NOVAS do padrao do jar
+     * (formas/grupos a remover, repeticoes e ajustes que o arquivo ainda nao tem). O que o dono mudou fica.
+     */
+    private static boolean upgrade(JsonObject cfg) {
+        try (InputStream in = FormCurator.class.getResourceAsStream("/dmzkicontrol_defaults/form_curation.json")) {
+            if (in == null) return false;
+            JsonObject def = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
+            int have = cfg.has("version") ? cfg.get("version").getAsInt() : 1;
+            int want = def.has("version") ? def.get("version").getAsInt() : 1;
+            if (have >= want) return false;
+            for (String key : new String[]{"removeForms", "removeGroups", "dedupe"}) {
+                if (!def.has(key)) continue;
+                if (!cfg.has(key) || !cfg.get(key).isJsonArray()) cfg.add(key, new com.google.gson.JsonArray());
+                com.google.gson.JsonArray mine = cfg.getAsJsonArray(key);
+                for (JsonElement e : def.getAsJsonArray(key)) if (!mine.contains(e)) mine.add(e);
+            }
+            if (def.has("tune")) {
+                if (!cfg.has("tune") || !cfg.get("tune").isJsonObject()) cfg.add("tune", new JsonObject());
+                JsonObject mine = cfg.getAsJsonObject("tune");
+                for (Map.Entry<String, JsonElement> e : def.getAsJsonObject("tune").entrySet()) if (!mine.has(e.getKey())) mine.add(e.getKey(), e.getValue());
+            }
+            cfg.addProperty("version", want);
+            LOGGER.info("Curadoria de formas: arquivo atualizado da versao {} para {} (entradas novas acrescentadas).", have, want);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 

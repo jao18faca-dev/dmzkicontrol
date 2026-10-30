@@ -49,6 +49,8 @@ public class CurationTest {
         check(!leg.has("ssjlegendary3") && !leg.has("ssjlegendary4") && leg.has("ssjfullpower"), "SSJ3/SSJ4 Lendario fora, Lendario FP fica");
         JsonObject ooz = forms("races/saiyan/forms/oozaru.json");
         check(!ooz.has("supersaiyan4fp") && !ooz.has("supersaiyan4lb") && ooz.has("supersaiyan4"), "SSJ4 FP/LB fora, SSJ4 fica");
+        check(!forms("races/saiyan/forms/supersaiyan.json").has("supersaiyan4") && forms("races/saiyan/forms/supersaiyan.json").has("supersaiyan3"),
+                "SSJ4 so uma vez (fica o do Oozaru Dourado, como no GT)");
         check(ooz.getAsJsonObject("goldenoozaru").get("unlockOnSkillLevel").getAsInt() == 7, "niveis do superforms intactos (sem buracos)");
         check(forms("races/saiyan/forms/beastforms.json").getAsJsonObject("beast").get("strMultiplier").getAsDouble() == 7.5, "Beast balanceado (22.85 -> 7.5)");
 
@@ -82,6 +84,29 @@ public class CurationTest {
 
         boolean again = FormCurator.run(cfg, "teste-2");
         check(!again, "segunda passada nao muda nada (idempotente)");
+
+        // arquivo de curadoria de versao antiga: ganha so as entradas novas, o resto do dono fica
+        Path old = Files.createTempDirectory("curation-old");
+        try (var walk = Files.walk(src)) {
+            for (Path p : walk.toList()) {
+                Path d = old.resolve(src.relativize(p).toString());
+                if (Files.isDirectory(p)) Files.createDirectories(d); else Files.copy(p, d);
+            }
+        }
+        JsonObject v1 = JsonParser.parseString(Files.readString(cfg.resolve("dmzkicontrol_forms.json"))).getAsJsonObject();
+        v1.addProperty("version", 1);
+        var dd = v1.getAsJsonArray("dedupe");
+        for (int i = dd.size() - 1; i >= 0; i--) if (dd.get(i).toString().contains("supersaiyan4")) dd.remove(i);
+        v1.addProperty("meuCampo", "fica");
+        Files.writeString(old.resolve("dmzkicontrol_forms.json"), v1.toString());
+        Path saved = cfg;
+        cfg = old;
+        FormCurator.run(old, "teste-versao-antiga");
+        JsonObject up = JsonParser.parseString(Files.readString(old.resolve("dmzkicontrol_forms.json"))).getAsJsonObject();
+        check(up.get("version").getAsInt() >= 2 && up.getAsJsonArray("dedupe").toString().contains("supersaiyan.supersaiyan4"), "arquivo antigo atualizado com a regra nova");
+        check(up.has("meuCampo"), "o que o dono mudou no arquivo fica");
+        check(!forms("races/saiyan/forms/supersaiyan.json").has("supersaiyan4"), "regra nova ja aplicada no arquivo antigo");
+        cfg = saved;
 
         System.out.println(fails == 0 ? "CURADORIA: TODOS OS TESTES PASSARAM" : "CURADORIA: " + fails + " FALHA(S)");
         System.exit(fails == 0 ? 0 : 1);
