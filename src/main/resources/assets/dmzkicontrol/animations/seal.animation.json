@@ -964,14 +964,14 @@
      "rotation": {
       "0.0": {
        "vector": [
-        -88,
+        "-88 - query.head_x_rotation - variable.dmzk_body_pitch",
         8,
         0
        ]
       },
       "0.06": {
        "vector": [
-        -102,
+        "-102 - query.head_x_rotation - variable.dmzk_body_pitch",
         8,
         0
        ],
@@ -979,7 +979,7 @@
       },
       "0.25": {
        "vector": [
-        -88,
+        "-88 - query.head_x_rotation - variable.dmzk_body_pitch",
         8,
         0
        ],
@@ -987,7 +987,7 @@
       },
       "0.45": {
        "vector": [
-        -86,
+        "-86 - query.head_x_rotation - variable.dmzk_body_pitch",
         8,
         0
        ]
@@ -1044,7 +1044,7 @@
       },
       "0.3": {
        "vector": [
-        -88,
+        "-88 - query.head_x_rotation - variable.dmzk_body_pitch",
         8,
         0
        ],
@@ -1052,7 +1052,7 @@
       },
       "0.6": {
        "vector": [
-        -90,
+        "-90 - query.head_x_rotation - variable.dmzk_body_pitch",
         7,
         0
        ],
@@ -1060,7 +1060,7 @@
       },
       "0.9": {
        "vector": [
-        -87,
+        "-87 - query.head_x_rotation - variable.dmzk_body_pitch",
         9,
         0
        ],
@@ -1068,7 +1068,7 @@
       },
       "1.2": {
        "vector": [
-        -89,
+        "-89 - query.head_x_rotation - variable.dmzk_body_pitch",
         8,
         0
        ],
@@ -1076,7 +1076,7 @@
       },
       "1.5": {
        "vector": [
-        -88,
+        "-88 - query.head_x_rotation - variable.dmzk_body_pitch",
         8,
         0
        ],

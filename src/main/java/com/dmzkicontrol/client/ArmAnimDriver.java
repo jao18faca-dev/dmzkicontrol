@@ -27,6 +27,28 @@ public final class ArmAnimDriver {
     public static final String LASER = "dmzkicontrol.laser_fire";
     public static final String LASER_AIM = "dmzkicontrol.laser_aim";
 
+    /** Variavel Molang usada nas animacoes da mira: inclinacao do corpo (graus) que o braco desconta. */
+    public static final String BODY_PITCH = "variable.dmzk_body_pitch";
+
+    /** Inclinacao do tronco nas animacoes de voo do DMZ (root + waist), para o braco apontar para frente. */
+    @SuppressWarnings({"rawtypes"})
+    private static double bodyPitch(AnimatableManager manager) {
+        try {
+            for (Object o : manager.getAnimationControllers().values()) {
+                AnimationController c = (AnimationController) o;
+                if (CONTROLLER.equals(c.getName()) || c.getCurrentAnimation() == null) continue;
+                String name = c.getCurrentAnimation().animation().name();
+                if (name == null) continue;
+                if (name.contains("fly_fast")) return 75.0;
+                if (name.contains("fly_front")) return 20.0;
+                if (name.contains("flyback") || name.contains("fly_back")) return 10.0;
+                if (name.contains("fly_left") || name.contains("fly_right")) return 15.0;
+            }
+        } catch (Throwable ignored) {
+        }
+        return 0.0;
+    }
+
     /** entityId -> {animacao, tick final}. */
     private static final Map<Integer, Object[]> REQUESTS = new HashMap<>();
     private static boolean warned;
@@ -68,12 +90,15 @@ public final class ArmAnimDriver {
             String[] last = {null};
             AnimationController controller = new AnimationController(geo, CONTROLLER, 3, state -> {
                 String want = current(p);
+                // o braco da mira segue o olhar; voando, desconta a inclinacao do corpo da animacao de voo do DMZ
+                double pitch = want != null && want.startsWith("dmzkicontrol.laser") ? bodyPitch(manager) : 0.0;
+                software.bernie.geckolib.core.molang.MolangParser.INSTANCE.setValue(BODY_PITCH, () -> pitch);
                 if (want == null) {
                     last[0] = null;
                     return PlayState.STOP;
                 }
                 if (!want.equals(last[0])) {
-                    RawAnimation raw = want.endsWith("_fire") ? RawAnimation.begin().thenPlay(want) : RawAnimation.begin().thenPlayAndHold(want);
+                    RawAnimation raw = want.contains("_fire") ? RawAnimation.begin().thenPlay(want) : RawAnimation.begin().thenPlayAndHold(want);
                     state.getController().setAnimation(raw);
                     state.getController().forceAnimationReset();
                     last[0] = want;

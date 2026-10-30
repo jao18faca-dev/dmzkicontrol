@@ -88,6 +88,7 @@ public final class ClientSetup {
                 if (renderer instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer pr) {
                     pr.addLayer(new CerealPartsLayer(pr, event.getEntityModels().bakeLayer(CerealPartsLayer.LAYER)));
                     pr.addLayer(new KiBowLayer(pr));
+                    pr.addLayer(new BonePoints.Layer(pr));
                 }
             }
         }
@@ -141,6 +142,7 @@ public final class ClientSetup {
 
         @SubscribeEvent
         public static void onRenderLevel(net.minecraftforge.client.event.RenderLevelStageEvent event) {
+            BonePoints.onRenderLevel(event);
             WeakPointRenderer.render(event);
             KiBowRenderer.render(event);
             SealFxRenderer.render(event);

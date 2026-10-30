@@ -95,29 +95,44 @@ public final class EyeReticleRenderer {
         Minecraft mc = Minecraft.getInstance();
         if (p == mc.player && firstPerson) return;
 
-        float yaw = (float) Math.toRadians(Mth.lerp(partial, p.yHeadRotO, p.yHeadRot));
-        float pitch = (float) Math.toRadians(Mth.lerp(partial, p.xRotO, p.getXRot()));
-        Vec3 fwd = new Vec3(-Mth.sin(yaw) * Mth.cos(pitch), -Mth.sin(pitch), Mth.cos(yaw) * Mth.cos(pitch));
-        Vec3 right = fwd.cross(new Vec3(0, 1, 0));
-        if (right.lengthSqr() < 1e-6) right = new Vec3(1, 0, 0);
-        right = right.normalize();
-        Vec3 up = right.cross(fwd).normalize();
-
-        Vec3 eye = p.getEyePosition(partial).subtract(cam);
         float[] rgb = KiFx.kiColor(p, FALLBACK);
         float pulse = 0.85f + 0.15f * Mth.sin(time * 0.25f + p.getId());
         float s = p.getScale();
         boolean both = twinEyes(p);
 
-        drawEye(vc, m, eye.add(right.scale(0.11 * s)), fwd, right, up, rgb, open * pulse, time, s);
-        if (both) drawEye(vc, m, eye.add(right.scale(-0.11 * s)), fwd, right, up, rgb, open * pulse, -time, s);
+        // posicao real dos olhos no modelo do DMZ (pega voando, deitado, transformado...)
+        BonePoints.Points bp = BonePoints.get(p.getId());
+        Vec3 fwd, up, rightEye, leftEye;
+        if (bp != null) {
+            fwd = bp.headForward();
+            up = bp.headUp();
+            rightEye = bp.rightEye().subtract(cam);
+            leftEye = bp.leftEye().subtract(cam);
+        } else {
+            float yaw = (float) Math.toRadians(Mth.lerp(partial, p.yHeadRotO, p.yHeadRot));
+            float pitch = (float) Math.toRadians(Mth.lerp(partial, p.xRotO, p.getXRot()));
+            fwd = new Vec3(-Mth.sin(yaw) * Mth.cos(pitch), -Mth.sin(pitch), Mth.cos(yaw) * Mth.cos(pitch));
+            Vec3 r = fwd.cross(new Vec3(0, 1, 0));
+            r = (r.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : r).normalize();
+            up = r.cross(fwd).normalize();
+            Vec3 face = p.getEyePosition(partial).subtract(cam).add(fwd.scale(0.27 * s));
+            rightEye = face.add(r.scale(0.125 * s));
+            leftEye = face.add(r.scale(-0.125 * s));
+        }
+        Vec3 right = fwd.cross(up);
+        right = (right.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : right).normalize();
+
+        // o olho desperto e o direito; nos Olhos Gemeos, os dois
+        drawEye(vc, m, rightEye, fwd, right, up, rgb, open * pulse, time, s);
+        if (both) drawEye(vc, m, leftEye, fwd, right, up, rgb, open * pulse, -time, s);
     }
 
     /** Dois circulos magicos empilhados na frente do olho, girando em sentidos opostos, com marcas de mira. */
     private static void drawEye(VertexConsumer vc, Matrix4f m, Vec3 eye, Vec3 fwd, Vec3 right, Vec3 up,
                                 float[] rgb, float a, float time, float s) {
-        Vec3 near = eye.add(fwd.scale(0.30 * s));
-        Vec3 far = eye.add(fwd.scale(0.52 * s));
+        // eye ja esta na superficie do rosto
+        Vec3 near = eye.add(fwd.scale(0.05 * s));
+        Vec3 far = eye.add(fwd.scale(0.26 * s));
         float grow = 0.6f + 0.4f * a;
 
         // perto: anel fino + miolo
@@ -139,8 +154,22 @@ public final class EyeReticleRenderer {
         return c.add(right.scale(Mth.cos(ang) * r)).add(up.scale(Mth.sin(ang) * r));
     }
 
+    /** Junta 4 vertices e desenha o quadrado dos dois lados (a mira aparece de frente e de costas). */
+    private static final float[][] QUAD = new float[4][7];
+    private static int quadN;
+
     private static void v(VertexConsumer vc, Matrix4f m, Vec3 p, float[] rgb, float a) {
-        vc.vertex(m, (float) p.x, (float) p.y, (float) p.z).color(rgb[0], rgb[1], rgb[2], Mth.clamp(a, 0f, 1f)).endVertex();
+        float[] q = QUAD[quadN++];
+        q[0] = (float) p.x; q[1] = (float) p.y; q[2] = (float) p.z;
+        q[3] = rgb[0]; q[4] = rgb[1]; q[5] = rgb[2]; q[6] = Mth.clamp(a, 0f, 1f);
+        if (quadN < 4) return;
+        quadN = 0;
+        for (int i = 0; i < 4; i++) emit(vc, m, QUAD[i]);
+        for (int i = 3; i >= 0; i--) emit(vc, m, QUAD[i]);
+    }
+
+    private static void emit(VertexConsumer vc, Matrix4f m, float[] q) {
+        vc.vertex(m, q[0], q[1], q[2]).color(q[3], q[4], q[5], q[6]).endVertex();
     }
 
     /** Anel; dashes > 0 desenha so metade dos segmentos (tracejado). */

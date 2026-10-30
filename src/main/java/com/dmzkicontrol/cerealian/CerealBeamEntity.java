@@ -45,6 +45,8 @@ public class CerealBeamEntity extends Entity {
     private static final EntityDataAccessor<Vector3f> END = SynchedEntityData.defineId(CerealBeamEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(CerealBeamEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> HIT = SynchedEntityData.defineId(CerealBeamEntity.class, EntityDataSerializers.BOOLEAN);
+    /** Id de entidade de quem atirou (o cliente desenha o raio saindo da mao de verdade). */
+    private static final EntityDataAccessor<Integer> SHOOTER = SynchedEntityData.defineId(CerealBeamEntity.class, EntityDataSerializers.INT);
 
     private UUID ownerId;
 
@@ -76,6 +78,7 @@ public class CerealBeamEntity extends Entity {
 
         CerealBeamEntity beam = new CerealBeamEntity(ModRegistry.CEREAL_BEAM.get(), level);
         beam.ownerId = sp.getUUID();
+        beam.entityData.set(SHOOTER, sp.getId());
         beam.setPos(hand.x, hand.y, hand.z);
         beam.entityData.set(COLOR, color & 0xFFFFFF);
 
@@ -142,6 +145,11 @@ public class CerealBeamEntity extends Entity {
         this.entityData.define(END, new Vector3f());
         this.entityData.define(COLOR, 0x5FD3C4);
         this.entityData.define(HIT, false);
+        this.entityData.define(SHOOTER, -1);
+    }
+
+    public int getShooterId() {
+        return this.entityData.get(SHOOTER);
     }
 
     @Override

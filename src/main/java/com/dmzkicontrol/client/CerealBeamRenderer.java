@@ -37,12 +37,21 @@ public class CerealBeamRenderer extends EntityRenderer<CerealBeamEntity> {
         float fade = 1f - smooth(Mth.clamp((age - 3.5f) / (CerealBeamEntity.LIFE - 3.5f), 0f, 1f));
         if (fade <= 0.01f) return;
         Vec3 here = e.position();
-        Vec3 fullEnd = e.getEnd().subtract(here);
+        // sai da mao de verdade de quem atirou (voando, em qualquer pose); sem ela, do ponto do servidor
+        Vec3 start = Vec3.ZERO;
+        BonePoints.Points bp = BonePoints.get(e.getShooterId());
+        if (bp != null && bp.rightHand().distanceToSqr(here) < 9.0) start = bp.rightHand().subtract(here);
+        else if (e.getShooterId() >= 0 && e.level().getEntity(e.getShooterId()) instanceof net.minecraft.world.entity.player.Player sp
+                && sp == net.minecraft.client.Minecraft.getInstance().player
+                && net.minecraft.client.Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
+            start = LaserAimFx.firstPersonTipPublic(sp, partial).subtract(here);
+        }
+        Vec3 fullEnd = e.getEnd().subtract(here).subtract(start);
         double fullLen = fullEnd.length();
         if (fullLen < 0.05) return;
         Vec3 dir = fullEnd.scale(1.0 / fullLen);
         double len = fullLen * grow;
-        Vec3 end = dir.scale(len);
+        Vec3 end = start.add(dir.scale(len));
         Vec3 cam = this.entityRenderDispatcher.camera.getPosition().subtract(here);
         float[] c = KiFx.rgb(e.getColor());
         float seed = KiFx.seed(e);
@@ -55,20 +64,20 @@ public class CerealBeamRenderer extends EntityRenderer<CerealBeamEntity> {
             double segLen = 1.2;
             int segs = Math.max(1, (int) Math.ceil(len / segLen));
             for (int i = 0; i < segs; i++) {
-                Vec3 a = dir.scale(len * i / segs);
-                Vec3 b = dir.scale(len * (i + 1) / segs);
+                Vec3 a = start.add(dir.scale(len * i / segs));
+                Vec3 b = start.add(dir.scale(len * (i + 1) / segs));
                 if (i == 0) KiFx.rod(vc, m, cam, b, a, KiFx.ROD_TINE, thick, c, seed); // afina saindo do dedo
                 else KiFx.rod(vc, m, cam, a, b, KiFx.ROD_ELBOW, thick, c, seed);
             }
             // brilho na ponta do dedo; a frente do raio brilha enquanto viaja; explosao no impacto
-            KiFx.blade(vc, m, cam, Vec3.ZERO, dir.scale(0.55), 0.24f * (0.3f + 0.7f * fade), c, seed);
+            KiFx.blade(vc, m, cam, start, start.add(dir.scale(0.55)), 0.24f * (0.3f + 0.7f * fade), c, seed);
             if (!arrived) KiFx.blade(vc, m, cam, end, end.subtract(dir.scale(0.8)), 0.3f, c, seed + 0.5f);
             else if (e.didHit()) KiFx.blade(vc, m, cam, end, end.subtract(dir.scale(1.1)), 0.5f * (0.35f + 0.65f * fade), c, seed + 0.5f);
         }
         // nucleo branco fino + brilho na cor do ki (estes sim apagam com transparencia)
         VertexConsumer glow = buffers.getBuffer(RenderType.lightning());
-        KiFx.glow(glow, m, cam, Vec3.ZERO, end, 0.02f * (0.4f + fade), 1f, 1f, 1f, 0.9f * fade);
-        KiFx.glow(glow, m, cam, Vec3.ZERO, end, 0.08f * (0.4f + fade), c[0], c[1], c[2], 0.35f * fade);
+        KiFx.glow(glow, m, cam, start, end, 0.02f * (0.4f + fade), 1f, 1f, 1f, 0.9f * fade);
+        KiFx.glow(glow, m, cam, start, end, 0.08f * (0.4f + fade), c[0], c[1], c[2], 0.35f * fade);
         super.render(e, yaw, partial, pose, buffers, light);
     }
 

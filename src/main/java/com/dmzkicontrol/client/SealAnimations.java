@@ -222,6 +222,7 @@ public final class SealAnimations {
         SEALED.clear();
         EyeReticleRenderer.clear();
         LaserAimFx.clear();
+        BonePoints.clear();
         SealFxRenderer.clear();
         NO_SHOOT_POSE.clear();
         ArmAnimDriver.clear();

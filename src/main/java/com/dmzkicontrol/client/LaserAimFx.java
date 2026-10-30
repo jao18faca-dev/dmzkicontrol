@@ -40,8 +40,15 @@ public final class LaserAimFx {
         AIMING.clear();
     }
 
-    /** Ponta do dedo: igual ao CerealianHooks.fireLaser no servidor. */
+    /** Ponta do dedo: a mao de verdade no modelo do DMZ (voando inclusive); sem ela, a conta do servidor. */
     public static Vec3 fingertip(Player p, float partial) {
+        BonePoints.Points bp = BonePoints.get(p.getId());
+        if (bp != null) return bp.rightHand();
+        return estimatedTip(p, partial);
+    }
+
+    /** Igual ao CerealianHooks.fireLaser no servidor (personagem em pe). */
+    public static Vec3 estimatedTip(Player p, float partial) {
         float yaw = Mth.lerp(partial, p.yRotO, p.getYRot());
         Vec3 right = Vec3.directionFromRotation(0.0F, yaw + 90.0F);
         double x = Mth.lerp(partial, p.xOld, p.getX());
@@ -79,6 +86,10 @@ public final class LaserAimFx {
             return false;
         });
         bs.endBatch(RenderType.lightning());
+    }
+
+    public static Vec3 firstPersonTipPublic(Player p, float partial) {
+        return firstPersonTip(p, partial);
     }
 
     /** Em primeira pessoa o braco aparece no canto: a luz fica na frente da mao direita na tela. */
@@ -119,8 +130,22 @@ public final class LaserAimFx {
         }
     }
 
+    /** Junta 4 vertices e desenha o quadrado dos dois lados. */
+    private static final float[][] QUAD = new float[4][7];
+    private static int quadN;
+
     private static void v(VertexConsumer vc, Matrix4f m, Vec3 p, float[] rgb, float a) {
-        vc.vertex(m, (float) p.x, (float) p.y, (float) p.z).color(rgb[0], rgb[1], rgb[2], Mth.clamp(a, 0f, 1f)).endVertex();
+        float[] q = QUAD[quadN++];
+        q[0] = (float) p.x; q[1] = (float) p.y; q[2] = (float) p.z;
+        q[3] = rgb[0]; q[4] = rgb[1]; q[5] = rgb[2]; q[6] = Mth.clamp(a, 0f, 1f);
+        if (quadN < 4) return;
+        quadN = 0;
+        for (int i = 0; i < 4; i++) emit(vc, m, QUAD[i]);
+        for (int i = 3; i >= 0; i--) emit(vc, m, QUAD[i]);
+    }
+
+    private static void emit(VertexConsumer vc, Matrix4f m, float[] q) {
+        vc.vertex(m, q[0], q[1], q[2]).color(q[3], q[4], q[5], q[6]).endVertex();
     }
 
     private static void disc(VertexConsumer vc, Matrix4f m, Vec3 c, Vec3 right, Vec3 up, float r, int seg, float[] rgb, float a, boolean hard) {
