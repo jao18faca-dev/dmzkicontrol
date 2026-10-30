@@ -1,0 +1,47 @@
+{
+ "id": 24,
+ "title": "quest.dmzkicontrol.granolah.24.name",
+ "description": "quest.dmzkicontrol.granolah.24.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_granolah",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s2_granolah",
+    "questId": 23
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 6380
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "ITEM",
+   "item": "dmzkicontrol:scouter_recording",
+   "count": 1
+  },
+  {
+   "type": "TALK_TO",
+   "npcId": "vegeta"
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 180000
+  }
+ ]
+}

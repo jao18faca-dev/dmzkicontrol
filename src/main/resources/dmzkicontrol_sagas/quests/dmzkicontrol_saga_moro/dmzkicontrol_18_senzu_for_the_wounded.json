@@ -1,0 +1,47 @@
+{
+ "id": 18,
+ "title": "quest.dmzkicontrol.moro.18.name",
+ "description": "quest.dmzkicontrol.moro.18.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_moro",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s1_moro",
+    "questId": 17
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 5852
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "ITEM",
+   "item": "dragonminez:senzu_bean",
+   "count": 4
+  },
+  {
+   "type": "TALK_TO",
+   "npcId": "piccolo"
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 180000
+  }
+ ]
+}

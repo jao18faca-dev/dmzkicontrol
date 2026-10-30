@@ -1,0 +1,73 @@
+{
+ "sagas": [
+  {
+   "id": "dmzkicontrol_s1_moro",
+   "name": "dmz.saga.dmzkicontrol_moro",
+   "folder": "dmzkicontrol_saga_moro",
+   "quests": [
+    "dmzkicontrol_01_the_patrol_comes_for_buu",
+    "dmzkicontrol_02_special_members",
+    "dmzkicontrol_03_ten_million_years",
+    "dmzkicontrol_04_what_piccolo_remembers",
+    "dmzkicontrol_05_the_escaped",
+    "dmzkicontrol_06_new_planet_namek",
+    "dmzkicontrol_07_the_planet_eater",
+    "dmzkicontrol_08_a_magic_that_drinks_power",
+    "dmzkicontrol_09_merus_answers_a_call",
+    "dmzkicontrol_10_lessons_in_stillness",
+    "dmzkicontrol_11_the_body_moves_first",
+    "dmzkicontrol_12_moro_s_second_feast",
+    "dmzkicontrol_13_bandits_from_the_void",
+    "dmzkicontrol_14_gohan_steps_up",
+    "dmzkicontrol_15_seven_three",
+    "dmzkicontrol_16_yardrat_calls",
+    "dmzkicontrol_17_forced_spirit_fission",
+    "dmzkicontrol_18_senzu_for_the_wounded",
+    "dmzkicontrol_19_the_namekian_wish",
+    "dmzkicontrol_20_the_cloak_comes_off",
+    "dmzkicontrol_21_the_sign",
+    "dmzkicontrol_22_merus_s_last_lesson",
+    "dmzkicontrol_23_rules_broken_for_a_student",
+    "dmzkicontrol_24_vegeta_reborn",
+    "dmzkicontrol_25_the_planet_eater_feeds",
+    "dmzkicontrol_26_nothing_left_to_consume",
+    "dmzkicontrol_27_a_galactic_patrolman"
+   ]
+  },
+  {
+   "id": "dmzkicontrol_s2_granolah",
+   "name": "dmz.saga.dmzkicontrol_granolah",
+   "folder": "dmzkicontrol_saga_granolah",
+   "quests": [
+    "dmzkicontrol_01_a_bounty_hunter_among_the_stars",
+    "dmzkicontrol_02_the_last_cerealian",
+    "dmzkicontrol_03_heeter_scouts",
+    "dmzkicontrol_04_ashes_of_cereal",
+    "dmzkicontrol_05_the_wrong_enemy",
+    "dmzkicontrol_06_vegeta_does_not_apologise",
+    "dmzkicontrol_07_family_business",
+    "dmzkicontrol_08_the_big_one",
+    "dmzkicontrol_09_macki_s_trap",
+    "dmzkicontrol_10_the_smallest_one",
+    "dmzkicontrol_11_monaito_will_not_leave",
+    "dmzkicontrol_12_provisions_for_the_ruins",
+    "dmzkicontrol_13_the_wish",
+    "dmzkicontrol_14_a_survivor_s_strength",
+    "dmzkicontrol_15_elec_s_scheme",
+    "dmzkicontrol_16_air_raid",
+    "dmzkicontrol_17_gas_reaches_higher",
+    "dmzkicontrol_18_the_puppeteer",
+    "dmzkicontrol_19_elec_s_wish",
+    "dmzkicontrol_20_the_strongest_mortal",
+    "dmzkicontrol_21_vegeta_s_ego",
+    "dmzkicontrol_22_instinct",
+    "dmzkicontrol_23_what_monaito_saw",
+    "dmzkicontrol_24_the_scouter_recording",
+    "dmzkicontrol_25_the_berserker",
+    "dmzkicontrol_26_everything_together",
+    "dmzkicontrol_27_an_emperor_returns",
+    "dmzkicontrol_28_what_is_left_of_cereal"
+   ]
+  }
+ ]
+}

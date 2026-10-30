@@ -1,0 +1,49 @@
+{
+ "id": 10,
+ "title": "quest.dmzkicontrol.moro.10.name",
+ "description": "quest.dmzkicontrol.moro.10.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_moro",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s1_moro",
+    "questId": 9
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 5724
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "KILL",
+   "entity": "dragonminez:saga_morosoldier",
+   "count": 6,
+   "health": 1453896,
+   "meleeDamage": 8586.0,
+   "kiDamage": 7813.3,
+   "spawn": "QUEST",
+   "count_mode": "QUEST_SPAWNED_ONLY",
+   "AITier": 1
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 496000
+  }
+ ]
+}

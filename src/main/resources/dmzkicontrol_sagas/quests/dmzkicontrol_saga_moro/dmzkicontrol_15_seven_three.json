@@ -1,0 +1,49 @@
+{
+ "id": 15,
+ "title": "quest.dmzkicontrol.moro.15.name",
+ "description": "quest.dmzkicontrol.moro.15.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_moro",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s1_moro",
+    "questId": 14
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 5804
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "KILL",
+   "entity": "dmzkicontrol:saga_seven_three",
+   "count": 1,
+   "health": 4416264,
+   "meleeDamage": 78934.4,
+   "kiDamage": 72619.6,
+   "spawn": "QUEST",
+   "count_mode": "QUEST_SPAWNED_ONLY",
+   "AITier": 3
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 512000
+  }
+ ]
+}

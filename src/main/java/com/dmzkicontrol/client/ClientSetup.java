@@ -98,6 +98,9 @@ public final class ClientSetup {
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_SHOT.get(), CerealShotRenderer::new);
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_BEAM.get(), CerealBeamRenderer::new);
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.BUBBLES.get(), BubblesRenderer::new);
+            // inimigos das sagas do Moro e do Granolah: renderizador de saga do proprio DMZ (aura, voo, ki)
+            com.dmzkicontrol.saga.SagaEnemies.ALL.values().forEach(t ->
+                    event.registerEntityRenderer(t.get(), com.dragonminez.client.init.entities.renderer.sagas.DBSagasRenderer::new));
         }
 
         @SubscribeEvent

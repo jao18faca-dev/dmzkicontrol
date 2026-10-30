@@ -1,0 +1,42 @@
+{
+ "id": 28,
+ "title": "quest.dmzkicontrol.granolah.28.name",
+ "description": "quest.dmzkicontrol.granolah.28.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_granolah",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s2_granolah",
+    "questId": 27
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 6444
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "TALK_TO",
+   "npcId": "granolah"
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 180000
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+{
+  "structure": "dragonminez:roshi_house",
+  "npcs": [
+    {
+      "id": "dmzkicontrol_jaco",
+      "entity": "dragonminez:quest_npc",
+      "npc_id": "jaco",
+      "model": "dmzk_saga_jaco",
+      "texture": "dmzk_saga_jaco",
+      "pos": [
+        24.5,
+        4.0,
+        30.5
+      ],
+      "yaw": 180.0
+    }
+  ]
+}

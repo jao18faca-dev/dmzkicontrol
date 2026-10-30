@@ -109,6 +109,21 @@ lado quando você chega perto e para para dançar quando você fica para trás.
   nível vale o dobro. Depois de pegar, 10 minutos de descanso.
 - Tudo ajustável em `bubbles` no `config/dmzkicontrol.json`.
 
+## Sagas do Moro e do Granolah
+
+Duas sagas do Dragon Ball Super vindas do **DMZ Ultra**, de DarkForest (usadas com permissão), adaptadas para o DMZ 2.2:
+
+- **O Prisioneiro da Patrulha Galáctica** (27 missões): Jaco, Merus, Saganbo, Seven-Three e as três fases do Moro.
+- **Granolah, o Sobrevivente** (28 missões): os Heeter (Oil, Macki, Elec e as três fases do Gas), o Granolah normal e com o desejo, o Monaito e o Black Freeza no fim.
+
+Como entram no jogo:
+- Ao abrir o mundo, o add-on escreve as sagas em `world/dragonminez/sagas` e `world/dragonminez/quests`. Arquivo que você editou não é sobrescrito.
+- Com o DMZ Sparking, a saga do Moro abre depois do filme do Broly. Sem o Sparking, abre depois da saga do Buu. A do Granolah vem depois da do Moro.
+- O nível e a força dos inimigos continuam a curva do Sparking (sem saltos).
+- Jaco fica na Casa do Kame; Merus e Granolah, na casa do Goku. Monaito e outro Granolah ficam no **Planeta Cereal**, que a nave espacial libera depois da primeira missão do Granolah. Os do Planeta Cereal aparecem depois de reabrir o mundo uma vez.
+- Os inimigos usam o sistema de inimigos de saga do próprio DMZ (voo, aura, ki, combos).
+- Para desligar: `sagas.installMoroAndGranolah = false` no `config/dmzkicontrol.json`.
+
 ## Comandos
 | Comando | O que faz |
 |---|---|
@@ -180,6 +195,8 @@ Licença: GPL-3.0-or-later, a mesma família do DragonMineZ.
 
 
 ## Creditos
+
+- Sagas do Moro e do Granolah, modelos e texturas dos personagens delas e o Planeta Cereal: **DMZ Ultra**, de DarkForest, usados com permissão.
 
 - **Dragon Block Noea**, de ButterJaffa e contribuidores: o DragonMineZ Evolution reconhece as formas do Noea
   (Rose, Beast, Golden/Black, Orange Piccolo, Ki Divino) no Aura Control quando os dois estao instalados.

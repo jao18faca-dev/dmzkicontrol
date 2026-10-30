@@ -28,6 +28,7 @@ public class KiControlMod {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, KiControlClientConfig.SPEC);
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         com.dmzkicontrol.registry.ModRegistry.register(modBus);
+        com.dmzkicontrol.saga.SagaEnemies.register(modBus);
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::loadComplete);
     }

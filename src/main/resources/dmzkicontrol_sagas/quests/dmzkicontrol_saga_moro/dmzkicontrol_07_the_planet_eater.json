@@ -1,0 +1,53 @@
+{
+ "id": 7,
+ "title": "quest.dmzkicontrol.moro.7.name",
+ "description": "quest.dmzkicontrol.moro.7.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_moro",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s1_moro",
+    "questId": 6
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 5676
+   },
+   {
+    "type": "DIMENSION",
+    "dimension": "dragonminez:namek"
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "KILL",
+   "entity": "dmzkicontrol:saga_moro",
+   "count": 1,
+   "health": 4318868,
+   "meleeDamage": 77193.6,
+   "kiDamage": 71018.1,
+   "spawn": "QUEST",
+   "count_mode": "QUEST_SPAWNED_ONLY",
+   "AITier": 3
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 492000
+  }
+ ]
+}

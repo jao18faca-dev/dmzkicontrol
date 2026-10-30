@@ -51,6 +51,10 @@ public final class ModRegistry {
     public static final RegistryObject<Item> BUBBLES_EGG = ITEMS.register("bubbles_spawn_egg",
             () -> new net.minecraftforge.common.ForgeSpawnEggItem(BUBBLES, 0x3A2618, 0xD9A877, new Item.Properties()));
 
+    /** Gravador do scouter (saga do Granolah): a ultima mensagem do Bardock, achada nas ruinas do Planeta Cereal. */
+    public static final RegistryObject<Item> SCOUTER_RECORDING = ITEMS.register("scouter_recording",
+            () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
     private ModRegistry() {}
 
     public static void register(IEventBus modBus) {
@@ -69,6 +73,7 @@ public final class ModRegistry {
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(CEREAL_SCOPE);
             event.accept(BLINDFOLD);
+            event.accept(SCOUTER_RECORDING);
         }
     }
 }

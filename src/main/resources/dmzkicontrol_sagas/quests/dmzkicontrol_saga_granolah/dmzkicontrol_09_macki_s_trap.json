@@ -1,0 +1,53 @@
+{
+ "id": 9,
+ "title": "quest.dmzkicontrol.granolah.9.name",
+ "description": "quest.dmzkicontrol.granolah.9.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_granolah",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s2_granolah",
+    "questId": 8
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 6140
+   },
+   {
+    "type": "DIMENSION",
+    "dimension": "dmzkicontrol:cereal"
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "KILL",
+   "entity": "dmzkicontrol:saga_macki",
+   "count": 1,
+   "health": 4438330,
+   "meleeDamage": 81389.6,
+   "kiDamage": 74878.5,
+   "spawn": "QUEST",
+   "count_mode": "QUEST_SPAWNED_ONLY",
+   "AITier": 3
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 560000
+  }
+ ]
+}

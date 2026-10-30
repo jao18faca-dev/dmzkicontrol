@@ -1,0 +1,47 @@
+{
+ "id": 23,
+ "title": "quest.dmzkicontrol.granolah.23.name",
+ "description": "quest.dmzkicontrol.granolah.23.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_granolah",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s2_granolah",
+    "questId": 22
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 6364
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "TALK_TO",
+   "npcId": "monaito"
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 180000
+  },
+  {
+   "type": "ITEM",
+   "item": "dmzkicontrol:scouter_recording",
+   "count": 1
+  }
+ ]
+}

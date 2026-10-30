@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "destinations": [
+    {
+      "dimension": "dmzkicontrol:cereal",
+      "icon_index": 2,
+      "id": "dmzkicontrol_cereal",
+      "name": "gui.dmzkicontrol.spacepod.cereal",
+      "show_when_locked": true,
+      "translate": true,
+      "unlock_rules": {
+        "quest": "dmzkicontrol_s2_granolah:1"
+      }
+    }
+  ]
+}

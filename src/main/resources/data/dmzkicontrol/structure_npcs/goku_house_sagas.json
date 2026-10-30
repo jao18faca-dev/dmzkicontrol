@@ -1,0 +1,31 @@
+{
+  "structure": "dragonminez:goku_house",
+  "npcs": [
+    {
+      "id": "dmzkicontrol_granolah",
+      "entity": "dragonminez:quest_npc",
+      "npc_id": "granolah",
+      "model": "dmzk_saga_granolah",
+      "texture": "dmzk_saga_granolah",
+      "pos": [
+        56.5,
+        5.0,
+        45.5
+      ],
+      "yaw": 90.0
+    },
+    {
+      "id": "dmzkicontrol_merus",
+      "entity": "dragonminez:quest_npc",
+      "npc_id": "merus",
+      "model": "dmzk_saga_merus",
+      "texture": "dmzk_saga_merus",
+      "pos": [
+        58.5,
+        5.0,
+        52.5
+      ],
+      "yaw": 90.0
+    }
+  ]
+}

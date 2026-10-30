@@ -380,6 +380,16 @@ public class KiControlConfig {
 
     public Movement movement = new Movement();
 
+    /** Sagas do Moro e do Granolah (vindas do DMZ Ultra, de DarkForest, com permissao). */
+    public static class Sagas {
+        /** true = escreve as sagas no mundo (pasta dragonminez/sagas e quests) ao abrir o mundo. */
+        public boolean installMoroAndGranolah = true;
+        /** true = coloca o Monaito e o Granolah no Planeta Cereal (aparecem depois de reabrir o mundo). */
+        public boolean cerealNpcs = true;
+    }
+
+    public Sagas sagas = new Sagas();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -495,6 +505,7 @@ public class KiControlConfig {
         if (kiVision == null) kiVision = new KiVision();
         if (bubbles == null) bubbles = new Bubbles();
         if (movement == null) movement = new Movement();
+        if (sagas == null) sagas = new Sagas();
         if (auraControlRequiredSaga == null) auraControlRequiredSaga = "";
         if (auraLevelEfficiency == null || auraLevelEfficiency.isEmpty()) auraLevelEfficiency = new ArrayList<>(List.of(0.60, 0.70, 0.80, 0.90, 1.00));
         if (auraLevelTrainSpeed == null || auraLevelTrainSpeed.isEmpty()) auraLevelTrainSpeed = new ArrayList<>(List.of(1.00, 1.15, 1.30, 1.45, 1.60));

@@ -1,0 +1,53 @@
+{
+ "id": 16,
+ "title": "quest.dmzkicontrol.granolah.16.name",
+ "description": "quest.dmzkicontrol.granolah.16.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_granolah",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s2_granolah",
+    "questId": 15
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 6252
+   },
+   {
+    "type": "DIMENSION",
+    "dimension": "dmzkicontrol:cereal"
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "KILL",
+   "entity": "dmzkicontrol:saga_heeter_soldier",
+   "count": 6,
+   "health": 1588008,
+   "meleeDamage": 9378.0,
+   "kiDamage": 8534.0,
+   "spawn": "QUEST",
+   "count_mode": "QUEST_SPAWNED_ONLY",
+   "AITier": 1
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 572000
+  }
+ ]
+}

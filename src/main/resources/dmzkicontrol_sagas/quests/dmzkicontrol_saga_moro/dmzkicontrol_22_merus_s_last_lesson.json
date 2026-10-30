@@ -1,0 +1,42 @@
+{
+ "id": 22,
+ "title": "quest.dmzkicontrol.moro.22.name",
+ "description": "quest.dmzkicontrol.moro.22.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_moro",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s1_moro",
+    "questId": 21
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 5916
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "TALK_TO",
+   "npcId": "merus"
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 180000
+  }
+ ]
+}

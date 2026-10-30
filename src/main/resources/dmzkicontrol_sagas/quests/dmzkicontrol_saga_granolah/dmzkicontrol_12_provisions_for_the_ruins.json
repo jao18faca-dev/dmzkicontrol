@@ -1,0 +1,47 @@
+{
+ "id": 12,
+ "title": "quest.dmzkicontrol.granolah.12.name",
+ "description": "quest.dmzkicontrol.granolah.12.desc",
+ "type": "SAGA",
+ "category": "dmzkicontrol_saga_granolah",
+ "parallel_objectives": false,
+ "party_scaling": true,
+ "secret": false,
+ "claim_mode": "TREE_OR_NPC",
+ "prerequisites": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "SAGA_QUEST",
+    "sagaId": "dmzkicontrol_s2_granolah",
+    "questId": 11
+   }
+  ]
+ },
+ "requirements": {
+  "operator": "AND",
+  "conditions": [
+   {
+    "type": "LEVEL",
+    "minLevel": 6188
+   }
+  ]
+ },
+ "objectives": [
+  {
+   "type": "ITEM",
+   "item": "dragonminez:senzu_bean",
+   "count": 3
+  },
+  {
+   "type": "TALK_TO",
+   "npcId": "monaito"
+  }
+ ],
+ "rewards": [
+  {
+   "type": "TPS",
+   "amount": 180000
+  }
+ ]
+}
