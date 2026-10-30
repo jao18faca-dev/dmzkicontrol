@@ -168,6 +168,8 @@ public class KiControlConfig {
         public boolean preciseKiShot = true;
         /** Tempo mirando com a mao antes do laser sair (ticks; 20 = 1 s). */
         public int laserAimTicks = 30;
+        /** Flechas e laser entram no choque de ki e podem ser rebatidas no parry do DMZ. */
+        public boolean kiClashAndParry = true;
         /** Passiva "Leitura de Trajetoria": chance de desviar de projeteis (base + por nivel da Mira). */
         public double dodgeChanceBase = 0.06;
         public double dodgeChancePerLevel = 0.03;

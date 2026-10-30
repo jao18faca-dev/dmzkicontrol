@@ -72,6 +72,16 @@ O add-on instala a raça **Cerealiano** no sistema de raças do DMZ (`config/dra
   ```
 - Os valores ficam no bloco `cerealian` de `config/dmzkicontrol.json`.
 
+## Flechas e laser no choque de ki
+
+- **Parry:** bloquear no tempo certo (a janela de parry do DMZ) rebate a flecha de volta em quem atirou,
+  e devolve o laser.
+- **Choque:** flecha contra rajada de ki, a mais forte passa; flecha contra uma onda de ki (Kamehameha,
+  Galick Gun...) trava na ponta da onda por um instante e quem tiver mais poder vence (a flecha carregada
+  pesa mais). Vale para o ki do DMZ, Sparking, Noea e Overhaul.
+- **Laser:** derruba rajadas mais fracas no caminho; onda de ki ou rajada mais forte segura o laser.
+- Desliga com `cerealian.kiClashAndParry: false`.
+
 ## Luta às cegas (visão de ki)
 
 Sem enxergar, você sente o ki. O mundo apaga (só um contorno de poucos blocos em volta, para não cair

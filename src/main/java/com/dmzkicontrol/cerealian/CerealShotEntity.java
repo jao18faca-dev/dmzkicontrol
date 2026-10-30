@@ -56,6 +56,10 @@ public class CerealShotEntity extends Projectile {
     private int lockIdx = -1;
     private boolean exploded;
     private final Set<Integer> alreadyHit = new HashSet<>();
+    /** Choque com uma onda de ki: ticks restantes e id da onda (a flecha fica presa na ponta dela). */
+    private int clashTicks;
+    private int clashWith = -1;
+    private Vec3 clashVel = Vec3.ZERO;
 
     public CerealShotEntity(EntityType<? extends CerealShotEntity> type, Level level) {
         super(type, level);
@@ -142,10 +146,16 @@ public class CerealShotEntity extends Projectile {
         Vec3 vel = this.getDeltaMovement();
 
         if (!this.level().isClientSide) {
+            if (clashTicks > 0) { // presa na ponta da onda de ki: so o choque acontece
+                tickClash();
+                return;
+            }
             vel = steer(pos, vel);
             this.setDeltaMovement(vel);
         }
         Vec3 next = pos.add(vel);
+
+        if (!this.level().isClientSide && this.level() instanceof ServerLevel sl && clashWithKi(sl, pos, next)) return;
 
         if (!this.level().isClientSide) {
             BlockHitResult block = this.level().clip(new ClipContext(pos, next, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
@@ -157,7 +167,7 @@ public class CerealShotEntity extends Projectile {
                 EntityHitResult hit = ProjectileUtil.getEntityHitResult(this.level(), this, pos, end, box, this::canHitEntity);
                 if (hit == null) break;
                 Vec3 impact = hit.getEntity().getBoundingBox().inflate(0.1).clip(pos, end).orElse(null);
-                hitEntity(hit.getEntity(), impact);
+                if (hitEntity(hit.getEntity(), impact)) return; // rebatida no parry: ja mudou de dono e direcao
                 if (pierceLeft-- <= 0) {
                     Vec3 at = impact != null ? impact : hit.getEntity().position();
                     finish(at);
@@ -210,9 +220,15 @@ public class CerealShotEntity extends Projectile {
         return super.canHitEntity(e) && e instanceof LivingEntity le && le.isAlive() && !alreadyHit.contains(e.getId());
     }
 
-    private void hitEntity(Entity target, Vec3 impact) {
+    /** true = a flecha foi rebatida (parry no tempo certo) e nao causou dano. */
+    private boolean hitEntity(Entity target, Vec3 impact) {
+        Vec3 at0 = impact != null ? impact : target.position().add(0, target.getBbHeight() * 0.5, 0);
+        if (target instanceof ServerPlayer parrier && KiInterplay.perfectParry(parrier)) {
+            reflect(parrier, at0);
+            return true;
+        }
         alreadyHit.add(target.getId());
-        if (!(target instanceof LivingEntity le)) return;
+        if (!(target instanceof LivingEntity le)) return false;
         Entity owner = this.getOwner();
         float dmg = damage;
         if (owner instanceof ServerPlayer sp) {
@@ -223,6 +239,95 @@ public class CerealShotEntity extends Projectile {
         le.invulnerableTime = 0;
         le.hurt(MainDamageTypes.kiblast(this.level(), this, owner), dmg);
         impactFx(impact != null ? impact : le.position().add(0, le.getBbHeight() * 0.5, 0), true);
+        return false;
+    }
+
+    // ------------------------------------------------------------------ parry e choque de ki
+
+    /** Poder no choque: o dano, e a flecha carregada pesa mais. */
+    private float clashPower() {
+        return damage * (isArrow() ? 1.0f + 0.5f * Math.min(2.0f, charge) : 1.0f);
+    }
+
+    /** Parry perfeito: a flecha volta para quem atirou (mirando nele), agora como ki de quem rebateu. */
+    private void reflect(ServerPlayer parrier, Vec3 at) {
+        Entity old = this.getOwner();
+        this.setOwner(parrier);
+        alreadyHit.clear();
+        alreadyHit.add(parrier.getId());
+        Vec3 dir = parrier.getViewVector(1.0f).normalize();
+        lockTarget = -1;
+        if (old instanceof LivingEntity back && back.isAlive() && back != parrier) {
+            lockTarget = back.getId();
+            lockIdx = 0;
+            this.entityData.set(LOCKED, true);
+            dir = WeakPoints.position(back, 0, 1.0f).subtract(at).normalize();
+        }
+        Vec3 start = at.add(dir.scale(0.9));
+        this.setPos(start.x, start.y, start.z);
+        this.setDeltaMovement(dir.scale(speed > 0 ? speed : 3.0));
+        this.faceVelocity();
+        life = 0;
+        if (this.level() instanceof ServerLevel sl) KiInterplay.parryFx(sl, at);
+    }
+
+    /** Encontrou ki inimigo neste trecho? true = este tick acabou (choque comecou ou a flecha se foi). */
+    private boolean clashWithKi(ServerLevel sl, Vec3 pos, Vec3 next) {
+        double pad = isArrow() ? 0.6 * getScale() : 0.35;
+        for (com.dragonminez.common.init.entities.ki.AbstractKiProjectile p : KiInterplay.near(sl, this.getOwner(), pos, next, pad)) {
+            float theirs = KiInterplay.power(p);
+            if (KiInterplay.isBeam(p)) {
+                Vec3 head = KiInterplay.beamHead(p);
+                if (KiInterplay.segmentSegment(pos, next, p.position(), head) > KiInterplay.radius(p) + pad) continue;
+                if (!isArrow()) { // tiro comum nao segura uma onda
+                    KiInterplay.clashFx(sl, head, getColor(), p.getColor(), 0.4f, this);
+                    this.discard();
+                    return true;
+                }
+                clashWith = p.getId();
+                clashTicks = 12;
+                clashVel = this.getDeltaMovement();
+                this.setPos(head.x, head.y, head.z);
+                KiInterplay.clashFx(sl, head, getColor(), p.getColor(), 1.0f, this);
+                return true;
+            }
+            if (KiInterplay.pointSegment(p.position(), pos, next) > KiInterplay.radius(p) + pad) continue;
+            Vec3 at = p.position();
+            KiInterplay.clashFx(sl, at, getColor(), p.getColor(), 0.6f, this);
+            if (clashPower() >= theirs) {
+                p.discard();                                   // a flecha passa por cima
+                damage = Math.max(damage * 0.3f, damage - theirs * 0.5f);
+            } else {
+                finish(at);                                    // a rajada era mais forte
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Presa na ponta da onda: faiscas, e no fim quem tiver mais poder vence. */
+    private void tickClash() {
+        if (!(this.level() instanceof ServerLevel sl)) return;
+        Entity e = sl.getEntity(clashWith);
+        if (!(e instanceof com.dragonminez.common.init.entities.ki.AbstractKiProjectile p) || p.isRemoved()) {
+            clashTicks = 0;                                    // a onda acabou: a flecha segue
+            clashWith = -1;
+            this.setDeltaMovement(clashVel);
+            return;
+        }
+        Vec3 head = KiInterplay.beamHead(p);
+        this.setPos(head.x, head.y, head.z);
+        if (clashTicks % 3 == 0) KiInterplay.clashFx(sl, head, getColor(), p.getColor(), 0.5f, this);
+        if (--clashTicks > 0) return;
+        clashWith = -1;
+        if (clashPower() >= KiInterplay.power(p) * 0.75f) {   // flecha concentrada fura a onda
+            KiInterplay.clashFx(sl, head, getColor(), p.getColor(), 1.6f, this);
+            p.discard();
+            damage *= 0.6f;
+            this.setDeltaMovement(clashVel);
+        } else {
+            finish(head);
+        }
     }
 
     /** Fim do tiro: a flecha explode; o tiro comum so faz o impacto (e uma cratera, se configurado). */

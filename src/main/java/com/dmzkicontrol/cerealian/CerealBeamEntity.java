@@ -82,6 +82,61 @@ public class CerealBeamEntity extends Entity {
         beam.setPos(hand.x, hand.y, hand.z);
         beam.entityData.set(COLOR, color & 0xFFFFFF);
 
+        // ki inimigo no caminho: rajada mais fraca e derrubada; onda de ki ou rajada mais forte segura o laser
+        if (level instanceof ServerLevel sl) {
+            double limit = hit != null ? eye.distanceTo(hit.getLocation()) : eye.distanceTo(end);
+            com.dragonminez.common.init.entities.ki.AbstractKiProjectile blocker = null;
+            Vec3 blockAt = null;
+            for (com.dragonminez.common.init.entities.ki.AbstractKiProjectile p : KiInterplay.near(sl, sp, eye, end, 0.4)) {
+                boolean wave = KiInterplay.isBeam(p);
+                Vec3 at = wave ? KiInterplay.beamHead(p) : p.position();
+                double reach = KiInterplay.radius(p) + 0.4;
+                if (wave ? KiInterplay.segmentSegment(eye, end, p.position(), at) > reach : KiInterplay.pointSegment(at, eye, end) > reach) continue;
+                double t = at.subtract(eye).dot(dir);
+                if (t < 0 || t > limit) continue;
+                if (!wave && damage >= KiInterplay.power(p)) {
+                    KiInterplay.clashFx(sl, at, color, p.getColor(), 0.5f, sp);
+                    p.discard();
+                    continue;
+                }
+                blocker = p;
+                blockAt = eye.add(dir.scale(t));
+                limit = t;
+            }
+            if (blocker != null) {
+                hit = null;
+                end = blockAt;
+                KiInterplay.clashFx(sl, blockAt, color, blocker.getColor(), 0.8f, sp);
+                beam.entityData.set(HIT, true);
+                beam.entityData.set(END, new Vector3f((float) end.x, (float) end.y, (float) end.z));
+                return beam;
+            }
+        }
+
+        if (hit != null && hit.getEntity() instanceof ServerPlayer parrier && KiInterplay.perfectParry(parrier)) {
+            // parry no tempo certo: o laser volta em quem atirou
+            Vec3 impact = parrier.getBoundingBox().inflate(0.1).clip(eye, end).orElse(parrier.getEyePosition());
+            end = impact;
+            beam.entityData.set(HIT, true);
+            if (level instanceof ServerLevel sl) {
+                KiInterplay.parryFx(sl, impact);
+                CerealBeamEntity back = new CerealBeamEntity(ModRegistry.CEREAL_BEAM.get(), level);
+                back.ownerId = parrier.getUUID();
+                back.entityData.set(SHOOTER, -1);
+                back.setPos(impact.x, impact.y, impact.z);
+                back.entityData.set(COLOR, color & 0xFFFFFF);
+                Vec3 target = sp.position().add(0, sp.getBbHeight() * 0.6, 0);
+                back.entityData.set(END, new Vector3f((float) target.x, (float) target.y, (float) target.z));
+                back.entityData.set(HIT, true);
+                sl.addFreshEntity(back);
+                sp.invulnerableTime = 0;
+                sp.hurt(MainDamageTypes.kiblast(level, back, parrier), damage);
+                impactFx(level, target, true);
+            }
+            beam.entityData.set(END, new Vector3f((float) end.x, (float) end.y, (float) end.z));
+            return beam;
+        }
+
         if (hit != null && hit.getEntity() instanceof LivingEntity le) {
             Vec3 impact = le.getBoundingBox().inflate(0.1).clip(eye, end).orElse(le.position().add(0, le.getBbHeight() * 0.5, 0));
             int forced = le.getId() == lockTarget ? lockIdx : -1;
