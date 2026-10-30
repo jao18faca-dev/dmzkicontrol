@@ -31,6 +31,8 @@ public final class SealAnimations {
     public static final String BREAK = "dmzkicontrol.seal_break";
 
     private static final ResourceLocation OURS = new ResourceLocation(KiControlMod.MODID, "animations/seal.animation.json");
+    /** Poses das cutscenes de transformacao (4.0). */
+    private static final ResourceLocation SCENES = new ResourceLocation(KiControlMod.MODID, "animations/cutscene.animation.json");
     private static final ResourceLocation DMZ_PRIMARY = new ResourceLocation("dragonminez", "animations/entity/races/movement.animation.json");
 
     /** entityId -> [tick de parada, nome]. */
@@ -54,14 +56,21 @@ public final class SealAnimations {
             Map<ResourceLocation, BakedAnimations> cache = GeckoLibCache.getBakedAnimations();
             BakedAnimations dmz = cache.get(DMZ_PRIMARY);
             BakedAnimations ours = cache.get(OURS);
+            BakedAnimations scenes = cache.get(SCENES);
             if (dmz == null || ours == null) return warnOnce("arquivo de animacao nao encontrado");
             boolean missing = false;
             for (String key : ours.animations().keySet()) {
                 if (dmz.getAnimation(key) != ours.getAnimation(key)) { missing = true; break; }
             }
+            if (!missing && scenes != null) {
+                for (String key : scenes.animations().keySet()) {
+                    if (dmz.getAnimation(key) != scenes.getAnimation(key)) { missing = true; break; }
+                }
+            }
             if (!missing) return true;
             Map<String, Animation> merged = new HashMap<>(dmz.animations());
             merged.putAll(ours.animations());
+            if (scenes != null) merged.putAll(scenes.animations());
             cache.put(DMZ_PRIMARY, new BakedAnimations(merged));
             return true;
         } catch (Throwable t) {

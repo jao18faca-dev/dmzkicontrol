@@ -400,6 +400,22 @@ public class KiControlConfig {
 
     public Sagas sagas = new Sagas();
 
+    /** Cutscenes de transformacao (4.0): uma cena para cada forma de cada raca, Kaioken, Instinto Superior... */
+    public static class FormScenes {
+        /** Liga/desliga as cutscenes de transformacao para todo mundo. */
+        public boolean enabled = true;
+        /** Quem esta na cena nao leva dano nem empurrao. */
+        public boolean invulnerable = true;
+        /** Quem esta na cena fica parado no lugar (no chao ou no ar). */
+        public boolean freeze = true;
+        /** Cena tambem para as formas que somam (Kaioken, Ki Divino, Instinto Superior, Ultra Ego...). */
+        public boolean stackForms = true;
+        /** Formas sem cena, como "grupo.forma" (ex.: "kaioken.x2"). */
+        public java.util.List<String> disabledForms = new java.util.ArrayList<>();
+    }
+
+    public FormScenes formScenes = new FormScenes();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -516,6 +532,8 @@ public class KiControlConfig {
         if (bubbles == null) bubbles = new Bubbles();
         if (movement == null) movement = new Movement();
         if (sagas == null) sagas = new Sagas();
+        if (formScenes == null) formScenes = new FormScenes();
+        if (formScenes.disabledForms == null) formScenes.disabledForms = new java.util.ArrayList<>();
         if (auraControlRequiredSaga == null) auraControlRequiredSaga = "";
         if (auraLevelEfficiency == null || auraLevelEfficiency.isEmpty()) auraLevelEfficiency = new ArrayList<>(List.of(0.60, 0.70, 0.80, 0.90, 1.00));
         if (auraLevelTrainSpeed == null || auraLevelTrainSpeed.isEmpty()) auraLevelTrainSpeed = new ArrayList<>(List.of(1.00, 1.15, 1.30, 1.45, 1.60));

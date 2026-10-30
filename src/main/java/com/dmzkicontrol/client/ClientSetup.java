@@ -41,6 +41,7 @@ public final class ClientSetup {
             "key.categories.dmzkicontrol");
 
     private static final ResourceLocation CUTSCENE_OVERLAY = new ResourceLocation(KiControlMod.MODID, "aura_cutscene");
+    private static final ResourceLocation FORM_SCENE_OVERLAY = new ResourceLocation(KiControlMod.MODID, "form_scene");
     private static boolean wasDown;
 
     private ClientSetup() {}
@@ -107,6 +108,7 @@ public final class ClientSetup {
         public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
             event.register(SEAL_KEY);
             event.register(CerealianEyeClient.EYE_KEY);
+            event.register(com.dmzkicontrol.client.scene.SceneKeys.SKIP);
         }
 
         @SubscribeEvent
@@ -116,6 +118,7 @@ public final class ClientSetup {
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "ki_vision", KiVision.OVERLAY);
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "bubbles_training", BubblesHud.OVERLAY);
             event.registerAboveAll("aura_cutscene", CutsceneOverlay.INSTANCE);
+            event.registerAboveAll("form_scene", com.dmzkicontrol.client.scene.SceneOverlay.INSTANCE);
         }
     }
 
@@ -125,7 +128,10 @@ public final class ClientSetup {
 
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {
-            if (event.phase != TickEvent.Phase.END) return;
+            if (event.phase == TickEvent.Phase.START) {
+                com.dmzkicontrol.client.scene.SceneKeys.clientTickStart();
+                return;
+            }
             Minecraft mc = Minecraft.getInstance();
             boolean down = SEAL_KEY.isDown();
             if (down && !wasDown && mc.screen == null && mc.player != null) onSealPressed();
@@ -133,6 +139,7 @@ public final class ClientSetup {
             while (SEAL_KEY.consumeClick()) { /* descarta repeticoes do teclado */ }
 
             CutsceneController.clientTick();
+            com.dmzkicontrol.client.scene.ScenePlayback.clientTick();
             SealAnimations.clientTick();
             CerealianEyeClient.clientTick();
             KiBowRenderer.clientTick();
@@ -152,6 +159,7 @@ public final class ClientSetup {
             KiVision.render(event);
             EyeReticleRenderer.render(event);
             LaserAimFx.render(event);
+            com.dmzkicontrol.client.scene.SceneFx.render(event);
         }
 
         /** Visao de ki: o mundo apaga em volta (neblina escura de poucos blocos). */
@@ -173,6 +181,7 @@ public final class ClientSetup {
         @SubscribeEvent
         public static void onRenderTick(TickEvent.RenderTickEvent event) {
             CutsceneController.lockRotation();
+            com.dmzkicontrol.client.scene.SceneCamera.renderTickLock();
             if (event.phase == TickEvent.Phase.START) {
                 SealAnimations.suppressShootPose();
                 SealAnimations.hideAurasForFrame();
@@ -183,11 +192,13 @@ public final class ClientSetup {
         @SubscribeEvent(priority = EventPriority.LOWEST)
         public static void onCamera(ViewportEvent.ComputeCameraAngles event) {
             CutsceneController.onCameraAngles(event);
+            com.dmzkicontrol.client.scene.SceneCamera.onCameraAngles(event);
         }
 
         @SubscribeEvent(priority = EventPriority.LOWEST)
         public static void onFov(ViewportEvent.ComputeFov event) {
             CutsceneController.onFov(event);
+            com.dmzkicontrol.client.scene.SceneCamera.onFov(event);
             CerealianEyeClient.onFov(event);
         }
 
@@ -200,7 +211,7 @@ public final class ClientSetup {
         /** Durante a cena o personagem fica parado. */
         @SubscribeEvent
         public static void onMovement(MovementInputUpdateEvent event) {
-            if (!CutsceneController.isActive()) return;
+            if (!CutsceneController.isActive() && !com.dmzkicontrol.client.scene.ScenePlayback.isLocalActive()) return;
             var in = event.getInput();
             in.forwardImpulse = 0f;
             in.leftImpulse = 0f;
@@ -211,7 +222,7 @@ public final class ClientSetup {
 
         @SubscribeEvent
         public static void onInteract(InputEvent.InteractionKeyMappingTriggered event) {
-            if (!CutsceneController.isActive()) return;
+            if (!CutsceneController.isActive() && !com.dmzkicontrol.client.scene.ScenePlayback.isLocalActive()) return;
             event.setCanceled(true);
             event.setSwingHand(false);
         }
@@ -220,6 +231,7 @@ public final class ClientSetup {
         @SubscribeEvent
         public static void onOverlay(RenderGuiOverlayEvent.Pre event) {
             if (CutsceneController.isActive() && !CUTSCENE_OVERLAY.equals(event.getOverlay().id())) event.setCanceled(true);
+            if (com.dmzkicontrol.client.scene.ScenePlayback.isLocalActive() && !FORM_SCENE_OVERLAY.equals(event.getOverlay().id())) event.setCanceled(true);
         }
 
         /** Renascer/trocar de dimensao recria o jogador local com outro id: zera os estados por id. */
@@ -227,6 +239,7 @@ public final class ClientSetup {
         public static void onClientClone(ClientPlayerNetworkEvent.Clone event) {
             SealAnimations.clearSealed();
             CutsceneController.stop();
+            com.dmzkicontrol.client.scene.ScenePlayback.clear();
             CerealianEyeClient.reset();
             KiVision.reset();
             BubblesHud.reset();

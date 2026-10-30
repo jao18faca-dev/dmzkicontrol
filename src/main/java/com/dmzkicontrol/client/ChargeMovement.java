@@ -24,7 +24,7 @@ public final class ChargeMovement {
 
     public static void onMovement(MovementInputUpdateEvent event) {
         KiControlConfig.Movement cfg = KiControlConfig.get().movement;
-        if (!cfg.moveWhileChargingKi || CutsceneController.isActive()) return;
+        if (!cfg.moveWhileChargingKi || CutsceneController.isActive() || com.dmzkicontrol.client.scene.ScenePlayback.isLocalActive()) return;
         Player p = event.getEntity();
         Minecraft mc = Minecraft.getInstance();
         if (p != mc.player || mc.screen != null) return;

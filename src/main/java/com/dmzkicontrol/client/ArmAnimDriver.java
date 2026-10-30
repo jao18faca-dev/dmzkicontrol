@@ -98,7 +98,8 @@ public final class ArmAnimDriver {
                     return PlayState.STOP;
                 }
                 if (!want.equals(last[0])) {
-                    RawAnimation raw = want.contains("_fire") ? RawAnimation.begin().thenPlay(want) : RawAnimation.begin().thenPlayAndHold(want);
+                    RawAnimation raw = want.startsWith("dmzkicontrol.cs.") ? RawAnimation.begin().thenLoop(want)
+                            : want.contains("_fire") ? RawAnimation.begin().thenPlay(want) : RawAnimation.begin().thenPlayAndHold(want);
                     state.getController().setAnimation(raw);
                     state.getController().forceAnimationReset();
                     last[0] = want;

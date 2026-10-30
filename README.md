@@ -114,6 +114,18 @@ lado quando você chega perto e para para dançar quando você fica para trás.
   nível vale o dobro. Depois de pegar, 10 minutos de descanso.
 - Tudo ajustável em `bubbles` no `config/dmzkicontrol.json`.
 
+## Cutscenes de transformação (4.0)
+
+Toda transformação toca uma cutscene própria, uma diferente para cada forma de cada raça: Saiyajin (do SSJ Falso ao Beast, Oozaru, SSJ4, Lendário, Deus, Blue, Rosé), Humano, Namekuseijin, Demônio do Frio, Majin, Bio-Androide, Cerealiano, Alienígena, Demônio, Glind e Esfinge, além do Kaioken (x2 até x100), Ki Divino, Instinto Superior, Ultra Ego, Golden e Black Freeza. São 108 cenas.
+
+- **Câmera de cinema:** passeia em volta do personagem com cortes, close no rosto, zoom e tremor, e cresce junto com formas gigantes (Oozaru, Namekuseijin Gigante, Cell Max). Funciona no chão e voando.
+- **Efeitos no mundo**, vistos por todos por perto (de frente e de costas): pilares de luz, anéis de choque, cúpulas de energia, raios, espirais, halos, fragmentos de casca, pedras que sobem do chão (só se houver chão perto), cratera e partículas.
+- **Tela:** faixas de cinema, clarão, bordas tingidas, linhas de foco e onomatopeias de mangá, nome da forma e uma frase.
+- **Poses** sincronizadas com a câmera (21 poses: grito, punhos cerrados, braços abertos, meditando, garras, guarda...).
+- **Durante a cena** quem se transforma fica parado e não leva dano nem empurrão. **Enter** pula a cena (dá para trocar a tecla nos controles).
+- Formas criadas pelo jogador e formas de outros add-ons ganham uma cena genérica.
+- Configuração em `config/dmzkicontrol.json`, seção `formScenes`: `enabled`, `invulnerable`, `freeze`, `stackForms` (Kaioken, Instinto...) e `disabledForms` (ex.: `"kaioken.x2"`).
+
 ## Sagas do Moro e do Granolah
 
 Duas sagas do Dragon Ball Super vindas do **DMZ Ultra**, de DarkForest (usadas com permissão), adaptadas para o DMZ 2.2:
