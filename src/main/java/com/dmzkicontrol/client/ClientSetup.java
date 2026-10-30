@@ -146,6 +146,7 @@ public final class ClientSetup {
             SealFxRenderer.render(event);
             KiVision.render(event);
             EyeReticleRenderer.render(event);
+            LaserAimFx.render(event);
         }
 
         /** Visao de ki: o mundo apaga em volta (neblina escura de poucos blocos). */

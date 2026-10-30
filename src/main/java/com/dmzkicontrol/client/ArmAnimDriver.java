@@ -25,6 +25,7 @@ public final class ArmAnimDriver {
     public static final String BOW_CAST = "dmzkicontrol.kibow_cast";
     public static final String BOW_FIRE = "dmzkicontrol.kibow_fire";
     public static final String LASER = "dmzkicontrol.laser_fire";
+    public static final String LASER_AIM = "dmzkicontrol.laser_aim";
 
     /** entityId -> {animacao, tick final}. */
     private static final Map<Integer, Object[]> REQUESTS = new HashMap<>();

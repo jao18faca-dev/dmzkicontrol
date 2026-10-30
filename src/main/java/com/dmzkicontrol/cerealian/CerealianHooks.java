@@ -40,10 +40,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Mod.EventBusSubscriber(modid = KiControlMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class CerealianHooks {
     private static final Map<UUID, Long> LAST_DODGE = new ConcurrentHashMap<>();
-    /** Lasers esperando o braco chegar: {tick de disparo, dano, cor}. */
+    /** Lasers sendo mirados: {tick de disparo, dano, cor}. */
     private record PendingLaser(long at, float damage, int color) {}
     private static final Map<UUID, PendingLaser> PENDING_LASERS = new ConcurrentHashMap<>();
-    private static final int LASER_DELAY_TICKS = 3;
+
+    private static void broadcastAnim(ServerPlayer sp, byte type) {
+        com.dmzkicontrol.network.KiControlNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> sp),
+                new com.dmzkicontrol.network.SealAnimS2C(sp.getId(), type));
+    }
 
     private CerealianHooks() {}
 
@@ -90,7 +94,10 @@ public final class CerealianHooks {
         PendingLaser laser = PENDING_LASERS.get(sp.getUUID());
         if (laser != null && sp.level().getGameTime() >= laser.at()) {
             PENDING_LASERS.remove(sp.getUUID());
-            if (sp.isAlive()) fireLaser(sp, laser.damage(), laser.color());
+            if (sp.isAlive()) {
+                broadcastAnim(sp, com.dmzkicontrol.network.SealAnimS2C.LASER); // tranco do disparo
+                fireLaser(sp, laser.damage(), laser.color());
+            }
         }
         if (sp.tickCount % 40 == 0) grantRaceKit(sp);
         if (sp.tickCount % 2 == 0 && CerealianEye.isCerealian(sp)) {
@@ -156,10 +163,16 @@ public final class CerealianHooks {
         if (!basic || !KiControlConfig.get().cerealian.preciseKiShot) return;
 
         event.setCanceled(true);
-        // primeiro o braco sobe e aponta (animacao), o raio sai quando o dedo chega na posicao
-        com.dmzkicontrol.network.KiControlNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> sp),
-                new com.dmzkicontrol.network.SealAnimS2C(sp.getId(), com.dmzkicontrol.network.SealAnimS2C.LASER));
-        PENDING_LASERS.put(sp.getUUID(), new PendingLaser(sp.level().getGameTime() + LASER_DELAY_TICKS, proj.getKiDamage(), kiColor(sp, proj.getColor())));
+        if (PENDING_LASERS.containsKey(sp.getUUID())) return; // ja esta mirando
+        // o braco sobe e mira com o dedo; o ki se junta na ponta e o laser sai no fim da mira
+        int aim = Math.max(0, KiControlConfig.get().cerealian.laserAimTicks);
+        broadcastAnim(sp, com.dmzkicontrol.network.SealAnimS2C.LASER_AIM);
+        PENDING_LASERS.put(sp.getUUID(), new PendingLaser(sp.level().getGameTime() + Math.max(3, aim), proj.getKiDamage(), kiColor(sp, proj.getColor())));
+        try {
+            sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), com.dragonminez.common.init.MainSounds.KI_EXPLOSION_CHARGE.get(), SoundSource.PLAYERS, 0.5f, 1.9f);
+        } catch (Throwable t) {
+            sp.level().playSound(null, sp.getX(), sp.getY(), sp.getZ(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.5f, 1.9f);
+        }
     }
 
     private static void fireLaser(ServerPlayer sp, float damage, int color) {

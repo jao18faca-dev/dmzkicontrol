@@ -24,6 +24,8 @@ public record SealAnimS2C(int entityId, byte type) {
     /** Olho Cereal ligado/desligado: mira magica flutuando na frente do olho. */
     public static final byte EYE_ON = 9;
     public static final byte EYE_OFF = 10;
+    /** Cerealiano mirando o laser com a mao (o disparo vem depois, com LASER). */
+    public static final byte LASER_AIM = 11;
 
     public static void encode(SealAnimS2C m, FriendlyByteBuf buf) {
         buf.writeVarInt(m.entityId);

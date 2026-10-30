@@ -166,6 +166,8 @@ public class KiControlConfig {
         public double twinEyesMultiplier = 2.0;
         /** Troca a bola de ki basica dos Cerealianos por um tiro fino e preciso. */
         public boolean preciseKiShot = true;
+        /** Tempo mirando com a mao antes do laser sair (ticks; 20 = 1 s). */
+        public int laserAimTicks = 30;
         /** Passiva "Leitura de Trajetoria": chance de desviar de projeteis (base + por nivel da Mira). */
         public double dodgeChanceBase = 0.06;
         public double dodgeChancePerLevel = 0.03;

@@ -110,6 +110,16 @@ public final class SealAnimations {
                 if (self) CutsceneController.stop();
                 SealEffects.burst(player, true);
             }
+            case SealAnimS2C.LASER_AIM -> {
+                // o braco sobe devagar e fica mirando; a pose instantanea de ki blast do DMZ fica desligada
+                int aim = Math.max(3, com.dmzkicontrol.config.KiControlConfig.get().cerealian.laserAimTicks);
+                NO_SHOOT_POSE.put(player.getId(), mc.level.getGameTime() + aim + 20);
+                if (((Object) player) instanceof IPlayerAnimatable anim) {
+                    try { anim.dragonminez$setShootingKi(false); } catch (Throwable ignored) { }
+                }
+                ArmAnimDriver.play(player, ArmAnimDriver.LASER_AIM, aim + 2);
+                LaserAimFx.start(player.getId(), aim);
+            }
             case SealAnimS2C.LASER -> {
                 // troca a pose instantanea do ki blast do DMZ por um "dedo apontado" suave
                 NO_SHOOT_POSE.put(player.getId(), mc.level.getGameTime() + 16);
@@ -117,6 +127,7 @@ public final class SealAnimations {
                     try { anim.dragonminez$setShootingKi(false); } catch (Throwable ignored) { }
                 }
                 ArmAnimDriver.play(player, ArmAnimDriver.LASER, 14);
+                LaserAimFx.stop(player.getId());
             }
             case SealAnimS2C.KIBOW_RELEASE -> {
                 // solta a corda: animacao de disparo (o controlador de ki do DMZ encerra sozinho os "_fire")
@@ -210,6 +221,7 @@ public final class SealAnimations {
     public static void clearSealed() {
         SEALED.clear();
         EyeReticleRenderer.clear();
+        LaserAimFx.clear();
         SealFxRenderer.clear();
         NO_SHOOT_POSE.clear();
         ArmAnimDriver.clear();
