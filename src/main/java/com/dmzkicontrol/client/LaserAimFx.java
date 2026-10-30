@@ -60,10 +60,9 @@ public final class LaserAimFx {
         Matrix4f m = event.getPoseStack().last().pose();
         // eixos da tela (billboard): tudo de frente para a camera
         Vec3 look = new Vec3(event.getCamera().getLookVector());
-        Vec3 right = look.cross(new Vec3(0, 1, 0));
-        if (right.lengthSqr() < 1e-6) right = new Vec3(1, 0, 0);
-        right = right.normalize();
-        Vec3 up = right.cross(look).normalize();
+        Vec3 r0 = look.cross(new Vec3(0, 1, 0));
+        final Vec3 right = (r0.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : r0).normalize();
+        final Vec3 up = right.cross(look).normalize();
 
         MultiBufferSource.BufferSource bs = mc.renderBuffers().bufferSource();
         VertexConsumer vc = bs.getBuffer(RenderType.lightning());
