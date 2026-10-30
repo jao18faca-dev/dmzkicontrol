@@ -336,6 +336,34 @@ public class KiControlConfig {
 
     public KiVision kiVision = new KiVision();
 
+    /**
+     * Treino do Senhor Kaioh: pegar o Bubbles sem voar, so correndo e pulando. 5 niveis; listas por nivel.
+     */
+    public static class Bubbles {
+        public boolean enabled = true;
+        /** O Bubbles aparece sozinho perto do Senhor Kaioh do DMZ. */
+        public boolean spawnNearKingKai = true;
+        /** Raio (blocos) em volta da casa dele por onde ele corre. */
+        public int homeRadius = 14;
+        public int timeSeconds = 60;
+        /** Velocidade do Bubbles em relacao a sua (1.0 = igual). */
+        public List<Double> speedFactors = new ArrayList<>(List.of(0.82, 0.92, 1.0, 1.07, 1.14));
+        /** Chance de pular para o lado quando voce chega perto, e o intervalo minimo entre pulos (ticks). */
+        public List<Double> leapChance = new ArrayList<>(List.of(0.35, 0.5, 0.65, 0.8, 0.9));
+        public List<Integer> leapCooldownTicks = new ArrayList<>(List.of(40, 30, 22, 16, 12));
+        /** Distancia em que ele para para dancar e te provocar. */
+        public double tauntDistance = 9.0;
+        /** Recompensa em "pontos de atributo" do DMZ (o TP de 1 ponto no seu nivel atual) por nivel. */
+        public List<Double> rewardStatPoints = new ArrayList<>(List.of(1.0, 1.5, 2.0, 2.5, 3.0));
+        /** A primeira vitoria em cada nivel rende isto vezes mais. */
+        public double firstClearMultiplier = 2.0;
+        /** Espera depois de pegar o Bubbles (minutos) e depois de falhar (segundos). */
+        public int cooldownMinutes = 10;
+        public int failCooldownSeconds = 10;
+    }
+
+    public Bubbles bubbles = new Bubbles();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -449,6 +477,7 @@ public class KiControlConfig {
         if (auraLevelStoryRequirements == null) auraLevelStoryRequirements = new LinkedHashMap<>();
         if (integrations == null) integrations = new Integrations();
         if (kiVision == null) kiVision = new KiVision();
+        if (bubbles == null) bubbles = new Bubbles();
         if (auraControlRequiredSaga == null) auraControlRequiredSaga = "";
         if (auraLevelEfficiency == null || auraLevelEfficiency.isEmpty()) auraLevelEfficiency = new ArrayList<>(List.of(0.60, 0.70, 0.80, 0.90, 1.00));
         if (auraLevelTrainSpeed == null || auraLevelTrainSpeed.isEmpty()) auraLevelTrainSpeed = new ArrayList<>(List.of(1.00, 1.15, 1.30, 1.45, 1.60));

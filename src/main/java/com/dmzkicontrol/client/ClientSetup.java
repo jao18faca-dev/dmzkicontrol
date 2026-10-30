@@ -96,6 +96,7 @@ public final class ClientSetup {
         public static void onRegisterRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_SHOT.get(), CerealShotRenderer::new);
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_BEAM.get(), CerealBeamRenderer::new);
+            event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.BUBBLES.get(), BubblesRenderer::new);
         }
 
         @SubscribeEvent
@@ -109,6 +110,7 @@ public final class ClientSetup {
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "aura_seal", SealHudOverlay.INSTANCE);
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "cereal_eye", CerealianEyeClient.OVERLAY);
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "ki_vision", KiVision.OVERLAY);
+            event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "bubbles_training", BubblesHud.OVERLAY);
             event.registerAboveAll("aura_cutscene", CutsceneOverlay.INSTANCE);
         }
     }
@@ -133,6 +135,7 @@ public final class ClientSetup {
             ArmAnimDriver.clientTick();
             SealFxRenderer.clientTick();
             KiVision.clientTick();
+            BubblesHud.clientTick();
             if (mc.player != null && mc.player.tickCount % 20 == 0) SealAnimations.ensureInjected();
         }
 
@@ -213,6 +216,7 @@ public final class ClientSetup {
             CutsceneController.stop();
             CerealianEyeClient.reset();
             KiVision.reset();
+            BubblesHud.reset();
         }
 
         @SubscribeEvent
@@ -222,6 +226,7 @@ public final class ClientSetup {
             SealAnimations.clearSealed();
             CerealianEyeClient.reset();
             KiVision.reset();
+            BubblesHud.reset();
         }
     }
 }

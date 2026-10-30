@@ -87,6 +87,18 @@ Quem está com a aura selada (Aura Control) quase some. É só para jogadores.
 - Alcance: 6 blocos + 6 por nível do Ki Sense (até 48). Tudo ajustável em `kiVision` no
   `config/dmzkicontrol.json`.
 
+## Treino do Senhor Kaioh: pegar o Bubbles
+
+O Bubbles aparece perto do Senhor Kaioh do DMZ (ou pelo ovo gerador). Clique nele com o botão direito
+para começar: você tem 60 segundos para encostar nele (ou bater, não machuca), sem voar, sem
+teletransporte e sem dash, só correndo e pulando, como o Goku. Ele foge, muda de direção, pula para o
+lado quando você chega perto e para para dançar quando você fica para trás.
+
+- 5 níveis: a cada vitória ele fica mais rápido (a velocidade acompanha a sua) e pula mais.
+- Recompensa: TP do DMZ, o custo de 1 a 3 pontos de atributo no seu nível; a primeira vitória em cada
+  nível vale o dobro. Depois de pegar, 10 minutos de descanso.
+- Tudo ajustável em `bubbles` no `config/dmzkicontrol.json`.
+
 ## Comandos
 | Comando | O que faz |
 |---|---|

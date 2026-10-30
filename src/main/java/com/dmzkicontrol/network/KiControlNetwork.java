@@ -8,7 +8,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 /** Canal proprio do addon (a wiki do DMZ pede: nunca registre pacotes no canal do DMZ). */
 public final class KiControlNetwork {
-    private static final String PROTOCOL = "4";
+    private static final String PROTOCOL = "5";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(KiControlMod.MODID, "main"),
@@ -42,6 +42,11 @@ public final class KiControlNetwork {
                 .encoder(EyeMarkS2C::encode)
                 .decoder(EyeMarkS2C::decode)
                 .consumerMainThread(EyeMarkS2C::handle)
+                .add();
+        CHANNEL.messageBuilder(BubblesHudS2C.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(BubblesHudS2C::encode)
+                .decoder(BubblesHudS2C::decode)
+                .consumerMainThread(BubblesHudS2C::handle)
                 .add();
     }
 }

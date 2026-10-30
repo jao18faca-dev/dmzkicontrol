@@ -41,15 +41,31 @@ public final class ModRegistry {
                     .noSave()
                     .build("cereal_beam"));
 
+    /** Bubbles, o macaco do Senhor Kaioh (treino de pegar o Bubbles). */
+    public static final RegistryObject<EntityType<com.dmzkicontrol.kaio.BubblesEntity>> BUBBLES = ENTITIES.register("bubbles",
+            () -> EntityType.Builder.<com.dmzkicontrol.kaio.BubblesEntity>of(com.dmzkicontrol.kaio.BubblesEntity::new, MobCategory.CREATURE)
+                    .sized(0.5f, 0.85f)
+                    .clientTrackingRange(10)
+                    .build("bubbles"));
+
+    public static final RegistryObject<Item> BUBBLES_EGG = ITEMS.register("bubbles_spawn_egg",
+            () -> new net.minecraftforge.common.ForgeSpawnEggItem(BUBBLES, 0x3A2618, 0xD9A877, new Item.Properties()));
+
     private ModRegistry() {}
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
         ENTITIES.register(modBus);
         modBus.addListener(ModRegistry::addToTabs);
+        modBus.addListener(ModRegistry::attributes);
+    }
+
+    private static void attributes(net.minecraftforge.event.entity.EntityAttributeCreationEvent event) {
+        event.put(BUBBLES.get(), com.dmzkicontrol.kaio.BubblesEntity.createAttributes().build());
     }
 
     private static void addToTabs(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) event.accept(BUBBLES_EGG);
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(CEREAL_SCOPE);
             event.accept(BLINDFOLD);
