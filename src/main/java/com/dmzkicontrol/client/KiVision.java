@@ -186,7 +186,7 @@ public final class KiVision {
         RenderLevelStageEvent.Stage stage = event.getStage();
         if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
             coverSky(event.getPoseStack(), fade(event.getPartialTick()));
-        } else if (stage == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
+        } else if (stage == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             renderGhosts(event);
         }
     }
