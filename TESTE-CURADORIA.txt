@@ -1,0 +1,42 @@
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+  OK   primeira passada muda arquivos
+  OK   Blue Evoluido removido
+  OK   Rose repetido tirado do godforms
+  OK   Blue Aperfeicoado agora exige o Blue (pre-requisito consertado)
+  OK   Blue Aperfeicoado desceu do nivel 4 para o 3
+  OK   Blue balanceado (6.0)
+  OK   so o Rose sobrou no evildivineforms
+  OK   divinerose (Rose repetido) movido para o backup
+  OK   SSJ5 removido
+  OK   SSJ3/SSJ4 Lendario fora, Lendario FP fica
+  OK   SSJ4 FP/LB fora, SSJ4 fica
+  OK   SSJ4 so uma vez (fica o do Oozaru Dourado, como no GT)
+  OK   niveis do superforms intactos (sem buracos)
+  OK   Beast balanceado (22.85 -> 7.5)
+  OK   precos do superforms cortados para 8 niveis
+  OK   precos do godforms cortados para 3 niveis
+  OK   precos do evildivineforms cortados para 1 nivel
+  OK   grupos removidos sairam do character.json
+  OK   Cell God/Blue removido
+  OK   Cell Max so uma vez (fica o do cellmax)
+  OK   Orange Piccolo repetido (pureprogress) movido
+  OK   Namekuseijin: Orange e Gigante ficam, Deus Namek sai
+  OK   Super Majin removido
+  OK   Ki Divino so uma versao
+  OK   Bio-Android Golden/Black removido
+  OK   Black Freeza balanceado (14 -> 2.4)
+  OK   skills.json sem os grupos removidos
+  OK   skills.json mantem os grupos vivos
+  OK   stackSkills sem o friezabiodata
+  OK   skills: Aura Control fica, Super Majin sai
+  OK   backup dos grupos removidos existe
+  OK   Ultra Ego na ordem certa (Sinal antes do Dominado)
+  OK   Ultra Ego: niveis de desbloqueio intactos
+  OK   segunda passada nao muda nada (idempotente)
+  OK   arquivo antigo atualizado com a regra nova
+  OK   o que o dono mudou no arquivo fica
+  OK   arquivo antigo ganha a regra de ordem
+  OK   regra nova ja aplicada no arquivo antigo
+CURADORIA: TODOS OS TESTES PASSARAM
