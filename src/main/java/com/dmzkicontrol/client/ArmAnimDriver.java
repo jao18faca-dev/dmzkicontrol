@@ -57,7 +57,7 @@ public final class ArmAnimDriver {
 
     /** Toca uma animacao "de uma vez" (disparo) por {@code ticks}. */
     public static void play(AbstractClientPlayer p, String anim, int ticks) {
-        if (p.level() == null) return;
+        if (p.level() == null || !com.dmzkicontrol.config.KiControlClientConfig.animationsEnabled()) return;
         REQUESTS.put(p.getId(), new Object[]{anim, p.level().getGameTime() + ticks});
         attach(p);
     }
@@ -68,6 +68,7 @@ public final class ArmAnimDriver {
 
     /** O que este jogador deve mostrar agora (null = nada, o DMZ cuida dos bracos). */
     private static String current(AbstractClientPlayer p) {
+        if (!com.dmzkicontrol.config.KiControlClientConfig.animationsEnabled()) return null;
         Object[] req = REQUESTS.get(p.getId());
         if (req != null) {
             long now = p.level().getGameTime();
@@ -119,6 +120,7 @@ public final class ArmAnimDriver {
     public static void clientTick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) { REQUESTS.clear(); return; }
+        if (!com.dmzkicontrol.config.KiControlClientConfig.animationsEnabled()) { REQUESTS.clear(); return; }
         SealAnimations.ensureInjected();
         for (AbstractClientPlayer p : mc.level.players()) attach(p);
         long now = mc.level.getGameTime();

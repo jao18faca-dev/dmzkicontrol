@@ -18,6 +18,7 @@ public final class KiControlClientConfig {
     public final ForgeConfigSpec.IntValue offsetY;
     public final ForgeConfigSpec.DoubleValue scale;
     public final ForgeConfigSpec.BooleanValue vignette;
+    public final ForgeConfigSpec.BooleanValue animations;
 
     static {
         Pair<KiControlClientConfig, ForgeConfigSpec> pair = new ForgeConfigSpec.Builder().configure(KiControlClientConfig::new);
@@ -33,6 +34,12 @@ public final class KiControlClientConfig {
                 .defineEnum("mode", CutsceneMode.ALWAYS);
         b.pop();
 
+        b.push("animations");
+        animations = b.comment("Animacoes do add-on no personagem (selo, Arco de Ki, laser cerealiano, poses das cutscenes).",
+                        "Desligadas por padrao: o personagem usa so as poses normais do DMZ.")
+                .define("enabled", false);
+        b.pop();
+
         b.push("hud");
         showHud = b.comment("Mostra o medidor de tensao do selo (estilo dos medidores laterais do DMZ).").define("showHud", true);
         meterSide = b.comment("Lado da tela do medidor (os medidores do DMZ ficam na esquerda).").defineEnum("side", MeterSide.RIGHT);
@@ -42,5 +49,14 @@ public final class KiControlClientConfig {
         vignette = b.comment("Brilho suave nas bordas da tela enquanto selado (fica vermelho com a tensao alta).")
                 .define("vignette", true);
         b.pop();
+    }
+
+    /** As animacoes do add-on estao ligadas? (desligadas se a config ainda nao carregou) */
+    public static boolean animationsEnabled() {
+        try {
+            return INSTANCE.animations.get();
+        } catch (Throwable t) {
+            return false;
+        }
     }
 }
