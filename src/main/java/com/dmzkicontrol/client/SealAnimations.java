@@ -122,9 +122,8 @@ public final class SealAnimations {
             case SealAnimS2C.LASER_AIM -> {
                 // o braco sobe devagar e fica mirando; a pose instantanea de ki blast do DMZ fica desligada
                 int aim = Math.max(3, com.dmzkicontrol.config.KiControlConfig.get().cerealian.laserAimTicks);
-                boolean animOn = com.dmzkicontrol.config.KiControlClientConfig.animationsEnabled();
-                if (animOn) NO_SHOOT_POSE.put(player.getId(), mc.level.getGameTime() + aim + 20);
-                if (animOn && ((Object) player) instanceof IPlayerAnimatable anim) {
+                NO_SHOOT_POSE.put(player.getId(), mc.level.getGameTime() + aim + 20);
+                if (((Object) player) instanceof IPlayerAnimatable anim) {
                     try { anim.dragonminez$setShootingKi(false); } catch (Throwable ignored) { }
                 }
                 ArmAnimDriver.play(player, ArmAnimDriver.LASER_AIM, aim + 2);
@@ -132,9 +131,8 @@ public final class SealAnimations {
             }
             case SealAnimS2C.LASER -> {
                 // troca a pose instantanea do ki blast do DMZ por um "dedo apontado" suave
-                boolean animOn = com.dmzkicontrol.config.KiControlClientConfig.animationsEnabled();
-                if (animOn) NO_SHOOT_POSE.put(player.getId(), mc.level.getGameTime() + 16);
-                if (animOn && ((Object) player) instanceof IPlayerAnimatable anim) {
+                NO_SHOOT_POSE.put(player.getId(), mc.level.getGameTime() + 16);
+                if (((Object) player) instanceof IPlayerAnimatable anim) {
                     try { anim.dragonminez$setShootingKi(false); } catch (Throwable ignored) { }
                 }
                 ArmAnimDriver.play(player, ArmAnimDriver.LASER, 14);
@@ -157,7 +155,6 @@ public final class SealAnimations {
     }
 
     public static void play(AbstractClientPlayer player, String name, int ticks) {
-        if (!com.dmzkicontrol.config.KiControlClientConfig.animationsEnabled()) return;
         if (!(((Object) player) instanceof IPlayerAnimatable anim) || !ensureInjected()) return;
         try {
             anim.dragonminez$playKiAnimation(name, false);
