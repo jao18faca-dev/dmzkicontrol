@@ -47,7 +47,6 @@ public final class ClientSetup {
     private ClientSetup() {}
 
     public static boolean cutsceneEnabled() {
-        if (true) return false; // cutscene do selo removida (4.0.4): sempre o selo rapido, com a mao no peito
         return switch (KiControlClientConfig.INSTANCE.cutscene.get()) {
             case ALWAYS -> true;
             case ONCE_PER_SESSION -> !CutsceneController.playedThisSession();
