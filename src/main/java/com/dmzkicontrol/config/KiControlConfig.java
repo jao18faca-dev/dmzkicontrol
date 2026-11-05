@@ -408,7 +408,7 @@ public class KiControlConfig {
     /** Cutscenes de transformacao (4.0): uma cena para cada forma de cada raca, Kaioken, Instinto Superior... */
     public static class FormScenes {
         /** Liga/desliga as cutscenes de transformacao para todo mundo. */
-        public boolean enabled = true;
+        public boolean enabled = false;
         /** Quem esta na cena nao leva dano nem empurrao. */
         public boolean invulnerable = true;
         /** Quem esta na cena fica parado no lugar (no chao ou no ar). */

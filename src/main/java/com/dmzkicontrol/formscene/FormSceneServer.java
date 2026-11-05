@@ -36,6 +36,9 @@ public final class FormSceneServer {
 
     private static final Map<UUID, Running> RUNNING = new ConcurrentHashMap<>();
 
+    /** Cutscenes de transformacao removidas a pedido (4.0.4). O codigo fica para uma volta futura. */
+    private static final boolean SCENES_ON = false;
+
     private FormSceneServer() {}
 
     public static boolean inScene(ServerPlayer sp) {
@@ -64,7 +67,7 @@ public final class FormSceneServer {
 
     private static void start(ServerPlayer sp, String group, String form) {
         KiControlConfig.FormScenes cfg = KiControlConfig.get().formScenes;
-        if (!cfg.enabled) return;
+        if (!SCENES_ON || !cfg.enabled) return;
         String key = (group + "." + form).toLowerCase(Locale.ROOT);
         for (String off : cfg.disabledForms) if (off != null && key.equals(off.toLowerCase(Locale.ROOT))) return;
         StatsData data = AuraSealManager.stats(sp);
