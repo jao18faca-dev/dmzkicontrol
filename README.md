@@ -151,6 +151,12 @@ Como entram no jogo:
 - As sagas do Ultra ganham **tradução em português** (o Ultra só vem em inglês).
 - Para manter as sagas deste add-on em vez das do Ultra: `ultra.useUltraSagas = false`.
 
+## Grupo (party) do DMZ
+
+- **TP dividido:** o DMZ 2.2.1 só dividia o TP com o grupo se quem ganhou tivesse a Transmissão Instantânea. Agora divide com quem está no mesmo mundo e dentro do alcance do grupo (`partyQuestShareRange` do DMZ), na proporção do DMZ (`partyTpShareRatio`). Desligar: `party.fixTpShare = false`.
+- **Missões:** o DMZ só contava a missão para quem do grupo já a tinha aceitado. Agora, quando alguém termina uma missão, quem está perto e já podia fazê-la (a anterior da saga feita) também a termina; a recompensa fica esperando na árvore. Desligar: `party.shareQuestCompletion = false`.
+- A **Venda de Treino** não esconde mais o cabelo (entra na lista `helmetsThatKeepHair` do DMZ).
+
 ## Comandos
 | Comando | O que faz |
 |---|---|

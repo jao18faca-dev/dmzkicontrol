@@ -497,5 +497,6 @@
   "gui.dmzkicontrol.hud_choice.later": "Change it later: /dmzhud or Mods > DragonMineZ Evolution > Config.",
   "gui.dmzkicontrol.hud_choice.no_ultra": "The HUD choice only exists with DMZ Ultra installed.",
   "message.dmzkicontrol.ultra_sagas_migrated": "%s Moro and Granolah quest(s) you had already done now count in DMZ Ultra's sagas too.",
-  "message.dmzkicontrol.blindfold_tp": "Training Blindfold: +%s extra TP"
+  "message.dmzkicontrol.blindfold_tp": "Training Blindfold: +%s extra TP",
+  "message.dmzkicontrol.party_quest_shared": "Quest completed together with %s (party). The reward is waiting in the quest tree."
 }

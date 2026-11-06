@@ -419,6 +419,18 @@ public class KiControlConfig {
 
     public Ultra ultra = new Ultra();
 
+    /** Grupo (party) do DMZ. */
+    public static class Party {
+        /** true = o TP dividido com o grupo funciona sem Transmissao Instantanea. O DMZ 2.2.1 so dividia o TP se quem
+         *  ganhou tivesse a Transmissao Instantanea e o colega estivesse no alcance dela; agora vale o alcance do grupo. */
+        public boolean fixTpShare = true;
+        /** true = quando alguem do grupo termina uma missao, quem esta perto (alcance do grupo do DMZ) e ja podia fazer
+         *  aquela missao tambem a termina, mesmo sem ter aceitado antes. A recompensa fica para cada um pegar. */
+        public boolean shareQuestCompletion = true;
+    }
+
+    public Party party = new Party();
+
     /** Cutscenes de transformacao (4.0): uma cena para cada forma de cada raca, Kaioken, Instinto Superior... */
     public static class FormScenes {
         /** Liga/desliga as cutscenes de transformacao para todo mundo. */

@@ -638,5 +638,6 @@
   "gui.dmzkicontrol.hud_choice.later": "Dá para trocar depois: /dmzhud ou Mods > DragonMineZ Evolution > Config.",
   "gui.dmzkicontrol.hud_choice.no_ultra": "A escolha de HUD só existe com o DMZ Ultra instalado.",
   "message.dmzkicontrol.ultra_sagas_migrated": "%s missão(ões) do Moro e do Granolah que você já tinha feito valem também nas sagas do DMZ Ultra.",
-  "message.dmzkicontrol.blindfold_tp": "Venda de Treino: +%s TP extra"
+  "message.dmzkicontrol.blindfold_tp": "Venda de Treino: +%s TP extra",
+  "message.dmzkicontrol.party_quest_shared": "Missão concluída junto com %s (grupo). A recompensa está esperando na árvore de missões."
 }

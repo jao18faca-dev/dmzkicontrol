@@ -72,7 +72,7 @@ final class SparkingScale {
             double melee = num(o, "meleeDamage") * grow * meleePerLevel / BASE_MELEE;
             o.addProperty("meleeDamage", round1(melee));
             if (num(o, "kiDamage") > 0) o.addProperty("kiDamage", round1(num(o, "kiDamage") * grow * kiPerLevel / BASE_KI));
-            if (defenseShare > 0 && !o.has("Defense")) o.addProperty("Defense", round1(melee * defenseShare));
+            // "Defense" nao existe nas missoes do DMZ 2.2.1 (ele avisa no relatorio e ignora): nao escreve
         }
     }
 

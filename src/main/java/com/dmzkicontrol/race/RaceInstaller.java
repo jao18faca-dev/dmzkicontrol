@@ -52,6 +52,7 @@ public final class RaceInstaller {
 
     private static boolean runAll() {
         boolean aura = ensureAuraControlSkill(KiControlConfig.get());
+        aura |= ensureBlindfoldKeepsHair();
         KiControlConfig.Cerealian c = KiControlConfig.get().cerealian;
         if (!c.installRace) return aura;
         boolean changed = aura;
@@ -242,6 +243,33 @@ public final class RaceInstaller {
             return true;
         } catch (Exception e) {
             KiControlMod.LOGGER.warn("Nao consegui ajustar o requisito do Alem do Limite: {}", e.toString());
+            return false;
+        }
+    }
+
+    /**
+     * O DMZ esconde o cabelo de quem tem algo no slot de capacete, menos os itens da lista
+     * gameplay.helmetsThatKeepHair do general-server.json. A Venda de Treino e so uma faixa nos olhos:
+     * entra na lista para o cabelo continuar aparecendo.
+     */
+    private static boolean ensureBlindfoldKeepsHair() {
+        Path file = dmzDir().resolve("general-server.json");
+        if (!Files.exists(file)) return false;
+        String id = KiControlMod.MODID + ":blindfold";
+        try {
+            JsonObject root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonObject gameplay = root.has("gameplay") && root.get("gameplay").isJsonObject() ? root.getAsJsonObject("gameplay") : null;
+            if (gameplay == null) return false;
+            JsonArray list = gameplay.has("helmetsThatKeepHair") && gameplay.get("helmetsThatKeepHair").isJsonArray()
+                    ? gameplay.getAsJsonArray("helmetsThatKeepHair") : new JsonArray();
+            for (JsonElement e : list) if (e.isJsonPrimitive() && id.equals(e.getAsString())) return false;
+            list.add(id);
+            gameplay.add("helmetsThatKeepHair", list);
+            Files.writeString(file, GSON.toJson(root), StandardCharsets.UTF_8);
+            KiControlMod.LOGGER.info("Venda de Treino adicionada aos itens de cabeca que mantem o cabelo (helmetsThatKeepHair).");
+            return true;
+        } catch (Exception e) {
+            KiControlMod.LOGGER.warn("Nao consegui manter o cabelo com a Venda de Treino: {}", e.toString());
             return false;
         }
     }
