@@ -118,7 +118,17 @@ public final class FormCurator {
             if (def.has("tune")) {
                 if (!cfg.has("tune") || !cfg.get("tune").isJsonObject()) cfg.add("tune", new JsonObject());
                 JsonObject mine = cfg.getAsJsonObject("tune");
-                for (Map.Entry<String, JsonElement> e : def.getAsJsonObject("tune").entrySet()) if (!mine.has(e.getKey())) mine.add(e.getKey(), e.getValue());
+                for (Map.Entry<String, JsonElement> e : def.getAsJsonObject("tune").entrySet()) {
+                    if (!mine.has(e.getKey())) {
+                        mine.add(e.getKey(), e.getValue());
+                    } else if (mine.get(e.getKey()).isJsonObject() && e.getValue().isJsonObject()) {
+                        // ajuste que o arquivo ja tinha: ganha so as propriedades novas (as que o dono mudou ficam)
+                        JsonObject have2 = mine.getAsJsonObject(e.getKey());
+                        for (Map.Entry<String, JsonElement> kv : e.getValue().getAsJsonObject().entrySet()) {
+                            if (!have2.has(kv.getKey())) have2.add(kv.getKey(), kv.getValue().deepCopy());
+                        }
+                    }
+                }
             }
             cfg.addProperty("version", want);
             LOGGER.info("Curadoria de formas: arquivo atualizado da versao {} para {} (entradas novas acrescentadas).", have, want);

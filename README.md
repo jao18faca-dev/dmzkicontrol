@@ -152,6 +152,13 @@ Como entram no jogo:
 - As sagas do Ultra ganham **tradução em português** (o Ultra só vem em inglês).
 - Para manter as sagas deste add-on em vez das do Ultra: `ultra.useUltraSagas = false`.
 
+## Freeza Dourado e Black Freeza
+
+O DMZ só trocava a cor do corpo. Agora, de frente e de costas, voando ou em qualquer pose:
+- **Dourado:** brilho metálico dourado correndo pelo corpo, gemas roxas acesas pulsando, pó dourado e faíscas brancas em volta, aura dourada com núcleo claro e contorno brilhante.
+- **Black:** preto polido com reflexos lilás finos, gemas roxo-rosadas acesas, fagulhas roxas e rosa e estalos de energia, aura escura com borda roxa e rosa.
+- Para voltar só às cores do DMZ: `forms.frostGodVisuals = false` no `config/dmzkicontrol-client.toml`. Cores e aura ficam em `config/dmzkicontrol_forms.json` (`frostgodforms.golden` / `frostgodforms.black`).
+
 ## Grupo (party) do DMZ
 
 - **TP dividido:** o DMZ 2.2.1 só dividia o TP com o grupo se quem ganhou tivesse a Transmissão Instantânea. Agora divide com quem está no mesmo mundo e dentro do alcance do grupo (`partyQuestShareRange` do DMZ), na proporção do DMZ (`partyTpShareRatio`). Desligar: `party.fixTpShare = false`.

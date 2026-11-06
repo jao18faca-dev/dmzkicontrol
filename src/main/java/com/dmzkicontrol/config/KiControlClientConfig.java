@@ -21,6 +21,7 @@ public final class KiControlClientConfig {
     public final ForgeConfigSpec.DoubleValue scale;
     public final ForgeConfigSpec.BooleanValue vignette;
     public final ForgeConfigSpec.EnumValue<UltraHud> ultraHud;
+    public final ForgeConfigSpec.BooleanValue frostGodVisuals;
 
     static {
         Pair<KiControlClientConfig, ForgeConfigSpec> pair = new ForgeConfigSpec.Builder().configure(KiControlClientConfig::new);
@@ -44,6 +45,12 @@ public final class KiControlClientConfig {
         scale = b.comment("Tamanho do medidor (1.0 = mesmo tamanho dos medidores do DMZ).").defineInRange("meterScale", 1.6, 0.5, 4.0);
         vignette = b.comment("Brilho suave nas bordas da tela enquanto selado (fica vermelho com a tensao alta).")
                 .define("vignette", true);
+        b.pop();
+
+        b.push("forms");
+        frostGodVisuals = b.comment("Freeza Dourado e Black Freeza: brilho metalico correndo pelo corpo, gemas acesas e faiscas",
+                        "em volta (false = so as cores do DMZ).")
+                .define("frostGodVisuals", true);
         b.pop();
 
         b.push("ultra");

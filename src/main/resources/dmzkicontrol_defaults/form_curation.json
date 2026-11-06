@@ -1,6 +1,6 @@
 {
   "_info": "Curadoria de formas do DragonMineZ Evolution. Roda a cada inicio, DEPOIS do DragonMineZ, DMZ Sparking e Dragon Block Noea: tira formas fan-made, remove repeticoes, conserta pre-requisitos/niveis e aplica o balanceamento e o visual abaixo. Para mudar numeros ou cores edite ESTE arquivo (os arquivos do DMZ sao reescritos por ele). Chave = grupo.forma.",
-  "version": 4,
+  "version": 5,
   "enabled": true,
   "removeForms": [
     "legendaryforms.ssjlegendary3",
@@ -295,7 +295,44 @@
       "eye2Color": "#C2141B",
       "auraColor": "#FFC83D",
       "extraAuraColor": "#FFF2B3",
-      "hasLightnings": false
+      "hasLightnings": false,
+      "bodyColor3": "#E8A91C",
+      "tintIntensity": 0.0,
+      "aura3DStyle": {
+        "size": [
+          1.12,
+          1.2,
+          1.04
+        ],
+        "flamePeaks": 14,
+        "waveFrequency": 2.2,
+        "waveSpeed": 5.6,
+        "waveAmplitude": 0.8,
+        "noiseDetail": 0.18,
+        "upwardBias": 0.56,
+        "coreAlpha": 0.06,
+        "rimAlpha": 1.0,
+        "rimPower": 3.6,
+        "rimThreshold": 0.05,
+        "bloomIntensity": 1.4,
+        "spikeDensity": 36,
+        "spikeBurstRate": 3.4,
+        "spikeRarity": 2.6,
+        "bandStart": 0.5,
+        "coreColor": "#FFF7D1",
+        "rimColor": "#FFB300",
+        "noiseColor": "#FFE07A",
+        "secondBorderColor": "#FFFFFF"
+      },
+      "outlineShader": {
+        "enabled": true,
+        "primaryColor": "#FFE38A",
+        "secondaryColor": "#8A5A00",
+        "outlineThickness": 1.1,
+        "fireIntensity": 0.0,
+        "colorMode": "pulse",
+        "bodyGlow": 0.12
+      }
     },
     "frostgodforms.black": {
       "strMultiplier": 2.4,
@@ -304,14 +341,51 @@
       "defMultiplier": 2.0,
       "speedMultiplier": 1.45,
       "energyDrain": 0.17,
-      "bodyColor1": "#1B1922",
-      "bodyColor2": "#8A2BB8",
-      "eye1Color": "#E14795",
-      "eye2Color": "#E14795",
+      "bodyColor1": "#131117",
+      "bodyColor2": "#6A2398",
+      "eye1Color": "#E0123F",
+      "eye2Color": "#E0123F",
       "auraColor": "#2A1438",
       "extraAuraColor": "#B06BFF",
       "hasLightnings": true,
-      "lightningColor": "#F4E6FF"
+      "lightningColor": "#E9C8FF",
+      "bodyColor3": "#26202E",
+      "tintIntensity": 0.0,
+      "aura3DStyle": {
+        "size": [
+          1.12,
+          1.2,
+          1.04
+        ],
+        "flamePeaks": 14,
+        "waveFrequency": 2.2,
+        "waveSpeed": 5.6,
+        "waveAmplitude": 0.8,
+        "noiseDetail": 0.18,
+        "upwardBias": 0.56,
+        "coreAlpha": 0.06,
+        "rimAlpha": 1.0,
+        "rimPower": 3.6,
+        "rimThreshold": 0.05,
+        "bloomIntensity": 1.3,
+        "spikeDensity": 36,
+        "spikeBurstRate": 3.4,
+        "spikeRarity": 2.6,
+        "bandStart": 0.5,
+        "coreColor": "#0D0612",
+        "rimColor": "#C04BFF",
+        "noiseColor": "#2A0E3A",
+        "secondBorderColor": "#FF5FD2"
+      },
+      "outlineShader": {
+        "enabled": true,
+        "primaryColor": "#C98BFF",
+        "secondaryColor": "#1A0A2A",
+        "outlineThickness": 1.1,
+        "fireIntensity": 0.15,
+        "colorMode": "pulse",
+        "bodyGlow": 0.08
+      }
     },
     "cellmax.corruptedgiant": {
       "strMultiplier": 7.5,
