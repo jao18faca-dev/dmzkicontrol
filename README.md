@@ -142,6 +142,15 @@ Como entram no jogo:
 - Os inimigos usam o sistema de inimigos de saga do próprio DMZ (voo, aura, ki, combos).
 - Para desligar: `sagas.installMoroAndGranolah = false` no `config/dmzkicontrol.json`.
 
+## Com o DMZ Ultra 0.4 instalado
+
+- **Sem Bleach:** o add-on desliga o interruptor geral de Bleach do próprio Ultra. Saem as raças Shinigami e Fullbringer, os Hollows, os NPCs, sagas e missões de Bleach, as formas, técnicas, itens, telas e teclas. Nada é apagado do mundo: quem já era Shinigami ou Fullbringer continua com a raça, na forma base. Para trazer de volta: `ultra.removeBleach = false`.
+- **Escolha da HUD:** na primeira vez que você entra num mundo aparece a pergunta: HUD original do DragonMineZ ou HUD do DMZ Ultra. A original desliga, na config do Ultra, a moldura com retrato, o painel do alvo, os menus redesenhados, a escolha de raça redesenhada, a placa acima da hotbar, os cartões no lugar do chat, a reorganização do canto direito e o anel da trava na tela. Para trocar depois: `/dmzhud` ou Mods > DragonMineZ Evolution > Config (fica em `ultra.hud` no `config/dmzkicontrol-client.toml`).
+- **Uma saga do Moro e uma do Granolah:** valem as do Ultra, que já vêm na versão 0.4 com as mesmas missões e mais coisas (o Moro sugando ki, o Merus ensinando o último passo do Instinto Superior, o Vegeta ensinando a técnica). As deste add-on saem do mundo (guardadas em `world/dmzkicontrol/retired_sagas`), junto com os NPCs repetidos (Jaco, Merus, Granolah, Monaito) e o segundo Planeta Cereal da nave. Quem já tinha feito missões das sagas do add-on fica com as mesmas missões feitas nas do Ultra, sem receber a recompensa de novo.
+- O que só existe aqui passa a usar as coisas do Ultra: as **Esferas de Cereal e o Toronbo** ficam no Planeta Cereal do Ultra, o **Radar de Cereal** chega na missão 11 da saga do Granolah do Ultra e o **Além do Limite** libera na missão 26 dela.
+- As sagas do Ultra ganham **tradução em português** (o Ultra só vem em inglês).
+- Para manter as sagas deste add-on em vez das do Ultra: `ultra.useUltraSagas = false`.
+
 ## Comandos
 | Comando | O que faz |
 |---|---|

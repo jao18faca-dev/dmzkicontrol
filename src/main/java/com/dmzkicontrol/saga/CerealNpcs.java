@@ -48,6 +48,36 @@ final class CerealNpcs {
         return o;
     }
 
+    /** Ids de todos os NPCs de saga deste add-on (placements e structure_npcs). */
+    static final java.util.Set<String> ALL_IDS = java.util.Set.of(
+            "dmzkicontrol_monaito", "dmzkicontrol_granolah_cereal", "dmzkicontrol_jaco", "dmzkicontrol_merus", "dmzkicontrol_granolah");
+
+    /** Com o DMZ Ultra: tira os NPCs de saga deste add-on do placements.json (o Ultra coloca os dele). */
+    static void remove(Path world) {
+        Path file = world.resolve("dragonminez").resolve("npcs").resolve("placements.json");
+        if (!Files.isRegularFile(file)) return;
+        try {
+            JsonObject root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8)).getAsJsonObject();
+            if (!root.has("placements") || !root.get("placements").isJsonArray()) return;
+            JsonArray list = root.getAsJsonArray("placements");
+            JsonArray keep = new JsonArray();
+            int removed = 0;
+            for (JsonElement e : list) {
+                if (e.isJsonObject() && e.getAsJsonObject().has("id") && ALL_IDS.contains(e.getAsJsonObject().get("id").getAsString())) {
+                    removed++;
+                    continue;
+                }
+                keep.add(e);
+            }
+            if (removed == 0) return;
+            root.add("placements", keep);
+            Files.writeString(file, GSON.toJson(root), StandardCharsets.UTF_8);
+            KiControlMod.LOGGER.info("[Sagas] {} NPC(s) repetido(s) do Planeta Cereal retirado(s) (o DMZ Ultra coloca os dele).", removed);
+        } catch (Exception e) {
+            KiControlMod.LOGGER.warn("[Sagas] NPCs repetidos do Planeta Cereal nao retirados: {}", e.toString());
+        }
+    }
+
     /** createIfMissing=false: so mexe se o DMZ ja criou o arquivo (antes de iniciar, para valer ja nesta abertura). */
     static void install(Path world, boolean createIfMissing) {
         Path file = world.resolve("dragonminez").resolve("npcs").resolve("placements.json");

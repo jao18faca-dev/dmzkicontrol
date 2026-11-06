@@ -44,10 +44,16 @@ public final class SagaInstaller {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onServerAboutToStart(ServerAboutToStartEvent event) {
-        if (!KiControlConfig.get().sagas.installMoroAndGranolah) return;
         MinecraftServer server = event.getServer();
         Path world = server.getWorldPath(LevelResource.ROOT);
         Path dmz = world.resolve("dragonminez");
+        if (com.dmzkicontrol.compat.UltraCompat.ultraSagas()) {
+            // o DMZ Ultra ja tem as sagas do Moro e do Granolah: as deste add-on saem (senao ficam duas de cada)
+            retire(world, dmz);
+            CerealNpcs.remove(world);
+            return;
+        }
+        if (!KiControlConfig.get().sagas.installMoroAndGranolah) return;
         try {
             JsonObject previous = previousCondition(dmz);
             SparkingScale scale = previous != null && SPARKING_TOP.equals(previous.get("sagaId").getAsString())
@@ -107,8 +113,51 @@ public final class SagaInstaller {
         if (KiControlConfig.get().sagas.cerealNpcs) CerealNpcs.install(world, false);
     }
 
+    /**
+     * Com o DMZ Ultra: tira do mundo as sagas que este add-on tinha escrito. Nada e apagado - vai para
+     * world/dmzkicontrol/retired_sagas (se o Ultra sair, o add-on escreve as dele de novo). O progresso dos
+     * jogadores passa para as sagas do Ultra no login (SagaMigration).
+     */
+    private static void retire(Path world, Path dmz) {
+        Path store = world.resolve("dmzkicontrol").resolve("retired_sagas");
+        int moved = 0;
+        try {
+            JsonObject index = jar("index.json");
+            for (JsonElement e : index.getAsJsonArray("sagas")) {
+                JsonObject saga = e.getAsJsonObject();
+                String id = saga.get("id").getAsString();
+                String folder = saga.get("folder").getAsString();
+                moved += move(dmz.resolve("sagas").resolve(id + ".json"), store.resolve("sagas").resolve(id + ".json"));
+                moved += move(dmz.resolve("quests").resolve(folder), store.resolve("quests").resolve(folder));
+            }
+        } catch (Exception ex) {
+            KiControlMod.LOGGER.error("[Sagas] Nao consegui tirar as sagas repetidas do Moro e do Granolah: {}", ex.toString());
+            return;
+        }
+        if (moved > 0) KiControlMod.LOGGER.info("[Sagas] DMZ Ultra instalado: as sagas do Moro e do Granolah sao as dele. As deste add-on sairam do mundo (guardadas em {}).", store);
+        else KiControlMod.LOGGER.info("[Sagas] DMZ Ultra instalado: usando as sagas do Moro e do Granolah dele.");
+    }
+
+    private static int move(Path from, Path to) throws Exception {
+        if (!Files.exists(from)) return 0;
+        Files.createDirectories(to.getParent());
+        if (Files.isDirectory(from)) {
+            Files.createDirectories(to);
+            try (Stream<Path> files = Files.list(from)) {
+                for (Path f : files.toList()) {
+                    Files.move(f, to.resolve(f.getFileName().toString()), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            Files.deleteIfExists(from); // pasta vazia
+        } else {
+            Files.move(from, to, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
+        return 1;
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onServerStarted(ServerStartedEvent event) {
+        if (com.dmzkicontrol.compat.UltraCompat.ultraSagas()) return;
         if (!KiControlConfig.get().sagas.installMoroAndGranolah || !KiControlConfig.get().sagas.cerealNpcs) return;
         CerealNpcs.install(event.getServer().getWorldPath(LevelResource.ROOT), true);
     }

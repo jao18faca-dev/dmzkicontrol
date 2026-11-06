@@ -18,7 +18,8 @@ public final class SparkingStory {
 
     public static Object[] extend(Object[] order) {
         try {
-            if (order == null || !enabled()) return order;
+            // com o DMZ Ultra o Sparking fica parado (o Ultra assume a historia) e as sagas sao as dele
+            if (order == null || !enabled() || UltraCompat.ultraSagas()) return order;
             List<Object> list = new ArrayList<>(Arrays.asList(order));
             if (list.contains(MORO) || !list.contains(AFTER)) return order;
             int at = Math.max(list.indexOf(AFTER), list.indexOf(AFTER_LEGACY)) + 1;

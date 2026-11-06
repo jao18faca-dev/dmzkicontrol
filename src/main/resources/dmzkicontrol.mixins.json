@@ -7,7 +7,8 @@
     "NoeaUltraDodgeMixin",
     "NoeaUltraEgoGateMixin",
     "DragonBallPackMixin",
-    "SparkingSagaOrderMixin"
+    "SparkingSagaOrderMixin",
+    "UltraBleachSwitchMixin"
   ],
   "injectors": {
     "defaultRequire": 0

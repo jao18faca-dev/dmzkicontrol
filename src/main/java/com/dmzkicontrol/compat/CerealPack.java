@@ -22,7 +22,11 @@ public final class CerealPack {
                 System.err.println("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + res + " nao encontrado no jar");
                 return null;
             }
-            return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
+            String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            // com o DMZ Ultra, as esferas ficam no Planeta Cereal dele (o deste add-on nao aparece na nave)
+            String dim = UltraCompat.cerealDimension();
+            if (!UltraCompat.OUR_CEREAL.equals(dim)) text = text.replace("\"" + UltraCompat.OUR_CEREAL + "\"", "\"" + dim + "\"");
+            return JsonParser.parseString(text).getAsJsonObject();
         } catch (Exception e) {
             System.err.println("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + res + " nao lido: " + e);
             return null;

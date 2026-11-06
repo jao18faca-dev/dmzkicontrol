@@ -74,6 +74,9 @@ public final class ClientSetup {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> UtilityMenuScreen.addMenuSlot(new SealMenuSlot()));
+            // Mods > DragonMineZ Evolution > Config: escolha da HUD (com o DMZ Ultra)
+            net.minecraftforge.fml.ModLoadingContext.get().registerExtensionPoint(net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class,
+                    () -> new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new HudChoiceScreen(parent)));
         }
 
         @SubscribeEvent

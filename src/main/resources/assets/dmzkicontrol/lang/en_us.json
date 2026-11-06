@@ -487,5 +487,14 @@
   "gui.dmzsparking.menu.now.guide.chapter.dmzkicontrol_s2_granolah": "Granolah the Survivor - the last Cerealian, the Heeters and the wish to the Cereal Dragon Balls. It ends with Frieza's return.",
   "gui.dmzsparking.menu.now.guide.bridge.dmzkicontrol_s2_granolah": "After this, a bounty hunter arrives on Earth looking for the Saiyans: Granolah. Talk to him near Goku's house.",
   "gui.dmzsparking.menu.now.guide.side.dmzsparking_s5_top": "The Broly and Super Hero films stay open in the quest tree, outside the main story.",
-  "gui.dmzsparking.menu.now.guide.side.dmzkicontrol_s1_moro": "The main story moves on to Planet Cereal."
+  "gui.dmzsparking.menu.now.guide.side.dmzkicontrol_s1_moro": "The main story moves on to Planet Cereal.",
+  "gui.dmzkicontrol.hud_choice.title": "DragonMineZ Evolution - HUD",
+  "gui.dmzkicontrol.hud_choice.question": "DMZ Ultra replaces DragonMineZ's HUD and menus. Which one do you want?",
+  "gui.dmzkicontrol.hud_choice.dmz": "Original DragonMineZ HUD",
+  "gui.dmzkicontrol.hud_choice.dmz.desc": "Health, ki and stamina bars and menus as DragonMineZ draws them.",
+  "gui.dmzkicontrol.hud_choice.ultra": "DMZ Ultra HUD",
+  "gui.dmzkicontrol.hud_choice.ultra.desc": "Portrait frame, glass bars, target panel and redrawn menus.",
+  "gui.dmzkicontrol.hud_choice.later": "Change it later: /dmzhud or Mods > DragonMineZ Evolution > Config.",
+  "gui.dmzkicontrol.hud_choice.no_ultra": "The HUD choice only exists with DMZ Ultra installed.",
+  "message.dmzkicontrol.ultra_sagas_migrated": "%s Moro and Granolah quest(s) you had already done now count in DMZ Ultra's sagas too."
 }

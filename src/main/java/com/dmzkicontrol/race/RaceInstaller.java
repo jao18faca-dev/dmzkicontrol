@@ -59,6 +59,7 @@ public final class RaceInstaller {
         changed |= patchCerealianDefaults(c.raceKey);
         changed |= addNewCerealianForms(c.raceKey);
         changed |= gateWishByToronbo(c.raceKey);
+        changed |= syncGranolahRequisite(c.raceKey);
         changed |= ensureEyeSkill(c);
         changed |= ensureRaceAccess(c.raceKey);
         return changed;
@@ -214,6 +215,33 @@ public final class RaceInstaller {
             return changed;
         } catch (Exception e) {
             KiControlMod.LOGGER.warn("Nao consegui ajustar o Poder do Desejo para o desejo ao Toronbo: {}", e.toString());
+            return false;
+        }
+    }
+
+    /**
+     * Alem do Limite libera na missao 26 da saga do Granolah: a deste add-on ou, com o DMZ Ultra, a dele
+     * (as do add-on saem do mundo quando o Ultra esta instalado). So troca se ainda estiver num dos dois valores.
+     */
+    private static boolean syncGranolahRequisite(String raceKey) {
+        Path formsFile = dmzDir().resolve("races").resolve(raceKey).resolve("forms").resolve("cerealforms.json");
+        if (!Files.exists(formsFile)) return false;
+        String ours = com.dmzkicontrol.compat.UltraCompat.OUR_GRANOLAH + ":26";
+        String ultra = com.dmzkicontrol.compat.UltraCompat.GRANOLAH + ":26";
+        String want = com.dmzkicontrol.compat.UltraCompat.ultraSagas() ? ultra : ours;
+        try {
+            JsonObject root = JsonParser.parseString(Files.readString(formsFile, StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonObject forms = root.getAsJsonObject("forms");
+            if (forms == null || !forms.has("alemdolimite")) return false;
+            JsonObject f = forms.getAsJsonObject("alemdolimite");
+            String now = f.has("sagaRequisite") ? f.get("sagaRequisite").getAsString() : "";
+            if (now.equals(want) || !(now.equals(ours) || now.equals(ultra))) return false;
+            f.addProperty("sagaRequisite", want);
+            Files.writeString(formsFile, GSON.toJson(root), StandardCharsets.UTF_8);
+            KiControlMod.LOGGER.info("Raca '{}': Alem do Limite agora libera na missao {}.", raceKey, want);
+            return true;
+        } catch (Exception e) {
+            KiControlMod.LOGGER.warn("Nao consegui ajustar o requisito do Alem do Limite: {}", e.toString());
             return false;
         }
     }

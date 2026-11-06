@@ -405,6 +405,20 @@ public class KiControlConfig {
 
     public Sagas sagas = new Sagas();
 
+    /** Com o DMZ Ultra (DarkForest) instalado. Sem ele nada disto faz diferenca. */
+    public static class Ultra {
+        /** true = tira todo o conteudo de Bleach do DMZ Ultra (racas Shinigami/Fullbringer, Hollows, NPCs, sagas,
+         *  formas, itens, telas e teclas). Usa o interruptor geral do proprio Ultra: nada e apagado do mundo,
+         *  e false traz tudo de volta. */
+        public boolean removeBleach = true;
+        /** true = as sagas do Moro e do Granolah sao as do proprio DMZ Ultra (as deste add-on saem do mundo,
+         *  com o progresso passado para as dele); Esferas de Cereal, Toronbo e as formas Cerealianas passam a
+         *  usar o Planeta Cereal e a saga do Ultra. false = ficam as deste add-on. */
+        public boolean useUltraSagas = true;
+    }
+
+    public Ultra ultra = new Ultra();
+
     /** Cutscenes de transformacao (4.0): uma cena para cada forma de cada raca, Kaioken, Instinto Superior... */
     public static class FormScenes {
         /** Liga/desliga as cutscenes de transformacao para todo mundo. */

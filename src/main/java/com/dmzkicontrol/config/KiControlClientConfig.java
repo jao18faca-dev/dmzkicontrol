@@ -10,6 +10,8 @@ public final class KiControlClientConfig {
 
     public enum CutsceneMode { ALWAYS, ONCE_PER_SESSION, OFF }
     public enum MeterSide { RIGHT, LEFT }
+    /** HUD com o DMZ Ultra: ASK (pergunta ao entrar no mundo), ULTRA (a dele) ou DMZ (a original do DragonMineZ). */
+    public enum UltraHud { ASK, ULTRA, DMZ }
 
     public final ForgeConfigSpec.EnumValue<CutsceneMode> cutscene;
     public final ForgeConfigSpec.BooleanValue showHud;
@@ -18,6 +20,7 @@ public final class KiControlClientConfig {
     public final ForgeConfigSpec.IntValue offsetY;
     public final ForgeConfigSpec.DoubleValue scale;
     public final ForgeConfigSpec.BooleanValue vignette;
+    public final ForgeConfigSpec.EnumValue<UltraHud> ultraHud;
 
     static {
         Pair<KiControlClientConfig, ForgeConfigSpec> pair = new ForgeConfigSpec.Builder().configure(KiControlClientConfig::new);
@@ -41,6 +44,15 @@ public final class KiControlClientConfig {
         scale = b.comment("Tamanho do medidor (1.0 = mesmo tamanho dos medidores do DMZ).").defineInRange("meterScale", 1.6, 0.5, 4.0);
         vignette = b.comment("Brilho suave nas bordas da tela enquanto selado (fica vermelho com a tensao alta).")
                 .define("vignette", true);
+        b.pop();
+
+        b.push("ultra");
+        ultraHud = b.comment("So com o DMZ Ultra instalado. Qual HUD usar:",
+                        "ASK   - pergunta na primeira vez que voce entra num mundo (padrao)",
+                        "ULTRA - a HUD do DMZ Ultra (moldura com retrato, barras de vidro, menus redesenhados)",
+                        "DMZ   - a HUD e os menus originais do DragonMineZ",
+                        "Para trocar no jogo: comando /dmzhud ou Mods > DragonMineZ Evolution > Config.")
+                .defineEnum("hud", UltraHud.ASK);
         b.pop();
     }
 }

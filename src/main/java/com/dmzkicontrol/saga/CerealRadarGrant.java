@@ -25,7 +25,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 @Mod.EventBusSubscriber(modid = KiControlMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class CerealRadarGrant {
     private static final String FLAG = "dmzkicontrol_cereal_radar";
-    private static final String SAGA = "dmzkicontrol_s2_granolah";
+    /** A saga deste add-on ou a do DMZ Ultra (a do Ultra nao da o radar: as Esferas de Cereal sao daqui). */
+    private static final String[] SAGAS = {"dmzkicontrol_s2_granolah", com.dmzkicontrol.compat.UltraCompat.GRANOLAH};
     private static final int QUEST = 11;
 
     private CerealRadarGrant() {}
@@ -48,7 +49,10 @@ public final class CerealRadarGrant {
             CompoundTag persisted = sp.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
             if (persisted.getBoolean(FLAG)) return;
             StatsData data = AuraSealManager.stats(sp);
-            if (data == null || !data.getPlayerQuestData().isQuestCompleted(PlayerQuestData.sagaQuestKey(SAGA, QUEST))) return;
+            if (data == null) return;
+            boolean done = false;
+            for (String saga : SAGAS) done |= data.getPlayerQuestData().isQuestCompleted(PlayerQuestData.sagaQuestKey(saga, QUEST));
+            if (!done) return;
             Item radar = ForgeRegistries.ITEMS.getValue(new ResourceLocation("dragonminez", "cereal_dball_radar"));
             if (radar == null || radar == net.minecraft.world.item.Items.AIR) return;
             persisted.putBoolean(FLAG, true);
