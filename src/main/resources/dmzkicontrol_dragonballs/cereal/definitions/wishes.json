@@ -27,6 +27,79 @@
       "name": "wish.toronbo.tps.name",
       "description": "wish.toronbo.tps.desc",
       "amount": 5000000
+    },
+    {
+      "type": "attributes",
+      "name": "wish.toronbo.attributes.name",
+      "description": "wish.toronbo.attributes.desc",
+      "amount": 90
+    },
+    {
+      "type": "item_list_wish",
+      "name": "wish.toronbo.scope.name",
+      "description": "wish.toronbo.scope.desc",
+      "items": [
+        {
+          "count": 1,
+          "itemId": "dmzkicontrol:cereal_scope",
+          "itemType": "generic_item"
+        }
+      ]
+    },
+    {
+      "type": "revive",
+      "name": "wish.toronbo.revive.name",
+      "description": "wish.toronbo.revive.desc",
+      "maxTargets": 2
+    },
+    {
+      "type": "item_list_wish",
+      "name": "wish.toronbo.mightfruit.name",
+      "description": "wish.toronbo.mightfruit.desc",
+      "items": [
+        {
+          "count": 24,
+          "itemId": "dragonminez:might_tree_fruit",
+          "itemType": "generic_item"
+        }
+      ]
+    },
+    {
+      "type": "item_list_wish",
+      "name": "wish.toronbo.materials.name",
+      "description": "wish.toronbo.materials.desc",
+      "items": [
+        {
+          "count": 48,
+          "itemId": "dragonminez:kikono_shard",
+          "itemType": "generic_item"
+        },
+        {
+          "count": 96,
+          "itemId": "minecraft:iron_ingot",
+          "itemType": "generic_item"
+        }
+      ]
+    },
+    {
+      "type": "relocatestats",
+      "name": "wish.toronbo.relocatestats.name",
+      "description": "wish.toronbo.relocatestats.desc"
+    },
+    {
+      "type": "recustomize",
+      "name": "wish.toronbo.customization.name",
+      "description": "wish.toronbo.customization.desc"
+    },
+    {
+      "type": "passivereset",
+      "name": "wish.toronbo.racialskillreset.name",
+      "description": "wish.toronbo.racialskillreset.desc"
+    },
+    {
+      "type": "changedifficulty",
+      "name": "wish.toronbo.changedifficulty.name",
+      "description": "wish.toronbo.changedifficulty.desc"
     }
   ]
 }

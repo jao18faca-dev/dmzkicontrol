@@ -56,6 +56,11 @@ O add-on instala a raça **Cerealiano** no sistema de raças do DMZ (`config/dra
 - **Esferas do Dragão de Cereal e o Toronbo:** como no mangá, são só duas esferas (1 e 2 estrelas), bem pequenas, espalhadas no Planeta Cereal. O Monaito te dá o Radar de Cereal na missão 11 da saga do Granolah. Juntando as duas aparece o Toronbo, o dragão com jeito de axolote, que realiza um desejo:
   - **Ser o guerreiro mais forte do universo:** para um Cerealiano, libera o Poder do Desejo e cobra anos de vida: a vida máxima cai 10% para sempre (`cerealian.toronboLifeCost`). Para outras raças, o Toronbo só desperta o potencial (5.000.000 TP, igual ao desejo de TP do Porunga).
   - 16 Sementes dos Deuses ou 5.000.000 TP.
+  - **A força de um povo inteiro:** x90 Atributos (entre o Porunga, x75, e o Shenlong, x100).
+  - **Mira dos Cerealianos:** a Mira Cereal.
+  - **Trazer de volta quem caiu:** revive até 2 pessoas.
+  - 24 Frutos da Árvore do Poder, ou a sucata dos Heeters (48 Fragmentos de Kikono e 96 Barras de Ferro).
+  - **Refazer o treino** (redistribuir atributos), **Um novo rosto** (mudar a aparência), **Apagar o passado da raça** (zerar o progresso racial) e **Escolher a dificuldade de novo**.
 - **Cabelo verde-água** por padrão.
 - **Olho Cereal** (segure **B**): gasta um pouco de ki por segundo e dá:
   - zoom de atirador;
