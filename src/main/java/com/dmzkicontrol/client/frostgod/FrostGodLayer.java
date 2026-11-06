@@ -28,7 +28,7 @@ import java.util.Map;
  * - um brilho metalico que corre pelo corpo (dourado no Dourado; lilas, fino e polido no Black);
  * - as gemas (as cupulas da cabeca, dos ombros, do peito, dos bracos e das pernas) brilhando de verdade.
  */
-public class FrostGodLayer<T extends AbstractClientPlayer> extends GeoRenderLayer<T> {
+public class FrostGodLayer<T extends AbstractClientPlayer & software.bernie.geckolib.core.animatable.GeoAnimatable> extends GeoRenderLayer<T> {
     private static final ResourceLocation SHEEN_GOLD = new ResourceLocation("dmzkicontrol", "textures/misc/frostgod_sheen_gold.png");
     private static final ResourceLocation SHEEN_BLACK = new ResourceLocation("dmzkicontrol", "textures/misc/frostgod_sheen_black.png");
     private static final String[] ARMOR_BONES = {"armorHead", "armorBody", "armorBody2", "armorLeggingsBody", "armorRightArm",
