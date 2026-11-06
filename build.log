@@ -1,0 +1,129 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.10/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Task :compileJava
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/kaio/BubblesTraining.java:57: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation KING_KAI = new ResourceLocation("dragonminez", "master_kaiosama");
+                                                     ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/network/KiControlNetwork.java:14: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+            new ResourceLocation(KiControlMod.MODID, "main"),
+            ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/DmzStyle.java:18: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    public static final ResourceLocation DMZ_FONT = new ResourceLocation("dragonminez", "smooth");
+                                                    ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/DmzStyle.java:20: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    public static final ResourceLocation RESERVE_SHEET = new ResourceLocation("dragonminez", "textures/gui/hud/hud_reserve.png");
+                                                         ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/CerealPartsLayer.java:35: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    public static final ModelLayerLocation LAYER = new ModelLayerLocation(new ResourceLocation(KiControlMod.MODID, "cereal_parts"), "main");
+                                                                          ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/CerealPartsLayer.java:36: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation EARS_TEX = new ResourceLocation(KiControlMod.MODID, "textures/entity/cereal_ears.png");
+                                                     ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/CerealPartsLayer.java:37: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation SCOPE_TEX = new ResourceLocation(KiControlMod.MODID, "textures/entity/cereal_scope.png");
+                                                      ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/CerealPartsLayer.java:38: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation BLINDFOLD_TEX = new ResourceLocation(KiControlMod.MODID, "textures/entity/blindfold.png");
+                                                          ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/ClientSetup.java:43: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation CUTSCENE_OVERLAY = new ResourceLocation(KiControlMod.MODID, "aura_cutscene");
+                                                             ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/ClientSetup.java:44: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation FORM_SCENE_OVERLAY = new ResourceLocation(KiControlMod.MODID, "form_scene");
+                                                               ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/ClientSetup.java:78: warning: [removal] get() in ModLoadingContext has been deprecated and marked for removal
+            net.minecraftforge.fml.ModLoadingContext.get().registerExtensionPoint(net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class,
+                                                    ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/SealHudOverlay.java:23: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation ICON = new ResourceLocation(KiControlMod.MODID, "textures/gui/seal_icon.png");
+                                                 ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/SealHudOverlay.java:24: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation VIGNETTE = new ResourceLocation("minecraft", "textures/misc/vignette.png");
+                                                     ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/scene/ScenePlayback.java:161: warning: [removal] ResourceLocation(String) in ResourceLocation has been deprecated and marked for removal
+                SoundEvent ev = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(s.id()));
+                                                                      ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/scene/SceneFx.java:173: warning: [removal] ResourceLocation(String) in ResourceLocation has been deprecated and marked for removal
+        ParticleType<?> t = ForgeRegistries.PARTICLE_TYPES.getValue(new ResourceLocation(id));
+                                                                    ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/SealAnimations.java:33: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation OURS = new ResourceLocation(KiControlMod.MODID, "animations/seal.animation.json");
+                                                 ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/SealAnimations.java:35: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation SCENES = new ResourceLocation(KiControlMod.MODID, "animations/cutscene.animation.json");
+                                                   ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/SealAnimations.java:36: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation DMZ_PRIMARY = new ResourceLocation("dragonminez", "animations/entity/races/movement.animation.json");
+                                                        ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/KiVision.java:61: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation VIGNETTE = new ResourceLocation("minecraft", "textures/misc/vignette.png");
+                                                     ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/CerealianEyeClient.java:50: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation VIGNETTE = new ResourceLocation("minecraft", "textures/misc/vignette.png");
+                                                     ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/BubblesRenderer.java:13: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+        super(ctx, new DefaultedEntityGeoModel<>(new ResourceLocation(KiControlMod.MODID, "bubbles"), true));
+                                                 ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/frostgod/FrostGodLayer.java:31: error: type argument T#1 is not within bounds of type-variable T#2
+public class FrostGodLayer<T extends AbstractClientPlayer> extends GeoRenderLayer<T> {
+                                                                                  ^
+  where T#1,T#2 are type-variables:
+    T#1 extends AbstractClientPlayer declared in class FrostGodLayer
+    T#2 extends GeoAnimatable declared in class GeoRenderLayer
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/frostgod/FrostGodLayer.java:32: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation SHEEN_GOLD = new ResourceLocation("dmzkicontrol", "textures/misc/frostgod_sheen_gold.png");
+                                                       ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/frostgod/FrostGodLayer.java:33: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+    private static final ResourceLocation SHEEN_BLACK = new ResourceLocation("dmzkicontrol", "textures/misc/frostgod_sheen_black.png");
+                                                        ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/frostgod/FrostGodLayer.java:40: error: type argument T#1 is not within bounds of type-variable T#2
+    public FrostGodLayer(GeoRenderer<T> renderer) {
+                                     ^
+  where T#1,T#2 are type-variables:
+    T#1 extends AbstractClientPlayer declared in class FrostGodLayer
+    T#2 extends GeoAnimatable declared in interface GeoRenderer
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/frostgod/FrostGodLayer.java:71: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+                ResourceLocation tex = new ResourceLocation("dragonminez", "textures/entity/races/frostdemon/bodytype_" + bodyType + "_layer" + layer + ".png");
+                                       ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/client/frostgod/FrostGodLayer.java:72: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+                if (!exists(tex)) tex = new ResourceLocation("dragonminez", "textures/entity/races/frostdemon/bodytype_0_layer" + layer + ".png");
+                                        ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/saga/CerealRadarGrant.java:56: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+            Item radar = ForgeRegistries.ITEMS.getValue(new ResourceLocation("dragonminez", "cereal_dball_radar"));
+                                                        ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/saga/SagaEnemies.java:157: warning: [removal] ResourceLocation(String,String) in ResourceLocation has been deprecated and marked for removal
+                .build(new ResourceLocation(KiControlMod.MODID, name).toString())));
+                       ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/KiControlMod.java:28: warning: [removal] get() in ModLoadingContext has been deprecated and marked for removal
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, KiControlClientConfig.SPEC);
+                         ^
+/home/runner/work/dmzkicontrol/dmzkicontrol/src/main/java/com/dmzkicontrol/KiControlMod.java:29: warning: [removal] get() in FMLJavaModLoadingContext has been deprecated and marked for removal
+        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+                                             ^
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 errors
+29 warnings
+
+> Task :compileJava FAILED
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1793931337721.json
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.10/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 21s
+1 actionable task: 1 executed
