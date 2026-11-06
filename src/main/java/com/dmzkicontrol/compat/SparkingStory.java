@@ -25,10 +25,10 @@ public final class SparkingStory {
             int at = Math.max(list.indexOf(AFTER), list.indexOf(AFTER_LEGACY)) + 1;
             list.add(at, MORO);
             list.add(at + 1, GRANOLAH);
-            System.out.println("[DragonMineZ Evolution] Moro e Granolah entram na historia principal do DMZ Sparking (depois do Torneio do Poder).");
+            com.dmzkicontrol.compat.CerealPack.info("[DragonMineZ Evolution] Moro e Granolah entram na historia principal do DMZ Sparking (depois do Torneio do Poder).");
             return list.toArray(new Object[0]);
         } catch (Throwable t) {
-            System.err.println("[DragonMineZ Evolution] historia do Sparking nao estendida: " + t);
+            com.dmzkicontrol.compat.CerealPack.warn("[DragonMineZ Evolution] historia do Sparking nao estendida: " + t);
             return order;
         }
     }

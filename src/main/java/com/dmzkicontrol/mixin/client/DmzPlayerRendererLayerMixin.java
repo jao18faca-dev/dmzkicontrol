@@ -19,7 +19,7 @@ public abstract class DmzPlayerRendererLayerMixin {
                 renderer.addRenderLayer(new com.dmzkicontrol.client.frostgod.FrostGodLayer(renderer));
             }
         } catch (Throwable t) {
-            System.err.println("[DragonMineZ Evolution] camada do Freeza Dourado/Black nao adicionada: " + t);
+            com.dmzkicontrol.compat.CerealPack.warn("[DragonMineZ Evolution] camada do Freeza Dourado/Black nao adicionada: " + t);
         }
     }
 }

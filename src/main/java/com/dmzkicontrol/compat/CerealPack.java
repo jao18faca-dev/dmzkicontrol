@@ -13,13 +13,23 @@ import java.nio.charset.StandardCharsets;
  * so enxerga os arquivos do proprio jar (cada mod e um modulo separado no Forge).
  */
 public final class CerealPack {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("dmzkicontrol");
+
     private CerealPack() {}
+
+    public static void info(String msg) {
+        LOG.info(msg);
+    }
+
+    public static void warn(String msg) {
+        LOG.warn(msg);
+    }
 
     public static JsonObject read(String file) {
         String res = "/dmzkicontrol_dragonballs/cereal/" + file;
         try (InputStream in = CerealPack.class.getResourceAsStream(res)) {
             if (in == null) {
-                System.err.println("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + res + " nao encontrado no jar");
+                warn("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + res + " nao encontrado no jar");
                 return null;
             }
             String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
@@ -28,7 +38,7 @@ public final class CerealPack {
             if (!UltraCompat.OUR_CEREAL.equals(dim)) text = text.replace("\"" + UltraCompat.OUR_CEREAL + "\"", "\"" + dim + "\"");
             return JsonParser.parseString(text).getAsJsonObject();
         } catch (Exception e) {
-            System.err.println("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + res + " nao lido: " + e);
+            warn("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + res + " nao lido: " + e);
             return null;
         }
     }

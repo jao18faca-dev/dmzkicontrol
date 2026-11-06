@@ -57,7 +57,7 @@ public final class PartyFixes {
                 PlayerQuestData pqd = data.getPlayerQuestData();
                 // quem ja aceitou o DMZ ja conta sozinho; quem ja terminou nao precisa
                 if (pqd.isQuestCompleted(key) || pqd.isQuestAccepted(key)) continue;
-                if (!canDo(key, quest, data)) continue;
+                if (!canDo(key, quest, event.getSaga(), data)) continue;
                 pqd.acceptQuest(key);
                 pqd.completeQuest(key);
                 QuestService.syncQuestState(member);
@@ -69,12 +69,27 @@ public final class PartyFixes {
         }
     }
 
-    /** O colega ja podia fazer esta missao (a anterior da saga feita / pre-requisitos cumpridos). */
-    private static boolean canDo(String key, Quest quest, StatsData data) {
+    /** O colega ja podia fazer esta missao: na saga, a anterior feita (e a saga anterior, se for a primeira). */
+    private static boolean canDo(String key, Quest quest, com.dragonminez.common.quest.Saga saga, StatsData data) {
+        PlayerQuestData pqd = data.getPlayerQuestData();
+        if (saga != null && saga.getQuests() != null) {
+            int index = saga.getQuests().indexOf(quest);
+            if (index >= 0) {
+                if (!QuestAvailabilityChecker.isSagaQuestAvailable(quest, saga, index, data)) return false;
+                if (index == 0) {
+                    String prev = saga.getRequirements() != null ? saga.getRequirements().previousSagaId() : null;
+                    if (prev != null && !prev.isBlank()) {
+                        com.dragonminez.common.quest.Saga before = com.dragonminez.common.quest.QuestRegistry.getSaga(prev);
+                        if (before != null && before.getQuests() != null && !before.getQuests().isEmpty()) {
+                            Quest last = before.getQuests().get(before.getQuests().size() - 1);
+                            if (!pqd.isQuestCompleted(PlayerQuestData.sagaQuestKey(prev, last.getId()))) return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
         if (quest.hasPrerequisites()) return QuestAvailabilityChecker.arePrerequisitesMet(quest.getPrerequisites(), data);
-        int colon = key.lastIndexOf(':');
-        if (colon <= 0) return true;
-        int id = quest.getId();
-        return id <= 1 || data.getPlayerQuestData().isQuestCompleted(key.substring(0, colon) + ":" + (id - 1));
+        return true;
     }
 }

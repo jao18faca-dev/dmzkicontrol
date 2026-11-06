@@ -46,9 +46,9 @@ public abstract class DragonBallPackMixin {
                 readDefinition("dmzkicontrol/dragonballs/cereal/" + file, root, loaded);
                 added++;
             } catch (Throwable t) {
-                System.err.println("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + file + " nao lido: " + t);
+                com.dmzkicontrol.compat.CerealPack.warn("[DragonMineZ Evolution] pacote das Esferas de Cereal: " + file + " nao lido: " + t);
             }
         }
-        System.out.println("[DragonMineZ Evolution] Esferas de Cereal e Toronbo: " + added + " definicoes adicionadas ao DMZ.");
+        com.dmzkicontrol.compat.CerealPack.info("[DragonMineZ Evolution] Esferas de Cereal e Toronbo: " + added + " definicoes adicionadas ao DMZ.");
     }
 }

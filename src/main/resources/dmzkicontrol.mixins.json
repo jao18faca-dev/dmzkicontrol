@@ -16,5 +16,6 @@
   },
   "client": [
     "client.DmzPlayerRendererLayerMixin"
-  ]
+  ],
+  "plugin": "com.dmzkicontrol.compat.KiControlMixinPlugin"
 }
