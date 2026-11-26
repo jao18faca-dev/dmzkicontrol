@@ -186,6 +186,15 @@ Cenas:
 | Freeza 100% (missão 15) | 70%: **Kienzan**, desviar de discos e rebatê-los todos juntos.<br>45%: **Raio da Morte**, rebater e desviar em rodízio e depois contra-atacar com um combo.<br>20%: **Embate final**, Kamehameha contra a rajada dele. |
 | Cell Perfeito (saga dos Androides) | 85%: **A Arrancada**, voar em zigue-zague trocando de lado entre as rajadas e fechar com um combo e o martelo duplo.<br>55%: **O Despertar**. Cell agarra um e arremessa no outro (sozinho, no chão), vocês voam para trás e se transformam.<br>25%: **Kamehameha contra Kamehameha**. |
 
+### Animações com captura de movimento
+
+Os golpes do combo (direto, gancho e chute giratório) vieram de captura de movimento real de lutadores, convertida para o boneco do DMZ a 60 qps. Foram um pouco exagerados para ficar com cara de anime. O mod também traz uma biblioteca de base `mc_*` para as próximas cenas:
+- **Socos:** direto, soco de karatê (oi-zuki) e socos de boxe;
+- **Chutes:** frontal, giratório e lateral;
+- **Defesa:** esquiva abaixando e bloqueio.
+
+Créditos: *The data used in this project was obtained from mocap.cs.cmu.edu. The database was created with funding from NSF EIA-0196217.*
+
 Configuração em `config/dmzkicontrol.json` → `encounters`:
 - `enabled`, `maxPlayers` (1 a 4), `joinRadius`;
 - `windowScale`: maior = mais fácil;

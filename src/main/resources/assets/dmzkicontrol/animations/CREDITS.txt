@@ -1,0 +1,6 @@
+Animacoes de golpes (combo_jab, combo_hook, combo_kick) e a biblioteca mc_* foram convertidas de captura de movimento
+real para o boneco do DragonMineZ.
+
+The data used in this project was obtained from mocap.cs.cmu.edu.
+The database was created with funding from NSF EIA-0196217.
+(CMU Graphics Lab Motion Capture Database - sujeitos 14, 77, 135, 143, 144; conversao BVH de Bruce Hahne.)
