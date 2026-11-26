@@ -179,7 +179,8 @@ public final class EncScripts {
 
         Beat dash = p.beat(Kind.CINE, 26);
         dash.shot(0, 0, "mid", 5, 1.4, 1, "mid", 0, 1.4, 0, 1.0f);
-        dash.ev(0, BOSS).move(MoveKind.ABS, 0, 1.5, 6.0, 0.4f).fx("afterimage", 10).snd(ZANZOKEN, 1f, 0.8f);
+        dash.ev(0, BOSS).move(MoveKind.ABS, 0, 1.5, 5.0, 0.4f).fx("afterimage", 10).snd(ZANZOKEN, 1f, 0.8f);
+        dash.ev(12, ALL).move(MoveKind.CLOSE, 0, 0, 0, 0.45f);
         dash.ev(6, BOSS).text("enc.dmzkicontrol.frieza.come_here");
         dash.ev(8, ALL).pose("stance", 18).text("enc.dmzkicontrol.cap.counter").impact(1);
 
@@ -190,11 +191,11 @@ public final class EncScripts {
         Key[] combo = {Key.ATTACK, Key.JUMP, Key.ATTACK, Key.LEFT, Key.ATTACK, Key.RIGHT, Key.JUMP, Key.ATTACK, Key.DOWN};
         for (int i = 0; i < combo.length; i++) comboHit(q, i, 14 + 11 * i, combo[i], 4, 0.012f);
         Cue fin = q.cue(126, Mode.ALL, Key.ATTACK, 5).lead(20).syncDmg(0.09f).hurt(0.04f);
-        fin.tell(-18, SELF).move(MoveKind.OFFSET, 0, 2.6, -1.0, 0.35f).pose("double_axe", 2);
+        fin.tell(-18, SELF).move(MoveKind.OFFSET, 0, 2.6, -0.9, 0.35f).pose("double_axe", 2);
         fin.onHit(0, SELF).pose("double_axe", 12).snd(d("critic_punch2"), 1f, 0.8f);
-        fin.onSync(2, BOSS).impact(3).sfx("ドゴォッ!!").shake(4f).move(MoveKind.ABS, 0, 0, 6.0, 0.55f).snd(d("ki_explosion_impact"));
+        fin.onSync(2, BOSS).impact(3).sfx("ドゴォッ!!").shake(4f).move(MoveKind.ABS, 0, 0, 5.0, 0.55f).snd(d("ki_explosion_impact"));
         fin.onSync(8, BOSS).fx("crater", 30).size(1.4f);
-        fin.onPartial(2, BOSS).impact(2).sfx("ドッ").shake(2.5f).move(MoveKind.ABS, 0, 0.5, 6.0, 0.4f);
+        fin.onPartial(2, BOSS).impact(2).sfx("ドッ").shake(2.5f).move(MoveKind.ABS, 0, 0.5, 5.0, 0.4f);
         fin.onHit(14, SELF).move(MoveKind.LANE, 0, 0, 0, 0.3f);
         fin.onMiss(0, SELF).pose("hit_recoil", 14).impact(1).snd(d("block3"));
         fin.onMiss(14, SELF).move(MoveKind.LANE, 0, 0, 0, 0.3f);
@@ -270,7 +271,7 @@ public final class EncScripts {
 
         Beat arrive = p.beat(Kind.CINE, 26);
         arrive.shot(0, 0, "mid", 5, 0.4, 1.5, "mid", 0, 1.8, 0, 1.0f);
-        arrive.ev(0, ALL).move(MoveKind.LANE, 0, 0, -23, 0.35f).pose("stance", 26).sfx("ザッ");
+        arrive.ev(0, ALL).move(MoveKind.CLOSE, 0, 0, 0, 0.35f).pose("guard_ready", 26).sfx("ザッ");
         arrive.ev(6, BOSS).text("enc.dmzkicontrol.cell.come");
 
         q = p.beat(Kind.PROMPT, 156).caption("enc.dmzkicontrol.cap.combo");
@@ -279,18 +280,17 @@ public final class EncScripts {
                 .shot(104, 8, "boss", 1.5, 1.0, -2.5, "mid", 0, 1.6, 0, 0.85f);
         Key[] combo = {Key.ATTACK, Key.JUMP, Key.LEFT, Key.RIGHT, Key.ATTACK, Key.DOWN, Key.ATTACK, Key.JUMP, Key.RIGHT, Key.ATTACK};
         for (int i = 0; i < combo.length; i++) {
-            Cue c = comboHit(q, i, 12 + 10 * i, combo[i], 4, 0.012f);
-            c.onHit(1, BOSS).move(MoveKind.OFFSET, 0, 0, -0.25, 0.5f);
+            comboHit(q, i, 12 + 10 * i, combo[i], 4, 0.012f);
         }
         Cue fin = q.cue(132, Mode.ALL, Key.ATTACK, 6).lead(20).syncDmg(0.09f).hurt(0.04f);
-        fin.tell(-18, SELF).move(MoveKind.OFFSET, 0, 3.0, -3.0, 0.35f).pose("double_axe", 2);
+        fin.tell(-18, SELF).move(MoveKind.OFFSET, 0, 3.0, -0.9, 0.35f).pose("double_axe", 2);
         fin.onHit(0, SELF).pose("double_axe", 12).snd(d("critic_punch2"), 1f, 0.8f);
-        fin.onSync(2, BOSS).impact(3).sfx("ドゴォン!!").shake(4.5f).move(MoveKind.ABS, 0, 0, -1.5, 0.55f).snd(d("ki_explosion_impact"));
+        fin.onSync(2, BOSS).impact(3).sfx("ドゴォン!!").shake(4.5f).move(MoveKind.ABS, 0, 0, 0, 0.55f).snd(d("ki_explosion_impact"));
         fin.onSync(8, BOSS).fx("crater", 34).size(1.5f);
-        fin.onPartial(2, BOSS).impact(2).sfx("ドッ").shake(2.5f).move(MoveKind.ABS, 0, 0.6, -1.5, 0.4f);
-        fin.onHit(14, SELF).move(MoveKind.LANE, 0, 0, -21, 0.3f);
+        fin.onPartial(2, BOSS).impact(2).sfx("ドッ").shake(2.5f).move(MoveKind.ABS, 0, 0.6, 0, 0.4f);
+        fin.onHit(14, SELF).move(MoveKind.LANE, 0, 0, -20, 0.3f);
         fin.onMiss(0, SELF).pose("hit_recoil", 14).impact(1).snd(d("block3"));
-        fin.onMiss(14, SELF).move(MoveKind.LANE, 0, 0, -21, 0.3f);
+        fin.onMiss(14, SELF).move(MoveKind.LANE, 0, 0, -20, 0.3f);
 
         Beat a = p.beat(Kind.CINE, 46);
         a.shot(0, 0, "boss", 1.4, 0.5, 2.4, "boss", 0, 1.2, 0, 0.8f)
@@ -339,7 +339,7 @@ public final class EncScripts {
         Key[] spd = {Key.LEFT, Key.UP, Key.RIGHT, Key.DOWN, Key.ATTACK, Key.JUMP};
         for (int i = 0; i < spd.length; i++) {
             Cue c = q.cue(16 + 17 * i, Mode.TURN, spd[i], 4).lead(14).dmg(0.015f).hurt(0.04f);
-            c.tell(-10, BOSS).moveTo(SELF, 0, 0, -1.7, 1f).fx("afterimage", 10).snd(ZANZOKEN, 0.9f, 1.2f);
+            c.tell(-10, BOSS).moveTo(SELF, 0, 0, -1.25, 1f).fx("afterimage", 10).snd(ZANZOKEN, 0.9f, 1.2f);
             c.onHit(0, SELF).pose(i % 2 == 0 ? "cross_guard" : "combo_hook", 8).snd(d(i % 2 == 0 ? "block1" : "punch3"));
             c.onHit(1, BOSS).fx("hit_spark", 6).impact(1).shake(1f);
             c.onMiss(0, SELF).pose("hit_recoil", 10).impact(1).shake(1.5f).snd(d("critic_punch1"));

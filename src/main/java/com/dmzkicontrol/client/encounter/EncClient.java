@@ -487,6 +487,13 @@ public final class EncClient {
                 if (p != null && mc.player != null && p != mc.player) a = S.local(p.position()).add(m.x(), m.y(), m.z());
             }
             case ABS -> a = new Vec3(m.x(), m.y(), m.z());
+            case CLOSE -> {
+                Entity b = S.boss();
+                Vec3 bl = b != null ? S.local(b.position()) : new Vec3(0, S.phase.lift, 0);
+                double reach = 1.05 + (b != null ? b.getBbWidth() * 0.5 : 0.3);
+                double ang = Math.toRadians(((S.n() - 1) / 2.0 - S.myRole) * 40.0);
+                a = bl.add(Math.sin(ang) * reach + m.x(), m.y(), Math.cos(ang) * reach + m.z());
+            }
         }
         S.anchor = a;
         S.speed = m.speed();

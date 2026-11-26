@@ -42,7 +42,9 @@ public final class EncScript {
         /** Ponto fixo da arena (o chefe usa este). */
         ABS,
         /** Esquiva curta (zanzoken) para o lado da tecla DODGE: x = distancia. */
-        HOP
+        HOP,
+        /** Corpo a corpo: em arco na frente do chefe, colado nele (todos na mesma distancia, o soco alcanca). */
+        CLOSE
     }
 
     public final String id;
