@@ -112,6 +112,8 @@ public final class ArmAnimDriver {
                 int ser = currentSerial(p);
                 if (!want.equals(last[0]) || (ONE_SHOT.contains(want) && ser != lastSerial[0])) {
                     lastSerial[0] = ser;
+                    // golpe entra rapido; pose de cena entra mesclando devagar (mais fluido)
+                    state.getController().transitionLength(ONE_SHOT.contains(want) ? 2 : want.startsWith("dmzkicontrol.cs.") ? 6 : 3);
                     RawAnimation raw = ONE_SHOT.contains(want) ? RawAnimation.begin().thenPlayAndHold(want)
                             : want.startsWith("dmzkicontrol.cs.") ? RawAnimation.begin().thenLoop(want)
                             : want.contains("_fire") ? RawAnimation.begin().thenPlay(want) : RawAnimation.begin().thenPlayAndHold(want);
