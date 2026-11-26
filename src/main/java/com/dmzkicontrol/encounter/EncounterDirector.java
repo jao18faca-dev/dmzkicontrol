@@ -68,6 +68,8 @@ public final class EncounterDirector {
 
     private static final Map<Integer, Run> RUNS = new HashMap<>();
     private static final List<Runnable> PENDING = new ArrayList<>();
+    /** Cenas agendadas pelo comando de teste: {nivel, tick, acao}. */
+    private static final List<Object[]> DELAYED = new ArrayList<>();
     private static int nextId = 1;
 
     private EncounterDirector() {}
@@ -251,11 +253,60 @@ public final class EncounterDirector {
         beginBeat(run, 0, 0);
     }
 
+    // ------------------------------------------------------------------ comando de teste
+
+    /** /dmzluta: usa o chefe mais perto (32 blocos) ou invoca um na frente do jogador, e comeca a fase. */
+    public static String debugStart(ServerPlayer sp, EncScript script, int phase) {
+        if (isLocked(sp)) return "Voce ja esta numa cena (use /dmzluta parar).";
+        ServerLevel level = sp.serverLevel();
+        var type = ForgeRegistries.ENTITY_TYPES.getValue(new net.minecraft.resources.ResourceLocation(script.bossType));
+        if (type == null) return "Chefe nao encontrado no DragonMineZ: " + script.bossType;
+        LivingEntity boss = null;
+        for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, sp.getBoundingBox().inflate(32), x -> x.getType() == type && x.isAlive())) {
+            if (boss == null || sp.distanceToSqr(e) < sp.distanceToSqr(boss)) boss = e;
+        }
+        if (boss != null && isLocked(boss)) return "Esse chefe ja esta numa cena.";
+        if (boss == null) {
+            Vec3 look = sp.getLookAngle();
+            Vec3 h = new Vec3(look.x, 0, look.z);
+            if (h.lengthSqr() < 1e-4) h = new Vec3(0, 0, 1);
+            BlockPos pos = BlockPos.containing(sp.position().add(h.normalize().scale(6)));
+            var spawned = type.spawn(level, pos, net.minecraft.world.entity.MobSpawnType.COMMAND);
+            if (!(spawned instanceof LivingEntity le)) return "Nao consegui invocar o chefe.";
+            boss = le;
+        }
+        final LivingEntity b = boss;
+        b.getPersistentData().remove(LAST);
+        // espera meio segundo: o chefe recem-criado chega aos clientes antes da cena
+        DELAYED.add(new Object[]{level, level.getGameTime() + 10, (Runnable) () -> start(script, phase, b, sp)});
+        return null;
+    }
+
+    /** /dmzluta parar */
+    public static int stopAll() {
+        int n = RUNS.size();
+        for (Run r : new ArrayList<>(RUNS.values())) finish(r, true);
+        DELAYED.clear();
+        return n;
+    }
+
     // ------------------------------------------------------------------ andamento
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
+        if (!DELAYED.isEmpty()) {
+            Iterator<Object[]> dit = DELAYED.iterator();
+            List<Runnable> now = new ArrayList<>();
+            while (dit.hasNext()) {
+                Object[] d = dit.next();
+                if (((ServerLevel) d[0]).getGameTime() >= (long) d[1]) {
+                    now.add((Runnable) d[2]);
+                    dit.remove();
+                }
+            }
+            PENDING.addAll(now);
+        }
         if (!PENDING.isEmpty()) {
             List<Runnable> copy = new ArrayList<>(PENDING);
             PENDING.clear();

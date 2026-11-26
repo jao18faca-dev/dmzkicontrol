@@ -186,6 +186,11 @@ Cenas:
 | Freeza 100% (missão 15) | 70%: **Kienzan**, desviar de discos e rebatê-los todos juntos.<br>45%: **Raio da Morte**, rebater e desviar em rodízio e depois contra-atacar com um combo.<br>20%: **Embate final**, Kamehameha contra a rajada dele. |
 | Cell Perfeito (saga dos Androides) | 85%: **A Arrancada**, voar em zigue-zague trocando de lado entre as rajadas e fechar com um combo e o martelo duplo.<br>55%: **O Despertar**. Cell agarra um e arremessa no outro (sozinho, no chão), vocês voam para trás e se transformam.<br>25%: **Kamehameha contra Kamehameha**. |
 
+**Comando de teste** (precisa de cheats ligados; no LAN, marque "Permitir comandos"):
+- `/dmzluta cell 1`: invoca o Cell Perfeito na sua frente e começa a fase 1. Os chefes são `freeza`, `freeza100` e `cell`, e a fase é opcional.
+- Se o chefe já estiver por perto (32 blocos), a cena usa ele em vez de invocar outro.
+- `/dmzluta parar`: encerra a cena.
+
 Configuração em `config/dmzkicontrol.json` → `encounters`:
 - `enabled`, `maxPlayers` (1 a 4), `joinRadius`;
 - `windowScale`: maior = mais fácil;
