@@ -90,6 +90,7 @@ public final class EncounterDirector {
         // chefe
         Vec3 bossTarget;
         float bossSpeed = 0.3f;
+        float shove;
         // deixas
         byte[][] res;
         float[][] off;
@@ -388,6 +389,7 @@ public final class EncounterDirector {
         LivingEntity boss = run.boss;
         CompoundTag lock = boss.getPersistentData().getCompound(LOCK);
         restoreBoss(boss, lock);
+        bossAnim(run, "charge_off");
         boss.getPersistentData().putLong(LAST, run.level.getGameTime());
         for (ServerPlayer p : run.players) restorePlayer(p);
         sendState(run, true);
@@ -441,6 +443,8 @@ public final class EncounterDirector {
             if (role < 0) {
                 if (ev.move != null) bossMove(run, ev.move, self);
                 if (ev.dmg > 0) damageBoss(run, ev.dmg);
+                if (ev.bossAnim != null) bossAnim(run, ev.bossAnim);
+                if (ev.shove > 0) run.shove = Math.max(run.shove, ev.shove);
             } else if (ev.hurt > 0) {
                 hurt(run, role, ev.hurt);
             }
@@ -465,7 +469,9 @@ public final class EncounterDirector {
 
     private static void moveBoss(Run run) {
         LivingEntity boss = run.boss;
-        Vec3 want = run.world(run.bossTarget.x, run.bossTarget.y, run.bossTarget.z);
+        Vec3 want = run.world(run.bossTarget.x, run.bossTarget.y, run.bossTarget.z - run.shove);
+        run.shove *= 0.72f;
+        if (run.shove < 0.01f) run.shove = 0;
         Vec3 pos = boss.position();
         Vec3 d = want.subtract(pos);
         Vec3 next;
@@ -482,6 +488,24 @@ public final class EncounterDirector {
         boss.moveTo(next.x, next.y, next.z, yaw, 0f);
         boss.setYHeadRot(yaw);
         boss.setYBodyRot(yaw);
+    }
+
+    /** Faz o chefe reagir com as animacoes do proprio DMZ (sincronizadas pelo GeckoLib para todos). */
+    private static void bossAnim(Run run, String anim) {
+        LivingEntity b = run.boss;
+        try {
+            switch (anim) {
+                case "attack" -> b.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+                case "charge_on", "charge_off" -> {
+                    if (b instanceof com.dragonminez.common.init.entities.sagas.DBSagasEntity s) s.setKiCharge(anim.equals("charge_on"));
+                }
+                default -> {
+                    if (b instanceof software.bernie.geckolib.animatable.GeoEntity geo) geo.triggerAnim("hurt_controller", anim);
+                }
+            }
+        } catch (Throwable t) {
+            // chefe de outro mod ou versao: segue sem a animacao
+        }
     }
 
     private static void damageBoss(Run run, float pct) {

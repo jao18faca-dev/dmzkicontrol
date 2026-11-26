@@ -44,7 +44,9 @@ public final class EncScript {
         /** Esquiva curta (zanzoken) para o lado da tecla DODGE: x = distancia. */
         HOP,
         /** Corpo a corpo: em arco na frente do chefe, colado nele (todos na mesma distancia, o soco alcanca). */
-        CLOSE
+        CLOSE,
+        /** Avanco do golpe: x blocos na direcao do chefe (volta com CLOSE). */
+        LUNGE
     }
 
     public final String id;
@@ -172,6 +174,11 @@ public final class EncScript {
         /** Dano no chefe (% da vida maxima) e nos alvos (% da vida maxima, nunca mata). Aplicados no servidor. */
         public float dmg, hurt;
         public int minN = 1, maxN = 4;
+        /** Reacao do chefe com as animacoes do proprio DMZ: hurt_left, hurt_right, hurt_top, hurt_down, grabbed,
+         *  knocked_out, parried, attack (golpe), charge_on / charge_off (carregando ki). */
+        public String bossAnim;
+        /** Empurrao no chefe (blocos para longe dos jogadores, volta sozinho). */
+        public float shove;
 
         Ev(int t, int who) {
             this.t = t;
@@ -203,6 +210,10 @@ public final class EncScript {
         public Ev moveTo(int role, double x, double y, double z, float speed) { this.move = new Move(MoveKind.TO_ROLE, x, y, z, speed, role); return this; }
 
         public Ev dmg(float pct) { this.dmg = pct; return this; }
+
+        public Ev boss(String anim) { this.bossAnim = anim; return this; }
+
+        public Ev shove(float blocks) { this.shove = blocks; return this; }
 
         public Ev hurt(float pct) { this.hurt = pct; return this; }
 
