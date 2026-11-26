@@ -2466,6 +2466,1430 @@
      }
     }
    }
+  },
+  "dmzkicontrol.cs.kame_charge": {
+   "animation_length": 1.0,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "-6 + math.sin(query.anim_time*1800)*0.8",
+        38,
+        "0 + math.sin(query.anim_time*1800)*0.5599999999999999"
+       ]
+      },
+      "1": {
+       "vector": [
+        "-6 + math.sin(query.anim_time*1800)*0.8",
+        38,
+        "0 + math.sin(query.anim_time*1800)*0.5599999999999999"
+       ]
+      }
+     }
+    },
+    "head": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        4,
+        -34,
+        0
+       ]
+      },
+      "1": {
+       "vector": [
+        4,
+        -34,
+        0
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "-28 + math.sin(query.anim_time*1800)*1.2",
+        42,
+        "18 + math.sin(query.anim_time*1800)*0.84"
+       ]
+      },
+      "1": {
+       "vector": [
+        "-28 + math.sin(query.anim_time*1800)*1.2",
+        42,
+        "18 + math.sin(query.anim_time*1800)*0.84"
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "-62 + math.sin(query.anim_time*1800)*1.2",
+        58,
+        "-4 + math.sin(query.anim_time*1800)*0.84"
+       ]
+      },
+      "1": {
+       "vector": [
+        "-62 + math.sin(query.anim_time*1800)*1.2",
+        58,
+        "-4 + math.sin(query.anim_time*1800)*0.84"
+       ]
+      }
+     }
+    },
+    "right_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -18,
+        8,
+        6
+       ]
+      },
+      "1": {
+       "vector": [
+        -18,
+        8,
+        6
+       ]
+      }
+     }
+    },
+    "left_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        14,
+        -6,
+        -8
+       ]
+      },
+      "1": {
+       "vector": [
+        14,
+        -6,
+        -8
+       ]
+      }
+     }
+    }
+   },
+   "loop": true
+  },
+  "dmzkicontrol.cs.kame_fire": {
+   "animation_length": 1.0,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "4 + math.sin(query.anim_time*1800)*1.0",
+        -6,
+        "0 + math.sin(query.anim_time*1800)*0.7"
+       ]
+      },
+      "1": {
+       "vector": [
+        "4 + math.sin(query.anim_time*1800)*1.0",
+        -6,
+        "0 + math.sin(query.anim_time*1800)*0.7"
+       ]
+      }
+     }
+    },
+    "head": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -4,
+        6,
+        0
+       ]
+      },
+      "1": {
+       "vector": [
+        -4,
+        6,
+        0
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "-88 + math.sin(query.anim_time*1800)*1.6",
+        -16,
+        "0 + math.sin(query.anim_time*1800)*1.1199999999999999"
+       ]
+      },
+      "1": {
+       "vector": [
+        "-88 + math.sin(query.anim_time*1800)*1.6",
+        -16,
+        "0 + math.sin(query.anim_time*1800)*1.1199999999999999"
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "-88 + math.sin(query.anim_time*1800)*1.6",
+        16,
+        "0 + math.sin(query.anim_time*1800)*1.1199999999999999"
+       ]
+      },
+      "1": {
+       "vector": [
+        "-88 + math.sin(query.anim_time*1800)*1.6",
+        16,
+        "0 + math.sin(query.anim_time*1800)*1.1199999999999999"
+       ]
+      }
+     }
+    },
+    "right_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -22,
+        0,
+        8
+       ]
+      },
+      "1": {
+       "vector": [
+        -22,
+        0,
+        8
+       ]
+      }
+     }
+    },
+    "left_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        18,
+        0,
+        -8
+       ]
+      },
+      "1": {
+       "vector": [
+        18,
+        0,
+        -8
+       ]
+      }
+     }
+    }
+   },
+   "loop": true
+  },
+  "dmzkicontrol.cs.dodge_left": {
+   "animation_length": 0.45,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        -10,
+        25,
+        22
+       ]
+      },
+      "0.45": {
+       "vector": [
+        -4,
+        8,
+        8
+       ]
+      }
+     }
+    },
+    "head": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        6,
+        -20,
+        -14
+       ]
+      },
+      "0.45": {
+       "vector": [
+        0,
+        -6,
+        -4
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        -30,
+        0,
+        8
+       ]
+      },
+      "0.45": {
+       "vector": [
+        -12,
+        0,
+        12
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        -30,
+        0,
+        -35
+       ]
+      },
+      "0.45": {
+       "vector": [
+        -12,
+        0,
+        -12
+       ]
+      }
+     }
+    },
+    "right_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        -20,
+        0,
+        14
+       ]
+      },
+      "0.45": {
+       "vector": [
+        -6,
+        0,
+        4
+       ]
+      }
+     }
+    },
+    "left_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        10,
+        0,
+        6
+       ]
+      },
+      "0.45": {
+       "vector": [
+        4,
+        0,
+        -4
+       ]
+      }
+     }
+    }
+   }
+  },
+  "dmzkicontrol.cs.dodge_right": {
+   "animation_length": 0.45,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        -10,
+        -25,
+        -22
+       ]
+      },
+      "0.45": {
+       "vector": [
+        -4,
+        -8,
+        -8
+       ]
+      }
+     }
+    },
+    "head": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        6,
+        20,
+        14
+       ]
+      },
+      "0.45": {
+       "vector": [
+        0,
+        6,
+        4
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        -30,
+        0,
+        35
+       ]
+      },
+      "0.45": {
+       "vector": [
+        -12,
+        0,
+        12
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        -30,
+        0,
+        -8
+       ]
+      },
+      "0.45": {
+       "vector": [
+        -12,
+        0,
+        -12
+       ]
+      }
+     }
+    },
+    "right_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        -20,
+        0,
+        -6
+       ]
+      },
+      "0.45": {
+       "vector": [
+        -6,
+        0,
+        4
+       ]
+      }
+     }
+    },
+    "left_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.12": {
+       "vector": [
+        10,
+        0,
+        -14
+       ]
+      },
+      "0.45": {
+       "vector": [
+        4,
+        0,
+        -4
+       ]
+      }
+     }
+    }
+   }
+  },
+  "dmzkicontrol.cs.deflect": {
+   "animation_length": 0.4,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -4,
+        -30,
+        0
+       ]
+      },
+      "0.2": {
+       "vector": [
+        -6,
+        26,
+        0
+       ]
+      },
+      "0.4": {
+       "vector": [
+        0,
+        10,
+        0
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -40,
+        0,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -70,
+        -40,
+        -10
+       ]
+      },
+      "0.2": {
+       "vector": [
+        -150,
+        30,
+        40
+       ]
+      },
+      "0.4": {
+       "vector": [
+        -90,
+        10,
+        20
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -30,
+        0,
+        0
+       ]
+      },
+      "0.2": {
+       "vector": [
+        -40,
+        0,
+        -25
+       ]
+      },
+      "0.4": {
+       "vector": [
+        -30,
+        0,
+        -15
+       ]
+      }
+     }
+    },
+    "head": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.2": {
+       "vector": [
+        -6,
+        -18,
+        0
+       ]
+      },
+      "0.4": {
+       "vector": [
+        0,
+        -6,
+        0
+       ]
+      }
+     }
+    }
+   }
+  },
+  "dmzkicontrol.cs.guard_ready": {
+   "animation_length": 1.0,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "-8 + math.sin(query.anim_time*1800)*0.5",
+        14,
+        "0 + math.sin(query.anim_time*1800)*0.35"
+       ]
+      },
+      "1": {
+       "vector": [
+        "-8 + math.sin(query.anim_time*1800)*0.5",
+        14,
+        "0 + math.sin(query.anim_time*1800)*0.35"
+       ]
+      }
+     }
+    },
+    "head": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        6,
+        -12,
+        0
+       ]
+      },
+      "1": {
+       "vector": [
+        6,
+        -12,
+        0
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "-70 + math.sin(query.anim_time*1800)*0.8",
+        20,
+        "10 + math.sin(query.anim_time*1800)*0.5599999999999999"
+       ]
+      },
+      "1": {
+       "vector": [
+        "-70 + math.sin(query.anim_time*1800)*0.8",
+        20,
+        "10 + math.sin(query.anim_time*1800)*0.5599999999999999"
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "-95 + math.sin(query.anim_time*1800)*0.8",
+        -10,
+        "-12 + math.sin(query.anim_time*1800)*0.5599999999999999"
+       ]
+      },
+      "1": {
+       "vector": [
+        "-95 + math.sin(query.anim_time*1800)*0.8",
+        -10,
+        "-12 + math.sin(query.anim_time*1800)*0.5599999999999999"
+       ]
+      }
+     }
+    },
+    "right_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -14,
+        10,
+        6
+       ]
+      },
+      "1": {
+       "vector": [
+        -14,
+        10,
+        6
+       ]
+      }
+     }
+    },
+    "left_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        12,
+        -8,
+        -6
+       ]
+      },
+      "1": {
+       "vector": [
+        12,
+        -8,
+        -6
+       ]
+      }
+     }
+    }
+   },
+   "loop": true
+  },
+  "dmzkicontrol.cs.hit_recoil": {
+   "animation_length": 0.6,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        32,
+        0,
+        6
+       ]
+      },
+      "0.35": {
+       "vector": [
+        18,
+        0,
+        2
+       ]
+      },
+      "0.6": {
+       "vector": [
+        4,
+        0,
+        0
+       ]
+      }
+     }
+    },
+    "head": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        30,
+        0,
+        -6
+       ]
+      },
+      "0.6": {
+       "vector": [
+        6,
+        0,
+        0
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -50,
+        0,
+        55
+       ]
+      },
+      "0.6": {
+       "vector": [
+        -10,
+        0,
+        15
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -50,
+        0,
+        -55
+       ]
+      },
+      "0.6": {
+       "vector": [
+        -10,
+        0,
+        -15
+       ]
+      }
+     }
+    },
+    "right_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -35,
+        0,
+        10
+       ]
+      },
+      "0.6": {
+       "vector": [
+        -6,
+        0,
+        2
+       ]
+      }
+     }
+    },
+    "left_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -15,
+        0,
+        -10
+       ]
+      },
+      "0.6": {
+       "vector": [
+        -2,
+        0,
+        -2
+       ]
+      }
+     }
+    }
+   }
+  },
+  "dmzkicontrol.cs.rush": {
+   "animation_length": 1.0,
+   "bones": {
+    "root": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        62,
+        0,
+        0
+       ]
+      },
+      "1": {
+       "vector": [
+        62,
+        0,
+        0
+       ]
+      }
+     }
+    },
+    "head": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -48,
+        0,
+        0
+       ]
+      },
+      "1": {
+       "vector": [
+        -48,
+        0,
+        0
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "42 + math.sin(query.anim_time*1800)*2.0",
+        0,
+        "14 + math.sin(query.anim_time*1800)*1.4"
+       ]
+      },
+      "1": {
+       "vector": [
+        "42 + math.sin(query.anim_time*1800)*2.0",
+        0,
+        "14 + math.sin(query.anim_time*1800)*1.4"
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "42 + math.sin(query.anim_time*1800)*2.0",
+        0,
+        "-14 + math.sin(query.anim_time*1800)*1.4"
+       ]
+      },
+      "1": {
+       "vector": [
+        "42 + math.sin(query.anim_time*1800)*2.0",
+        0,
+        "-14 + math.sin(query.anim_time*1800)*1.4"
+       ]
+      }
+     }
+    },
+    "right_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "14 + math.sin(query.anim_time*1800)*2.5",
+        0,
+        "4 + math.sin(query.anim_time*1800)*1.75"
+       ]
+      },
+      "1": {
+       "vector": [
+        "14 + math.sin(query.anim_time*1800)*2.5",
+        0,
+        "4 + math.sin(query.anim_time*1800)*1.75"
+       ]
+      }
+     }
+    },
+    "left_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        "26 + math.sin(query.anim_time*1800)*2.5",
+        0,
+        "-4 + math.sin(query.anim_time*1800)*1.75"
+       ]
+      },
+      "1": {
+       "vector": [
+        "26 + math.sin(query.anim_time*1800)*2.5",
+        0,
+        "-4 + math.sin(query.anim_time*1800)*1.75"
+       ]
+      }
+     }
+    }
+   },
+   "loop": true
+  },
+  "dmzkicontrol.cs.combo_jab": {
+   "animation_length": 0.3,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        20,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -6,
+        -30,
+        0
+       ]
+      },
+      "0.3": {
+       "vector": [
+        -2,
+        -10,
+        0
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -40,
+        20,
+        10
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -92,
+        -12,
+        0
+       ]
+      },
+      "0.3": {
+       "vector": [
+        -70,
+        0,
+        6
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -80,
+        -10,
+        -10
+       ]
+      },
+      "0.3": {
+       "vector": [
+        -70,
+        0,
+        -10
+       ]
+      }
+     }
+    }
+   }
+  },
+  "dmzkicontrol.cs.combo_hook": {
+   "animation_length": 0.3,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        -24,
+        0
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -6,
+        34,
+        0
+       ]
+      },
+      "0.3": {
+       "vector": [
+        -2,
+        12,
+        0
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -40,
+        -20,
+        -10
+       ]
+      },
+      "0.08": {
+       "vector": [
+        -90,
+        30,
+        -20
+       ]
+      },
+      "0.3": {
+       "vector": [
+        -70,
+        6,
+        -8
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -80,
+        10,
+        10
+       ]
+      },
+      "0.3": {
+       "vector": [
+        -70,
+        0,
+        10
+       ]
+      }
+     }
+    }
+   }
+  },
+  "dmzkicontrol.cs.combo_kick": {
+   "animation_length": 0.4,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.1": {
+       "vector": [
+        10,
+        -40,
+        18
+       ]
+      },
+      "0.4": {
+       "vector": [
+        2,
+        -10,
+        4
+       ]
+      }
+     }
+    },
+    "right_leg": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.1": {
+       "vector": [
+        -100,
+        0,
+        30
+       ]
+      },
+      "0.4": {
+       "vector": [
+        -20,
+        0,
+        6
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -40,
+        0,
+        10
+       ]
+      },
+      "0.1": {
+       "vector": [
+        -20,
+        0,
+        60
+       ]
+      },
+      "0.4": {
+       "vector": [
+        -30,
+        0,
+        20
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -40,
+        0,
+        -10
+       ]
+      },
+      "0.1": {
+       "vector": [
+        -70,
+        0,
+        -40
+       ]
+      },
+      "0.4": {
+       "vector": [
+        -40,
+        0,
+        -15
+       ]
+      }
+     }
+    }
+   }
+  },
+  "dmzkicontrol.cs.double_axe": {
+   "animation_length": 0.5,
+   "bones": {
+    "waist": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.15": {
+       "vector": [
+        18,
+        0,
+        0
+       ]
+      },
+      "0.3": {
+       "vector": [
+        -28,
+        0,
+        0
+       ]
+      },
+      "0.5": {
+       "vector": [
+        -14,
+        0,
+        0
+       ]
+      }
+     }
+    },
+    "right_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -60,
+        0,
+        0
+       ]
+      },
+      "0.15": {
+       "vector": [
+        -175,
+        -15,
+        0
+       ]
+      },
+      "0.3": {
+       "vector": [
+        -40,
+        -15,
+        0
+       ]
+      },
+      "0.5": {
+       "vector": [
+        -50,
+        -10,
+        0
+       ]
+      }
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        -60,
+        0,
+        0
+       ]
+      },
+      "0.15": {
+       "vector": [
+        -175,
+        15,
+        0
+       ]
+      },
+      "0.3": {
+       "vector": [
+        -40,
+        15,
+        0
+       ]
+      },
+      "0.5": {
+       "vector": [
+        -50,
+        10,
+        0
+       ]
+      }
+     }
+    },
+    "head": {
+     "rotation": {
+      "0.0": {
+       "vector": [
+        0,
+        0,
+        0
+       ]
+      },
+      "0.15": {
+       "vector": [
+        -20,
+        0,
+        0
+       ]
+      },
+      "0.5": {
+       "vector": [
+        10,
+        0,
+        0
+       ]
+      }
+     }
+    }
+   }
   }
  }
 }

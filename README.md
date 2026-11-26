@@ -164,6 +164,34 @@ O DMZ só trocava a cor do corpo. Agora, de frente e de costas, voando ou em qua
 - **Black:** preto polido com reflexos lilás finos, gemas roxo-rosadas acesas, fagulhas roxas e rosa e estalos de energia, aura escura com borda roxa e rosa.
 - Para voltar só às cores do DMZ: `forms.frostGodVisuals = false` no `config/dmzkicontrol-client.toml`. Cores e aura ficam em `config/dmzkicontrol_forms.json` (`frostgodforms.golden` / `frostgodforms.black`).
 
+## Lutas cinematográficas contra os chefes (4.2)
+
+Quando a vida de um chefe final cai abaixo de certos pontos, a luta vira uma cena com quick time events. Entram de **1 a 4 jogadores**: quem bateu no chefe e quem estiver por perto (até 48 blocos).
+
+- **Formação:** vocês ficam em faixas lado a lado, e o primeiro fica na direita.
+- **Deixas de botão:** usam as suas teclas de andar, atacar e pular, com um anel que vai fechando. Acertar na hora certa dá **PERFEITO**.
+- **Desvios (zanzoken):** a tecla mandada é a do lado do colega, e vocês trocam de lado ("eu pra direita, ele pra esquerda"). Sozinho, você pula de um lado para o outro deixando imagens residuais.
+- **Combos em rodízio:** cada golpe é de um jogador.
+- **Golpe final:** todos apertam juntos. No mesmo instante sai o **GOLPE COMBINADO** (dano cheio); se só parte acertar, sai metade.
+- **Cabo de guerra de energia:** a força de todo mundo soma, e o chefe tem momentos em que empurra mais forte.
+- **Janela de transformação:** a luta pausa em câmera lenta e você se transforma com a tecla normal do DMZ, em qualquer forma que já tenha. Quem transforma fica 50% mais forte no resto da cena. Sem forma, dá para segurar *Carregar Ki* para elevar o ki (+25%).
+- **Erros:** errar tira vida, mas nunca mata. A cena continua.
+- **Efeitos:** a cena tem impact frames (tela invertida, quadro preto com linhas de impacto, clarão), tela tremendo, onomatopeias, faixas de cinema, falas e sons do próprio DMZ.
+
+Cenas:
+
+| Chefe | Fases |
+|---|---|
+| Freeza (forma final, missão 14) | 50%: **A Fúria**. Freeza explode o Kuririn no céu e abre a janela de transformação. |
+| Freeza 100% (missão 15) | 70%: **Kienzan**, desviar de discos e rebatê-los todos juntos.<br>45%: **Raio da Morte**, rebater e desviar em rodízio e depois contra-atacar com um combo.<br>20%: **Embate final**, Kamehameha contra a rajada dele. |
+| Cell Perfeito (saga dos Androides) | 85%: **A Arrancada**, voar em zigue-zague trocando de lado entre as rajadas e fechar com um combo e o martelo duplo.<br>55%: **O Despertar**. Cell agarra um e arremessa no outro (sozinho, no chão), vocês voam para trás e se transformam.<br>25%: **Kamehameha contra Kamehameha**. |
+
+Configuração em `config/dmzkicontrol.json` → `encounters`:
+- `enabled`, `maxPlayers` (1 a 4), `joinRadius`;
+- `windowScale`: maior = mais fácil;
+- `missDamageMultiplier`, `bossDamageMultiplier`, `cooldownSeconds`;
+- `disabled`: ids `frieza_base`, `frieza_fp`, `cell_perfect`.
+
 ## Grupo (party) do DMZ
 
 - **TP dividido:** o DMZ 2.2.1 só dividia o TP com o grupo se quem ganhou tivesse a Transmissão Instantânea. Agora divide com quem está no mesmo mundo e dentro do alcance do grupo (`partyQuestShareRange` do DMZ), na proporção do DMZ (`partyTpShareRatio`). Desligar: `party.fixTpShare = false`.

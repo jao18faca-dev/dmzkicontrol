@@ -81,7 +81,7 @@ public final class SceneOverlay implements IGuiOverlay {
         return 0xFFFFFF;
     }
 
-    private static void vignette(GuiGraphics g, int w, int h, int rgb, float a) {
+    public static void vignette(GuiGraphics g, int w, int h, int rgb, float a) {
         int steps = 12;
         for (int i = 0; i < steps; i++) {
             float k = 1f - i / (float) steps;
@@ -95,7 +95,7 @@ public final class SceneOverlay implements IGuiOverlay {
         }
     }
 
-    private static void focusLines(GuiGraphics g, int w, int h, float k, int seed, int rgb) {
+    public static void focusLines(GuiGraphics g, int w, int h, float k, int seed, int rgb) {
         if (k <= 0.01f) return;
         float cx = w / 2f, cy = h / 2f;
         float maxR = (float) Math.sqrt(cx * cx + cy * cy);
@@ -119,7 +119,7 @@ public final class SceneOverlay implements IGuiOverlay {
     }
 
     /** Onomatopeia em pe (de cima para baixo), letras surgindo uma a uma e tremendo, com contorno preto. */
-    private static void vertical(GuiGraphics g, String txt, float x, float y, float scale, float tilt, float alpha, float shake, float time, int color) {
+    public static void vertical(GuiGraphics g, String txt, float x, float y, float scale, float tilt, float alpha, float shake, float time, int color) {
         if (alpha <= 0.02f) return;
         var font = Minecraft.getInstance().font;
         int a = Math.max(8, (int) (alpha * 255));
@@ -145,7 +145,7 @@ public final class SceneOverlay implements IGuiOverlay {
     }
 
     /** Onomatopeia grande de impacto (ドン!), surge maior e encolhe. */
-    private static void big(GuiGraphics g, String txt, float x, float y, float scale, float tilt, float since, int dur, int color) {
+    public static void big(GuiGraphics g, String txt, float x, float y, float scale, float tilt, float since, int dur, int color) {
         var font = Minecraft.getInstance().font;
         float a = since < 2f ? since / 2f : 1f - Mth.clamp((since - dur * 0.5f) / (dur * 0.5f), 0f, 1f);
         int alpha = Math.max(8, (int) (a * 255));

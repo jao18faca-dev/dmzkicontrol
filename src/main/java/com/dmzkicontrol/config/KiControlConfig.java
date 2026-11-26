@@ -447,6 +447,28 @@ public class KiControlConfig {
 
     public FormScenes formScenes = new FormScenes();
 
+    /** Lutas cinematograficas contra os chefes finais (quick time events), de 1 a 4 jogadores. */
+    public static class Encounters {
+        /** Liga/desliga os quick time events dos chefes. */
+        public boolean enabled = true;
+        /** Quantos jogadores entram na cena (1 a 4). Quem bateu no chefe entra; os outros por perto completam. */
+        public int maxPlayers = 4;
+        /** Distancia (blocos) do chefe para entrar junto na cena. */
+        public double joinRadius = 48.0;
+        /** Tamanho da janela de acerto (1.0 = normal; 1.5 = mais facil; 0.7 = mais dificil). */
+        public double windowScale = 1.0;
+        /** Multiplica o dano que voce toma ao errar (nunca mata: fica no minimo 1 de vida). */
+        public double missDamageMultiplier = 1.0;
+        /** Multiplica o dano que os acertos tiram do chefe. */
+        public double bossDamageMultiplier = 1.0;
+        /** Segundos minimos entre duas cenas do mesmo chefe. */
+        public double cooldownSeconds = 8.0;
+        /** Cenas desligadas, pelo id (ex.: "frieza_fp", "frieza_base", "cell_perfect"). */
+        public java.util.List<String> disabled = new java.util.ArrayList<>();
+    }
+
+    public Encounters encounters = new Encounters();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -565,6 +587,9 @@ public class KiControlConfig {
         if (sagas == null) sagas = new Sagas();
         if (formScenes == null) formScenes = new FormScenes();
         if (formScenes.disabledForms == null) formScenes.disabledForms = new java.util.ArrayList<>();
+        if (encounters == null) encounters = new Encounters();
+        if (encounters.disabled == null) encounters.disabled = new java.util.ArrayList<>();
+        encounters.maxPlayers = Math.max(1, Math.min(4, encounters.maxPlayers));
         if (auraControlRequiredSaga == null) auraControlRequiredSaga = "";
         if (auraLevelEfficiency == null || auraLevelEfficiency.isEmpty()) auraLevelEfficiency = new ArrayList<>(List.of(0.60, 0.70, 0.80, 0.90, 1.00));
         if (auraLevelTrainSpeed == null || auraLevelTrainSpeed.isEmpty()) auraLevelTrainSpeed = new ArrayList<>(List.of(1.00, 1.15, 1.30, 1.45, 1.60));

@@ -8,7 +8,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 /** Canal proprio do addon (a wiki do DMZ pede: nunca registre pacotes no canal do DMZ). */
 public final class KiControlNetwork {
-    private static final String PROTOCOL = "6";
+    private static final String PROTOCOL = "7";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(KiControlMod.MODID, "main"),
@@ -57,6 +57,26 @@ public final class KiControlNetwork {
                 .encoder(FormSceneSkipC2S::encode)
                 .decoder(FormSceneSkipC2S::decode)
                 .consumerMainThread(FormSceneSkipC2S::handle)
+                .add();
+        CHANNEL.messageBuilder(EncStateS2C.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(EncStateS2C::encode)
+                .decoder(EncStateS2C::decode)
+                .consumerMainThread(EncStateS2C::handle)
+                .add();
+        CHANNEL.messageBuilder(EncEventS2C.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(EncEventS2C::encode)
+                .decoder(EncEventS2C::decode)
+                .consumerMainThread(EncEventS2C::handle)
+                .add();
+        CHANNEL.messageBuilder(EncInputC2S.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(EncInputC2S::encode)
+                .decoder(EncInputC2S::decode)
+                .consumerMainThread(EncInputC2S::handle)
+                .add();
+        CHANNEL.messageBuilder(EncMashC2S.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(EncMashC2S::encode)
+                .decoder(EncMashC2S::decode)
+                .consumerMainThread(EncMashC2S::handle)
                 .add();
     }
 }

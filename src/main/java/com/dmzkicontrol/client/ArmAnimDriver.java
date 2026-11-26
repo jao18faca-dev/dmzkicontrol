@@ -49,8 +49,13 @@ public final class ArmAnimDriver {
         return 0.0;
     }
 
-    /** entityId -> {animacao, tick final}. */
+    /** entityId -> {animacao, tick final, numero do pedido}. */
     private static final Map<Integer, Object[]> REQUESTS = new HashMap<>();
+    private static int serial;
+    /** Poses de golpe (tocam uma vez e seguram o ultimo quadro); as outras ficam em loop. */
+    private static final java.util.Set<String> ONE_SHOT = java.util.Set.of(
+            "dmzkicontrol.cs.dodge_left", "dmzkicontrol.cs.dodge_right", "dmzkicontrol.cs.deflect", "dmzkicontrol.cs.hit_recoil",
+            "dmzkicontrol.cs.combo_jab", "dmzkicontrol.cs.combo_hook", "dmzkicontrol.cs.combo_kick", "dmzkicontrol.cs.double_axe");
     private static boolean warned;
 
     private ArmAnimDriver() {}
@@ -58,12 +63,18 @@ public final class ArmAnimDriver {
     /** Toca uma animacao "de uma vez" (disparo) por {@code ticks}. */
     public static void play(AbstractClientPlayer p, String anim, int ticks) {
         if (p.level() == null) return;
-        REQUESTS.put(p.getId(), new Object[]{anim, p.level().getGameTime() + ticks});
+        REQUESTS.put(p.getId(), new Object[]{anim, p.level().getGameTime() + ticks, ++serial});
         attach(p);
     }
 
     public static void clear() {
         REQUESTS.clear();
+    }
+
+    /** Numero do pedido em andamento (o mesmo golpe duas vezes seguidas recomeca a animacao). */
+    private static int currentSerial(AbstractClientPlayer p) {
+        Object[] req = REQUESTS.get(p.getId());
+        return req == null ? 0 : (int) req[2];
     }
 
     /** O que este jogador deve mostrar agora (null = nada, o DMZ cuida dos bracos). */
@@ -88,6 +99,7 @@ public final class ArmAnimDriver {
             Map controllers = manager.getAnimationControllers();
             if (controllers.containsKey(CONTROLLER)) return;
             String[] last = {null};
+            int[] lastSerial = {0};
             AnimationController controller = new AnimationController(geo, CONTROLLER, 3, state -> {
                 String want = current(p);
                 // o braco da mira segue o olhar; voando, desconta a inclinacao do corpo da animacao de voo do DMZ
@@ -97,8 +109,11 @@ public final class ArmAnimDriver {
                     last[0] = null;
                     return PlayState.STOP;
                 }
-                if (!want.equals(last[0])) {
-                    RawAnimation raw = want.startsWith("dmzkicontrol.cs.") ? RawAnimation.begin().thenLoop(want)
+                int ser = currentSerial(p);
+                if (!want.equals(last[0]) || (ONE_SHOT.contains(want) && ser != lastSerial[0])) {
+                    lastSerial[0] = ser;
+                    RawAnimation raw = ONE_SHOT.contains(want) ? RawAnimation.begin().thenPlayAndHold(want)
+                            : want.startsWith("dmzkicontrol.cs.") ? RawAnimation.begin().thenLoop(want)
                             : want.contains("_fire") ? RawAnimation.begin().thenPlay(want) : RawAnimation.begin().thenPlayAndHold(want);
                     state.getController().setAnimation(raw);
                     state.getController().forceAnimationReset();
