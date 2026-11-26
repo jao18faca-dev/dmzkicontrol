@@ -163,6 +163,18 @@ public final class EncounterDirector {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onDamage(LivingDamageEvent event) {
+        // a luta cinematografica nunca pode derrubar o jogo: qualquer erro aqui so desliga a cena
+        try {
+            tryStart(event);
+        } catch (Throwable t) {
+            if (!triggerFailed) KiControlMod.LOGGER.error("[Lutas] erro ao checar o gatilho da cena; ignorando.", t);
+            triggerFailed = true;
+        }
+    }
+
+    private static boolean triggerFailed;
+
+    private static void tryStart(LivingDamageEvent event) {
         KiControlConfig.Encounters cfg = KiControlConfig.get().encounters;
         if (!cfg.enabled || event.isCanceled()) return;
         LivingEntity boss = event.getEntity();

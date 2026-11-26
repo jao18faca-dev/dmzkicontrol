@@ -25,12 +25,6 @@ public final class EncScripts {
     private static final Map<String, EncScript> BY_ID = new LinkedHashMap<>();
     private static final Map<String, EncScript> BY_BOSS = new LinkedHashMap<>();
 
-    static {
-        add(friezaBase());
-        add(friezaFullPower());
-        add(cellPerfect());
-    }
-
     private EncScripts() {}
 
     private static void add(EncScript s) {
@@ -394,5 +388,12 @@ public final class EncScripts {
         lose.ev(8, BOSS).text("enc.dmzkicontrol.cell.laugh");
         lose.ev(34, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("base.fly_idle", 20);
         return s;
+    }
+
+    // registra por ultimo: os campos estaticos acima (sons, poses) precisam existir antes de montar os roteiros
+    static {
+        add(friezaBase());
+        add(friezaFullPower());
+        add(cellPerfect());
     }
 }
