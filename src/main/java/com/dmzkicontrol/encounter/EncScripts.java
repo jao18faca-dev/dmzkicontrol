@@ -58,7 +58,8 @@ public final class EncScripts {
 
     private static final String ZANZOKEN = d("zanzoken");
     private static final String[] PUNCH = {d("punch1"), d("punch2"), d("punch3"), d("punch4"), d("punch5"), d("punch6")};
-    private static final String[] COMBO_POSES = {"combo_jab", "combo_hook", "combo_kick"};
+    private static final String[] COMBO_POSES = {"base.jab_right", "base.jab_left", "combat.gutkick_right", "combat.one_handed_uppercut_left",
+            "base.jab_right", "combat.gutkick_left", "base.jab_left", "combat.one_handed_uppercut_right"};
 
     /** Esquiva de zanzoken (padrao de todas as deixas de desvio). */
     private static void dodge(Cue c, MoveKind kind) {
@@ -69,7 +70,7 @@ public final class EncScripts {
     /** Golpe do combo em rodizio. */
     private static Cue comboHit(Beat b, int i, int t, Key key, int win, float dmg) {
         Cue c = b.cue(t, Mode.TURN, key, win).lead(12).dmg(dmg).hurt(0.03f);
-        c.onHit(0, SELF).pose(COMBO_POSES[i % 3], 7).snd(PUNCH[i % PUNCH.length], 1f, 0.9f + (i % 4) * 0.06f);
+        c.onHit(0, SELF).pose(COMBO_POSES[i % COMBO_POSES.length], 9).snd(PUNCH[i % PUNCH.length], 1f, 0.9f + (i % 4) * 0.06f);
         c.onHit(1, BOSS).fx("hit_spark", 6).impact(i % 3 == 2 ? 2 : 1).shake(i % 3 == 2 ? 1.6f : 0.7f)
                 .sfx(i % 3 == 2 ? "バキッ" : null);
         c.onMiss(0, SELF).pose("hit_recoil", 10).snd(d("block2")).impact(1).shake(1f);
@@ -92,19 +93,19 @@ public final class EncScripts {
         b.ev(20, BOSS).fx("telekinesis", 40).snd(d("ki_explosion_charge"), 0.7f, 1.4f);
         b.ev(20, ALL).pose("tremble", 40);
         b.ev(56, BOSS).fx("sky_explosion", 40).size(1.6f).impact(2).shake(2.5f).snd(d("ki_explosion_impact"), 1.2f, 0.8f);
-        b.ev(72, ALL).text("enc.dmzkicontrol.kuririn").pose("head_pain", 24).sfx("クリリン!!");
-        b.ev(96, ALL).pose("roar_up", 24).fx("rage", 24).impact(2).shake(3f).snd(d("aura_start"), 1f, 0.7f);
+        b.ev(72, ALL).text("enc.dmzkicontrol.kuririn").pose("evs.rage_scream", 24).sfx("クリリン!!");
+        b.ev(96, ALL).pose("evs.rage_scream", 24).fx("rage", 24).impact(2).shake(3f).snd(d("aura_start"), 1f, 0.7f);
 
         Beat w = p.beat(Kind.CHARGE, 200).caption("enc.dmzkicontrol.cap.transform");
         w.shot(0, 0, "group", 3.2, 1.0, 3.2, "group", 0, 1.3, 0, 0.85f)
                 .shot(100, 100, "group", -3.2, 1.6, 3.0, "group", 0, 1.3, 0, 0.8f);
-        w.ev(0, ALL).pose("scream", 200).fx("rage", 200).snd(d("ki_charge_loop"), 0.8f, 0.8f);
+        w.ev(0, ALL).pose("base.ki_charge", 200).fx("rage", 200).snd(d("ki_charge_loop"), 0.8f, 0.8f);
 
         Beat e = p.beat(Kind.CINE, 50);
         e.shot(0, 0, "boss", 0.7, 1.7, 2.2, "boss", 0, 1.6, 0, 0.7f)
                 .shot(26, 10, "boss", -1.5, 0.6, 3.6, "group", 0, 1.6, 0, 0.9f);
         e.ev(4, BOSS).text("enc.dmzkicontrol.frieza.what_power");
-        e.ev(26, ALL).pose("stance", 24);
+        e.ev(26, ALL).pose("base.fly_idle", 24);
         return s;
     }
 
@@ -120,7 +121,7 @@ public final class EncScripts {
                 .shot(32, 6, "group", 2.2, 2.0, 4.5, "boss", 0, 2.6, 0, 0.9f);
         b.ev(2, BOSS).text("enc.dmzkicontrol.frieza.kienzan_line").snd(d("entity.frieza.s.attack"));
         b.ev(6, BOSS).fx("kienzan_charge", 54).size(1.4f).snd(d("ki_disk_charge"));
-        b.ev(10, ALL).pose("guard_ready", 50);
+        b.ev(10, ALL).pose("base.block", 50);
         b.ev(30, BOSS).move(MoveKind.ABS, 0, 2.5, 0, 0.15f);
 
         Beat q = p.beat(Kind.PROMPT, 128).caption("enc.dmzkicontrol.cap.dodge");
@@ -138,7 +139,7 @@ public final class EncScripts {
         c2.onMiss(0, SELF).pose("hit_recoil", 12).fx("cut", 8).impact(1).shake(1.5f).snd(d("critic_punch1"));
         Cue c3 = q.cue(100, Mode.ALL, Key.ATTACK, 6).lead(24).syncDmg(0.08f).hurt(0.08f);
         c3.tell(-22, BOSS).fx("kienzan", 22, SELF).size(1.3f).snd(d("ki_disk_fire"), 1f, 0.8f);
-        c3.onHit(0, SELF).pose("deflect", 10).snd(d("parry"));
+        c3.onHit(0, SELF).pose("combat.one_handed_uppercut_right", 10).snd(d("parry"));
         c3.onSync(0, BOSS).fx("kienzan_return", 10).snd(d("ki_disk_fire"), 1f, 1.4f);
         c3.onSync(10, BOSS).impact(3).sfx("ズバッ!!").shake(3f).snd(d("critic_punch2")).fx("burst", 14).size(1.5f);
         c3.onSync(12, BOSS).text("enc.dmzkicontrol.frieza.kienzan_cut");
@@ -148,7 +149,7 @@ public final class EncScripts {
 
         Beat a = p.beat(Kind.CINE, 36);
         a.shot(0, 0, "boss", 0.7, 1.7, 2.3, "boss", 0, 1.6, 0, 0.72f);
-        a.ev(0, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("stance", 30);
+        a.ev(0, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("base.fly_idle", 30);
         a.ev(2, BOSS).text("enc.dmzkicontrol.frieza.angry").snd(d("entity.frieza.s.hurt")).move(MoveKind.ABS, 0, 0, 0, 0.2f);
 
         // ---------- fase 2: Raio da Morte + contra-ataque
@@ -157,7 +158,7 @@ public final class EncScripts {
         b.shot(0, 0, "boss", 1.0, 1.6, 1.8, "boss", 0, 1.5, 0, 0.6f)
                 .shot(24, 0, "me", 0.9, 1.9, 2.4, "boss", 0, 1.5, 0, 0.85f);
         b.ev(0, BOSS).text("enc.dmzkicontrol.frieza.deathbeam_line").fx("finger_glow", 44);
-        b.ev(24, ALL).pose("guard_ready", 20);
+        b.ev(24, ALL).pose("base.block", 20);
         b.ev(36, BOSS).snd(d("laserbeam"), 0.6f, 1.6f);
 
         q = p.beat(Kind.PROMPT, 150).caption("enc.dmzkicontrol.cap.deflect");
@@ -172,7 +173,7 @@ public final class EncScripts {
                 dodge(c, MoveKind.HOP);
                 c.onHit(10, SELF).move(MoveKind.LANE, 0, 0, 0, 0.4f);
             } else {
-                c.onHit(0, SELF).pose("deflect", 9).fx("deflect_spark", 8).snd(d("parry"), 1f, 1f + i * 0.05f);
+                c.onHit(0, SELF).pose("combat.one_handed_uppercut_right", 9).fx("deflect_spark", 8).snd(d("parry"), 1f, 1f + i * 0.05f);
             }
             c.onMiss(0, SELF).pose("hit_recoil", 12).fx("burst", 8).size(0.5f).impact(1).shake(1.5f).snd(d("critic_punch1"));
         }
@@ -182,7 +183,7 @@ public final class EncScripts {
         dash.ev(0, BOSS).move(MoveKind.ABS, 0, 1.5, 5.0, 0.4f).fx("afterimage", 10).snd(ZANZOKEN, 1f, 0.8f);
         dash.ev(12, ALL).move(MoveKind.CLOSE, 0, 0, 0, 0.45f);
         dash.ev(6, BOSS).text("enc.dmzkicontrol.frieza.come_here");
-        dash.ev(8, ALL).pose("stance", 18).text("enc.dmzkicontrol.cap.counter").impact(1);
+        dash.ev(8, ALL).pose("base.fly_idle", 18).text("enc.dmzkicontrol.cap.counter").impact(1);
 
         q = p.beat(Kind.PROMPT, 150).caption("enc.dmzkicontrol.cap.combo");
         q.shot(0, 0, "mid", 3.6, 1.6, 0.4, "mid", 0, 1.4, 0, 0.95f)
@@ -212,7 +213,7 @@ public final class EncScripts {
         b.shot(0, 0, "group", 2.4, 0.6, 2.6, "group", 0, 1.6, 0, 0.85f)
                 .shot(40, 0, "boss", 1.2, 1.4, 2.6, "boss", 0, 2.2, 0, 0.8f)
                 .shot(58, 8, "mid", 10, 0.6, 0, "mid", 0, 1.6, 0, 1.0f);
-        b.ev(0, ALL).pose("kame_charge", 76).fx("kame_charge", 76).snd(d("ki_kame_charge"));
+        b.ev(0, ALL).pose("ki.kameha_cast", 76).fx("kame_charge", 76).snd(d("ki_kame_charge"));
         b.ev(8, ALL).sfx("か");
         b.ev(20, ALL).sfx("め");
         b.ev(32, ALL).sfx("は");
@@ -223,7 +224,7 @@ public final class EncScripts {
         m.shot(0, 0, "mid", 10, 1.2, 0, "mid", 0, 1.6, 0, 1.0f)
                 .shot(110, 30, "group", 2.0, 1.4, 4.6, "mid", 0, 1.6, 0, 0.95f)
                 .shot(180, 20, "boss", -1.6, 1.8, -3, "mid", 0, 1.6, 0, 0.9f);
-        m.ev(0, ALL).pose("kame_fire", 240).sfx("波ーッ!!").impact(2).shake(2f).snd(d("ki_kame_fire"));
+        m.ev(0, ALL).pose("ki.kameha_fire", 240).sfx("波ーッ!!").impact(2).shake(2f).snd(d("ki_kame_fire"));
         m.ev(0, BOSS).fx("clash", 240).snd(d("ki_beam_fire"), 1f, 0.8f);
         m.ev(90, BOSS).text("enc.dmzkicontrol.frieza.surge").shake(2f);
         m.ev(170, BOSS).text("enc.dmzkicontrol.frieza.surge2").shake(2.5f);
@@ -231,13 +232,13 @@ public final class EncScripts {
         win.shot(0, 0, "boss", 2.4, 1.2, -4, "boss", 0, 1.6, 0, 0.95f);
         win.ev(0, BOSS).fx("beam_win", 44).impact(3).sfx("ドォォン!!").shake(4.5f).snd(d("ki_explosion_impact"), 1.3f, 0.8f);
         win.ev(16, BOSS).text("enc.dmzkicontrol.frieza.scream").snd(d("entity.frieza.s.hurt"), 1.2f, 0.7f);
-        win.ev(40, ALL).pose("stance", 24);
+        win.ev(40, ALL).pose("base.fly_idle", 24);
         Beat lose = m.onLose(54, 0.15f);
         lose.shot(0, 0, "group", 3, 2, 6, "group", 0, 1.2, 0, 1.1f);
-        lose.ev(0, ALL).fx("beam_lose", 30).pose("blown_back", 30).impact(2).shake(3.5f).move(MoveKind.OFFSET, 0, 1, 6, 0.35f)
+        lose.ev(0, ALL).fx("beam_lose", 30).pose("base.flyback", 30).impact(2).shake(3.5f).move(MoveKind.OFFSET, 0, 1, 6, 0.35f)
                 .snd(d("ki_explosion_impact"));
         lose.ev(8, BOSS).text("enc.dmzkicontrol.frieza.laugh");
-        lose.ev(34, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("stance", 20);
+        lose.ev(34, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("base.fly_idle", 20);
         return s;
     }
 
@@ -252,7 +253,7 @@ public final class EncScripts {
         b.shot(0, 0, "boss", 0.9, 1.9, 2.6, "boss", 0, 1.8, 0, 0.75f)
                 .shot(26, 0, "group", 10, 1.4, 0, "group", 0, 1.2, -3, 0.95f);
         b.ev(2, BOSS).text("enc.dmzkicontrol.cell.taunt");
-        b.ev(26, ALL).pose("rush", 200).fx("speedlines", 180).snd(d("tp_short"), 1f, 0.6f).sfx("ゴォッ");
+        b.ev(26, ALL).pose("base.fly_fast", 200).fx("speedlines", 180).snd(d("tp_short"), 1f, 0.6f).sfx("ゴォッ");
 
         Beat q = p.beat(Kind.PROMPT, 150).caption("enc.dmzkicontrol.cap.rush");
         q.shot(0, 0, "group", 10, 1.4, 0, "group", 0, 1.2, -3, 0.9f)
@@ -271,7 +272,7 @@ public final class EncScripts {
 
         Beat arrive = p.beat(Kind.CINE, 26);
         arrive.shot(0, 0, "mid", 5, 0.4, 1.5, "mid", 0, 1.8, 0, 1.0f);
-        arrive.ev(0, ALL).move(MoveKind.CLOSE, 0, 0, 0, 0.35f).pose("guard_ready", 26).sfx("ザッ");
+        arrive.ev(0, ALL).move(MoveKind.CLOSE, 0, 0, 0, 0.35f).pose("base.block", 26).sfx("ザッ");
         arrive.ev(6, BOSS).text("enc.dmzkicontrol.cell.come");
 
         q = p.beat(Kind.PROMPT, 156).caption("enc.dmzkicontrol.cap.combo");
@@ -307,30 +308,30 @@ public final class EncScripts {
                 .shot(70, 0, "boss", 0.4, 0.9, 1.2, "group", 0, 1.4, 0, 1.1f);
         b.ev(4, BOSS).fx("afterimage", 12).snd(ZANZOKEN).moveTo(0, 0, 0, 1.6, 1f);
         b.ev(10, BOSS).text("enc.dmzkicontrol.cell.behind");
-        b.ev(14, 0).pose("tremble", 26).sfx("ガシッ").impact(1).snd(d("block3"));
+        b.ev(14, 0).pose("skp.grabbed", 40).sfx("ガシッ").impact(1).snd(d("block3"));
         b.ev(20, BOSS).moveTo(0, 0, 3, 4.5, 0.2f);
         b.ev(20, 0).move(MoveKind.OFFSET, 0, 3, 3, 0.2f);
         // com 2 ou mais: arremessa um no outro; o resto toma a onda de choque
-        b.ev(40, 0).pose("blown_back", 30).moveTo(1, 0, 0, 0, 0.5f).snd(d("knockback_character")).sfx("ブンッ").n(2, 4);
+        b.ev(40, 0).pose("base.flyback", 30).moveTo(1, 0, 0, 0, 0.5f).snd(d("knockback_character")).sfx("ブンッ").n(2, 4);
         b.ev(46, 1).impact(3).sfx("ドガッ!!").shake(3.5f).fx("burst", 12).snd(d("critic_punch1")).n(2, 4);
         b.ev(47, 0).move(MoveKind.OFFSET, 0.8, 0.6, 7, 0.32f).hurt(0.07f).n(2, 4);
-        b.ev(47, 1).move(MoveKind.OFFSET, -0.8, 0.6, 7, 0.32f).pose("blown_back", 26).hurt(0.07f).n(2, 4);
-        b.ev(47, OTHERS).fx("shockwave", 16).move(MoveKind.OFFSET, 0, 0.5, 6, 0.3f).pose("blown_back", 22).hurt(0.04f).n(3, 4);
+        b.ev(47, 1).move(MoveKind.OFFSET, -0.8, 0.6, 7, 0.32f).pose("base.flyback", 26).hurt(0.07f).n(2, 4);
+        b.ev(47, OTHERS).fx("shockwave", 16).move(MoveKind.OFFSET, 0, 0.5, 6, 0.3f).pose("base.flyback", 22).hurt(0.04f).n(3, 4);
         // sozinho: arremessado no chao
-        b.ev(40, 0).pose("blown_back", 40).move(MoveKind.OFFSET, 0, -4, 6, 0.45f).snd(d("knockback_character")).sfx("ブンッ").n(1, 1);
+        b.ev(40, 0).pose("base.flyback", 40).move(MoveKind.OFFSET, 0, -4, 6, 0.45f).snd(d("knockback_character")).sfx("ブンッ").n(1, 1);
         b.ev(46, 0).impact(3).sfx("ドガァ!!").shake(4f).fx("crater", 30).hurt(0.08f).snd(d("ki_explosion_impact")).n(1, 1);
         b.ev(60, BOSS).move(MoveKind.ABS, 0, 1.0, 0, 0.3f);
         b.ev(74, BOSS).text("enc.dmzkicontrol.cell.show_me");
-        b.ev(80, ALL).pose("clench", 24);
+        b.ev(80, ALL).pose("base.ki_charge", 24);
 
         Beat w = p.beat(Kind.CHARGE, 200).caption("enc.dmzkicontrol.cap.transform");
         w.shot(0, 0, "group", 3.4, 1.0, 3.4, "group", 0, 1.3, 0, 0.85f)
                 .shot(100, 100, "group", -3.4, 1.8, 3.2, "group", 0, 1.3, 0, 0.8f);
-        w.ev(0, ALL).pose("scream", 200).fx("charge", 200).snd(d("ki_charge_loop"), 0.8f, 0.9f);
+        w.ev(0, ALL).pose("base.ki_charge", 200).fx("charge", 200).snd(d("ki_charge_loop"), 0.8f, 0.9f);
 
         Beat rise = p.beat(Kind.CINE, 44);
         rise.shot(0, 0, "boss", -1.0, 0.8, 2.0, "group", 0, 1.6, 0, 0.95f);
-        rise.ev(0, ALL).move(MoveKind.LANE, 0, 0, 0, 0.22f).pose("stance", 40);
+        rise.ev(0, ALL).move(MoveKind.LANE, 0, 0, 0, 0.22f).pose("base.fly_idle", 40);
         rise.ev(8, BOSS).text("enc.dmzkicontrol.cell.excellent").impact(1);
 
         q = p.beat(Kind.PROMPT, 126).caption("enc.dmzkicontrol.cap.speed");
@@ -340,7 +341,7 @@ public final class EncScripts {
         for (int i = 0; i < spd.length; i++) {
             Cue c = q.cue(16 + 17 * i, Mode.TURN, spd[i], 4).lead(14).dmg(0.015f).hurt(0.04f);
             c.tell(-10, BOSS).moveTo(SELF, 0, 0, -1.25, 1f).fx("afterimage", 10).snd(ZANZOKEN, 0.9f, 1.2f);
-            c.onHit(0, SELF).pose(i % 2 == 0 ? "cross_guard" : "combo_hook", 8).snd(d(i % 2 == 0 ? "block1" : "punch3"));
+            c.onHit(0, SELF).pose(i % 2 == 0 ? "base.block" : "base.jab_left", 9).snd(d(i % 2 == 0 ? "block1" : "punch3"));
             c.onHit(1, BOSS).fx("hit_spark", 6).impact(1).shake(1f);
             c.onMiss(0, SELF).pose("hit_recoil", 10).impact(1).shake(1.5f).snd(d("critic_punch1"));
         }
@@ -358,7 +359,7 @@ public final class EncScripts {
                 .shot(72, 14, "mid", 11, 0.4, 0, "mid", 0, 1.8, 0, 1.0f);
         b.ev(0, BOSS).fx("kame_charge", 92).size(1.4f).snd(d("ki_kame_charge"));
         b.ev(8, BOSS).text("enc.dmzkicontrol.cell.kame");
-        b.ev(46, ALL).pose("kame_charge", 46).fx("kame_charge", 46).snd(d("ki_kame_charge"), 1f, 1.1f);
+        b.ev(46, ALL).pose("ki.kameha_cast", 46).fx("kame_charge", 46).snd(d("ki_kame_charge"), 1f, 1.1f);
         b.ev(52, ALL).sfx("か");
         b.ev(62, ALL).sfx("め");
         b.ev(72, ALL).sfx("は");
@@ -368,7 +369,7 @@ public final class EncScripts {
         m.shot(0, 0, "mid", 11, 1.0, 0, "mid", 0, 1.8, 0, 1.0f)
                 .shot(120, 30, "group", 2.0, 1.4, 4.6, "mid", 0, 1.8, 0, 0.95f)
                 .shot(200, 20, "boss", -1.6, 1.8, -3, "mid", 0, 1.8, 0, 0.9f);
-        m.ev(0, ALL).pose("kame_fire", 260).sfx("波ーッ!!").impact(2).shake(2f).snd(d("ki_kame_fire"));
+        m.ev(0, ALL).pose("ki.kameha_fire", 260).sfx("波ーッ!!").impact(2).shake(2f).snd(d("ki_kame_fire"));
         m.ev(0, BOSS).fx("clash", 260).snd(d("ki_kame_fire"), 1f, 0.8f);
         m.ev(90, BOSS).text("enc.dmzkicontrol.cell.surge").shake(2f);
         m.ev(190, BOSS).text("enc.dmzkicontrol.cell.surge2").shake(2.5f);
@@ -376,13 +377,13 @@ public final class EncScripts {
         win.shot(0, 0, "boss", 2.4, 1.2, -4, "boss", 0, 1.6, 0, 0.95f);
         win.ev(0, BOSS).fx("beam_win", 48).impact(3).sfx("ドォォォン!!").shake(5f).snd(d("ki_explosion_impact"), 1.3f, 0.7f);
         win.ev(18, BOSS).text("enc.dmzkicontrol.cell.scream");
-        win.ev(46, ALL).pose("stance", 24);
+        win.ev(46, ALL).pose("base.fly_idle", 24);
         Beat lose = m.onLose(56, 0.16f);
         lose.shot(0, 0, "group", 3, 2, 6, "group", 0, 1.2, 0, 1.1f);
-        lose.ev(0, ALL).fx("beam_lose", 30).pose("blown_back", 30).impact(2).shake(3.5f).move(MoveKind.OFFSET, 0, 1, 6, 0.35f)
+        lose.ev(0, ALL).fx("beam_lose", 30).pose("base.flyback", 30).impact(2).shake(3.5f).move(MoveKind.OFFSET, 0, 1, 6, 0.35f)
                 .snd(d("ki_explosion_impact"));
         lose.ev(8, BOSS).text("enc.dmzkicontrol.cell.laugh");
-        lose.ev(34, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("stance", 20);
+        lose.ev(34, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("base.fly_idle", 20);
         return s;
     }
 }

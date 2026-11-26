@@ -34,6 +34,13 @@ public final class SealAnimations {
     /** Poses das cutscenes de transformacao (4.0). */
     private static final ResourceLocation SCENES = new ResourceLocation(KiControlMod.MODID, "animations/cutscene.animation.json");
     private static final ResourceLocation DMZ_PRIMARY = new ResourceLocation("dragonminez", "animations/entity/races/movement.animation.json");
+    /** Outros arquivos de animacao do jogador no DMZ (golpes, ki, tecnicas, eventos): juntamos no mesmo conjunto. */
+    private static final ResourceLocation[] DMZ_EXTRA = {
+            new ResourceLocation("dragonminez", "animations/entity/races/combat.animation.json"),
+            new ResourceLocation("dragonminez", "animations/entity/races/ki.animation.json"),
+            new ResourceLocation("dragonminez", "animations/entity/races/skp.animation.json"),
+            new ResourceLocation("dragonminez", "animations/entity/races/evs.animation.json"),
+            new ResourceLocation("dragonminez", "animations/entity/races/transf.animation.json")};
 
     /** entityId -> [tick de parada, nome]. */
     private static final Map<Integer, Object[]> STOPS = new HashMap<>();
@@ -67,8 +74,22 @@ public final class SealAnimations {
                     if (dmz.getAnimation(key) != scenes.getAnimation(key)) { missing = true; break; }
                 }
             }
+            if (!missing) {
+                for (ResourceLocation extra : DMZ_EXTRA) {
+                    BakedAnimations ex = cache.get(extra);
+                    if (ex == null) continue;
+                    for (String key : ex.animations().keySet()) {
+                        if (dmz.getAnimation(key) == null) { missing = true; break; }
+                    }
+                    if (missing) break;
+                }
+            }
             if (!missing) return true;
             Map<String, Animation> merged = new HashMap<>(dmz.animations());
+            for (ResourceLocation extra : DMZ_EXTRA) {
+                BakedAnimations ex = cache.get(extra);
+                if (ex != null) for (Map.Entry<String, Animation> e : ex.animations().entrySet()) merged.putIfAbsent(e.getKey(), e.getValue());
+            }
             merged.putAll(ours.animations());
             if (scenes != null) merged.putAll(scenes.animations());
             cache.put(DMZ_PRIMARY, new BakedAnimations(merged));

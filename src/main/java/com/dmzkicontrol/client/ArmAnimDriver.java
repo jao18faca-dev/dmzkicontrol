@@ -53,6 +53,9 @@ public final class ArmAnimDriver {
     private static final Map<Integer, Object[]> REQUESTS = new HashMap<>();
     private static int serial;
     /** Poses de golpe (tocam uma vez e seguram o ultimo quadro); as outras ficam em loop. */
+    /** Animacoes do DMZ que ficam em loop (o resto toca uma vez e segura). */
+    private static final java.util.Set<String> DMZ_LOOPS = java.util.Set.of(
+            "base.block", "base.fly_idle", "base.fly_fast", "base.flyback", "base.ki_charge", "ki.kameha_fire", "evs.rage_scream");
     private static final java.util.Set<String> ONE_SHOT = java.util.Set.of(
             "dmzkicontrol.cs.dodge_left", "dmzkicontrol.cs.dodge_right", "dmzkicontrol.cs.deflect", "dmzkicontrol.cs.hit_recoil",
             "dmzkicontrol.cs.combo_jab", "dmzkicontrol.cs.combo_hook", "dmzkicontrol.cs.combo_kick", "dmzkicontrol.cs.double_axe");
@@ -110,12 +113,15 @@ public final class ArmAnimDriver {
                     return PlayState.STOP;
                 }
                 int ser = currentSerial(p);
-                if (!want.equals(last[0]) || (ONE_SHOT.contains(want) && ser != lastSerial[0])) {
+                boolean dmzAnim = !want.startsWith("dmzkicontrol.");
+                boolean looping = DMZ_LOOPS.contains(want) || (want.startsWith("dmzkicontrol.cs.") && !ONE_SHOT.contains(want));
+                boolean strike = ONE_SHOT.contains(want) || (dmzAnim && !looping);
+                if (!want.equals(last[0]) || (strike && ser != lastSerial[0])) {
                     lastSerial[0] = ser;
                     // golpe entra rapido; pose de cena entra mesclando devagar (mais fluido)
-                    state.getController().transitionLength(ONE_SHOT.contains(want) ? 2 : want.startsWith("dmzkicontrol.cs.") ? 6 : 3);
-                    RawAnimation raw = ONE_SHOT.contains(want) ? RawAnimation.begin().thenPlayAndHold(want)
-                            : want.startsWith("dmzkicontrol.cs.") ? RawAnimation.begin().thenLoop(want)
+                    state.getController().transitionLength(strike ? 2 : looping ? 6 : 3);
+                    RawAnimation raw = looping ? RawAnimation.begin().thenLoop(want)
+                            : strike ? RawAnimation.begin().thenPlayAndHold(want)
                             : want.contains("_fire") ? RawAnimation.begin().thenPlay(want) : RawAnimation.begin().thenPlayAndHold(want);
                     state.getController().setAnimation(raw);
                     state.getController().forceAnimationReset();

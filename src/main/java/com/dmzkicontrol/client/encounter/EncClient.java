@@ -424,9 +424,10 @@ public final class EncClient {
                 String pose = ev.pose;
                 if ("dodge".equals(pose)) {
                     double x = role == S.myRole && S.anchor != null ? S.anchor.x : S.local(acp.position()).x;
-                    pose = x > 0.3 || (Math.abs(x) <= 0.3 && role % 2 == 0) ? "dodge_left" : "dodge_right";
+                    pose = x > 0.3 || (Math.abs(x) <= 0.3 && role % 2 == 0) ? "base.dodge_left" : "base.dodge_right";
                 }
-                ArmAnimDriver.play(acp, "dmzkicontrol.cs." + pose, ev.poseTicks);
+                // nome com ponto = animacao do proprio DMZ (base., combat., ki., skp., evs.); senao, pose nossa
+                ArmAnimDriver.play(acp, pose.contains(".") ? pose : "dmzkicontrol.cs." + pose, ev.poseTicks);
             }
             if (ev.snd != null && e != null && !(once && soundDone)) {
                 playAt(e, ev.snd, ev.vol, ev.pitch);
