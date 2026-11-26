@@ -282,11 +282,18 @@ public final class EncounterDirector {
             Vec3 look = sp.getLookAngle();
             Vec3 h = new Vec3(look.x, 0, look.z);
             if (h.lengthSqr() < 1e-4) h = new Vec3(0, 0, 1);
-            BlockPos pos = BlockPos.containing(sp.position().add(h.normalize().scale(6)));
+            Vec3 at = sp.position().add(h.normalize().scale(6));
+            // em cima do chao de verdade (nunca dentro de morro ou embaixo da terra)
+            int top = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) Math.floor(at.x), (int) Math.floor(at.z));
+            BlockPos pos = BlockPos.containing(at.x, Math.max(top, (int) Math.floor(sp.getY())), at.z);
             var spawned = type.spawn(level, pos, net.minecraft.world.entity.MobSpawnType.COMMAND);
             if (!(spawned instanceof LivingEntity le)) return "Nao consegui invocar o chefe.";
             boss = le;
         }
+        // no teste, o chefe brilha (da para ver atraves de paredes) e o chat diz onde ele esta
+        boss.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20 * 120, 0, false, false));
+        sp.sendSystemMessage(net.minecraft.network.chat.Component.literal(String.format("%s em %.0f, %.0f, %.0f (%.0f blocos)",
+                boss.getDisplayName().getString(), boss.getX(), boss.getY(), boss.getZ(), boss.distanceTo(sp))));
         final LivingEntity b = boss;
         b.getPersistentData().remove(LAST);
         // espera meio segundo: o chefe recem-criado chega aos clientes antes da cena
