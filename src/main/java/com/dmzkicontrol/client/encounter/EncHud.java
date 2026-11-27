@@ -286,7 +286,7 @@ public final class EncHud implements IGuiOverlay {
         disc(g, cx, cy, base, DmzStyle.argb(0.92f * appear, fill));
         if (inWin && answered == null) disc(g, cx, cy, base * 0.85f, DmzStyle.argb(0.25f * appear * (float) (0.6 + 0.4 * Math.sin(t * 2.5)), GOLD));
         DmzStyle.text(g, Component.literal(glyph(key)), cx, cy - 5 * scale * 1.4f, 1.7f * scale, 0.5f, 0xFFFFFF, appear);
-        DmzStyle.text(g, keyName(key), cx, cy + base + 4, 0.8f * scale, 0.5f, 0xDDDDDD, appear * 0.9f);
+        DmzStyle.text(g, keyName(key), cx, cy + base + 5, 1.15f * scale, 0.5f, 0xFFFFFF, appear);
         if (c.mode == EncScript.Mode.ALL && scale >= 1f) {
             DmzStyle.text(g, Component.translatable("enc.dmzkicontrol.together"), cx, cy - base * 3.4f, 1.0f, 0.5f, GOLD, appear);
         }

@@ -109,9 +109,33 @@ public final class EncClient {
             return new Vec3(fz * x + fx * z, y, -fx * x + fz * z);
         }
 
+        private long lastSearch;
+        private boolean warned;
+
         public Entity boss() {
             Minecraft mc = Minecraft.getInstance();
-            return mc.level == null ? null : mc.level.getEntity(bossId);
+            if (mc.level == null) return null;
+            Entity e = mc.level.getEntity(bossId);
+            if (e != null) return e;
+            // o id nao bateu (outro mod trocou/escondeu a entidade): procura o chefe pelo tipo perto da arena
+            long now = mc.level.getGameTime();
+            if (now - lastSearch < 10) return null;
+            lastSearch = now;
+            var type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(script.bossType));
+            Entity best = null;
+            if (type != null && origin != null) {
+                for (Entity c : mc.level.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(origin, origin).inflate(64), x -> x.getType() == type)) {
+                    if (best == null || c.distanceToSqr(origin) < best.distanceToSqr(origin)) best = c;
+                }
+            }
+            if (best != null) {
+                com.dmzkicontrol.KiControlMod.LOGGER.info("[Lutas] chefe {} achado pelo tipo (id {} -> {}).", script.bossType, bossId, best.getId());
+                bossId = best.getId();
+            } else if (!warned) {
+                warned = true;
+                com.dmzkicontrol.KiControlMod.LOGGER.warn("[Lutas] o cliente nao recebeu o chefe {} (id {}) perto de {}.", script.bossType, bossId, origin);
+            }
+            return best;
         }
 
         public Entity player(int role) {
@@ -458,7 +482,9 @@ public final class EncClient {
         if (S == null) return Component.empty();
         if (role < 0) {
             Entity b = S.boss();
-            return b != null ? b.getDisplayName() : Component.literal("?");
+            if (b != null) return b.getDisplayName();
+            var type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(S.script.bossType));
+            return type != null ? type.getDescription() : Component.literal("?");
         }
         Entity p = S.player(role);
         return p != null ? p.getDisplayName() : Component.literal("?");

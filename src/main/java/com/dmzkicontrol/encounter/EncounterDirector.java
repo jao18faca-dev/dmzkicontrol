@@ -70,6 +70,8 @@ public final class EncounterDirector {
     private static final List<Runnable> PENDING = new ArrayList<>();
     /** Cenas agendadas pelo comando de teste: {nivel, tick, acao}. */
     private static final List<Object[]> DELAYED = new ArrayList<>();
+    /** Chefes do comando de teste esperando a cena comecar: ninguem bate neles nesse meio-tempo. */
+    private static final java.util.Set<LivingEntity> PROTECT = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
     private static int nextId = 1;
 
     private EncounterDirector() {}
@@ -207,6 +209,7 @@ public final class EncounterDirector {
     }
 
     private static void start(EncScript script, int phaseIdx, LivingEntity boss, ServerPlayer attacker) {
+        PROTECT.remove(boss);
         if (!boss.isAlive() || !attacker.isAlive() || !(boss.level() instanceof ServerLevel level)) return;
         if (attacker.level() != level || isLocked(boss) || isLocked(attacker)) return;
         KiControlConfig.Encounters cfg = KiControlConfig.get().encounters;
@@ -261,7 +264,8 @@ public final class EncounterDirector {
             p.fallDistance = 0;
         }
         RUNS.put(run.id, run);
-        KiControlMod.LOGGER.info("[Lutas] {} fase {} com {} jogador(es).", script.id, phaseIdx + 1, ps.size());
+        KiControlMod.LOGGER.info("[Lutas] {} fase {} com {} jogador(es). Chefe id {} em {} (vivo={}, rastreado={}).", script.id, phaseIdx + 1, ps.size(),
+                boss.getId(), boss.blockPosition(), boss.isAlive(), boss.level().getEntity(boss.getId()) == boss);
         beginBeat(run, 0, 0);
     }
 
@@ -296,6 +300,7 @@ public final class EncounterDirector {
                 boss.getDisplayName().getString(), boss.getX(), boss.getY(), boss.getZ(), boss.distanceTo(sp))));
         final LivingEntity b = boss;
         b.getPersistentData().remove(LAST);
+        PROTECT.add(b);
         // espera meio segundo: o chefe recem-criado chega aos clientes antes da cena
         DELAYED.add(new Object[]{level, level.getGameTime() + 10, (Runnable) () -> start(script, phase, b, sp)});
         return null;
@@ -758,8 +763,8 @@ public final class EncounterDirector {
     /** Ninguem da cena toma dano de fora dela (nem o chefe). */
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onAttack(LivingAttackEvent event) {
-        if (RUNS.isEmpty() || event.getEntity().level().isClientSide) return;
-        if (isLocked(event.getEntity())) event.setCanceled(true);
+        if ((RUNS.isEmpty() && PROTECT.isEmpty()) || event.getEntity().level().isClientSide) return;
+        if (isLocked(event.getEntity()) || PROTECT.contains(event.getEntity())) event.setCanceled(true);
     }
 
     /** Servidor caiu no meio da cena: o chefe nao fica congelado para sempre. */
