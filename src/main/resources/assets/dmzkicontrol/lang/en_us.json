@@ -577,5 +577,9 @@
   "enc.dmzkicontrol.window_charge": "or hold %s (Charge Ki) to power up",
   "enc.dmzkicontrol.window_transform": "Hold %s to transform!",
   "dmz.saga.dmzsparking_s1_beerus": "Beerus Saga",
-  "dmz.saga.dmzsparking_s4_black": "Goku Black Saga"
+  "dmz.saga.dmzsparking_s4_black": "Goku Black Saga",
+  "enc.dmzkicontrol.title.cell_final": "THE END OF CELL",
+  "enc.dmzkicontrol.title.father_son": "FATHER-SON KAMEHAMEHA",
+  "enc.dmzkicontrol.cap.rage": "RAGE! Follow the keys",
+  "enc.dmzkicontrol.cap.father_son": "FATHER AND SON! Mash!"
 }

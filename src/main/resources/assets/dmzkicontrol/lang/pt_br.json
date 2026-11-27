@@ -718,5 +718,9 @@
   "enc.dmzkicontrol.window_charge": "ou segure %s (Carregar Ki) para elevar o ki",
   "enc.dmzkicontrol.window_transform": "Segure %s para se transformar!",
   "dmz.saga.dmzsparking_s1_beerus": "Saga do Beerus",
-  "dmz.saga.dmzsparking_s4_black": "Saga do Goku Black"
+  "dmz.saga.dmzsparking_s4_black": "Saga do Goku Black",
+  "enc.dmzkicontrol.title.cell_final": "O FIM DO CELL",
+  "enc.dmzkicontrol.title.father_son": "KAMEHAMEHA PAI E FILHO",
+  "enc.dmzkicontrol.cap.rage": "FÚRIA! Siga as teclas",
+  "enc.dmzkicontrol.cap.father_son": "PAI E FILHO! Aperte sem parar!"
 }

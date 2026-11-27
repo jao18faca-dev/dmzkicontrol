@@ -167,6 +167,7 @@ public final class ClientSetup {
             EyeReticleRenderer.render(event);
             LaserAimFx.render(event);
             com.dmzkicontrol.client.scene.SceneFx.render(event);
+            com.dmzkicontrol.client.encounter.EncBeams.render(event);
             com.dmzkicontrol.client.encounter.EncFx.render(event);
         }
 

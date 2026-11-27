@@ -172,6 +172,19 @@ MOVES["dbz_cross_block"] = (0.4, [
     (0.40, BLOCK, "hold"),
 ])
 
+# Kamehameha de uma mao (Gohan no Cell Super Perfeito: o braco esquerdo machucado pendurado).
+# Corpo de lado, ombro direito para a frente, braco direito reto, pernas abertas segurando o tranco.
+def kame_onehand():
+    keys = []
+    for i, t in enumerate([0, 0.1, 0.2, 0.3, 0.4]):
+        j = [0, 1.6, -1.2, 1.4, 0][i]   # tremendo de esforco
+        keys.append((t, P(root=dict(r=[8, 0, 0], p=[0, -1.8, 0.4]), waist=dict(r=[10 + j * 0.5, -34 + j, 0]),
+                          head=dict(r=[-14, 18, 0]),
+                          right_arm=dict(r=[-96 + j, 6, 6]), left_arm=dict(r=[5, 2, -5 + j * 0.5]),
+                          right_leg=dict(r=[30, 0, 6]), left_leg=dict(r=[-26, 0, -8])), "io"))
+    return keys
+MOVES["dbz_kame_onehand_loop"] = (0.4, kame_onehand())
+
 # Guarda de luta (loop leve, respirando)
 def guard_loop():
     keys = []
@@ -188,7 +201,7 @@ def export():
     anims = {}
     for name, (length, keys) in MOVES.items():
         a = build(keys, length)
-        if name in ("dbz_guard",): a["loop"] = True
+        if name in ("dbz_guard",) or name.endswith("_loop"): a["loop"] = True
         if name in ("dbz_cross_block",): a["loop"] = "hold_on_last_frame"
         anims["dmzkicontrol.cs." + name] = a
     return {"format_version": "1.8.0", "animations": anims}

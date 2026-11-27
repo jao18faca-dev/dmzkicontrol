@@ -266,94 +266,102 @@ public final class EncScripts {
         return s;
     }
 
-    // ------------------------------------------------------------------ Cell Perfeito: arrancada, arremesso, Kamehameha
+    // ------------------------------------------------------------------ Cell Perfeito: a finalizacao inteira
 
+    /**
+     * A finalizacao do Cell Perfeito: uma cena so, longa, quando ele chega a 20% de vida. A arrancada vista
+     * por ele, o combo e o martelo, o arremesso com a janela de transformacao, o duelo de velocidade, a furia
+     * (soco no estomago, gancho e martelo ate o chao) e o Kamehameha contra Kamehameha. Vencer o cabo de
+     * guerra derrota o Cell; perder deixa ele vivo e a finalizacao volta depois.
+     */
     private static EncScript cellPerfect() {
         EncScript s = new EncScript("cell_perfect", d("saga_cell_perfect"));
 
-        // ---------- fase 1: a arrancada em zigue-zague e o combo
-        Phase p = s.phase(0.85f, "enc.dmzkicontrol.title.cell_rush").distance(26).lift(2.0);
-        Beat b = p.beat(Kind.CINE, 52);
+        // ---------- 1: a arrancada e o combo
+        Phase p = s.phase(0.20f, "enc.dmzkicontrol.title.cell_final").distance(26).lift(2.0);
+        Beat b = p.beat(Kind.CINE, 56);
         b.shot(0, 0, "boss", 0.9, 1.9, 2.6, "boss", 0, 1.8, 0, 0.75f)
+                .shot(14, 0, "boss", 0.35, 1.75, 1.1, "boss", 0, 1.75, 0, 0.5f, -4f)
                 // a arrancada vista pelo Cell: por cima do ombro dele, os jogadores vindo de longe
-                .shot(26, 0, "boss", 0.75, 2.35, -1.5, "group", 0, 1.0, 0, 0.8f, 3f);
-        b.ev(2, BOSS).text("enc.dmzkicontrol.cell.taunt");
-        b.ev(26, ALL).pose("base.fly_fast", 200).fx("speedlines", 180).snd(d("tp_short"), 1f, 0.6f).sfx("ゴォッ");
+                .shot(30, 0, "boss", 0.75, 2.35, -1.5, "group", 0, 1.0, 0, 0.8f, 3f);
+        b.ev(2, BOSS).snd(d("aura_start"), 0.9f, 0.6f).boss("charge_on");
+        b.ev(14, BOSS).fx("boss_charge", 16).boss("charge_off");
+        b.ev(30, ALL).pose("base.fly_fast", 200).fx("speedlines", 200).snd(d("tp_short"), 1f, 0.6f);
 
-        Beat q = p.beat(Kind.PROMPT, 150).caption("enc.dmzkicontrol.cap.rush");
+        Beat q = p.beat(Kind.PROMPT, 196).caption("enc.dmzkicontrol.cap.rush");
         // visao do Cell: as rajadas saem do ombro dele e voam ate os jogadores, que desviam em zigue-zague e crescem
-        // na tela a cada desvio; no meio troca de ombro; no fim, de frente, eles chegando
+        // na tela a cada desvio; troca de ombro, passa de lado acompanhando e volta ao ombro com eles chegando
         q.shot(0, 0, "boss", 0.75, 2.35, -1.5, "group", 0, 1.0, 0, 0.8f, 3f)
-                .shot(66, 0, "boss", -0.8, 2.2, -1.4, "group", 0, 1.0, 0, 0.85f, -4f)
-                .shot(116, 10, "boss", 0.5, 1.9, -1.2, "group", 0, 1.2, 0, 0.95f, 2f);
-        q.ev(0, ALL).move(MoveKind.LANE, 0, 0, -14, -0.12f);
-        int[] rt = {26, 52, 74, 94, 112, 128};
-        int[] rw = {5, 5, 4, 4, 4, 3};
+                .shot(60, 0, "boss", -0.8, 2.2, -1.4, "group", 0, 1.0, 0, 0.85f, -4f)
+                .shot(112, 16, "group", 6, 0.8, 1.5, "group", 0, 1.2, -2, 0.95f, 5f)
+                .shot(150, 0, "boss", 0.5, 1.9, -1.2, "group", 0, 1.2, 0, 0.95f, 2f);
+        q.ev(0, ALL).move(MoveKind.LANE, 0, 0, -14, -0.10f);
+        int[] rt = {24, 46, 66, 86, 104, 122, 140, 158, 174};
+        int[] rw = {5, 5, 5, 4, 4, 4, 3, 3, 3};
         for (int i = 0; i < rt.length; i++) {
             Cue c = q.cue(rt[i], Mode.EACH, Key.DODGE, rw[i]).lead(Math.max(12, 20 - i * 2)).hurt(0.04f);
-            c.tell(-14, BOSS).fx("kiblast", 14, SELF).snd(d("kiblast_shoot"), 0.9f, 0.9f + i * 0.05f).boss("attack");
+            c.tell(-14, BOSS).fx("kiblast", 14, SELF).snd(d("kiblast_shoot"), 0.9f, 0.9f + i * 0.04f).boss("attack");
             dodge(c, MoveKind.MIRROR);
             c.onHit(3, SELF).fx("blast_behind", 12).snd(d("ki_explosion_impact"), 0.5f, 1.3f);
             c.onMiss(0, SELF).fx("burst", 10).size(0.8f).pose("hit_recoil", 10).impact(1).shake(2f).snd(d("ki_explosion_impact"), 0.8f, 1.1f);
         }
 
-        Beat arrive = p.beat(Kind.CINE, 26);
-        arrive.shot(0, 0, "mid", 5, 0.4, 1.5, "mid", 0, 1.8, 0, 1.0f);
-        arrive.ev(0, ALL).move(MoveKind.CLOSE, 0, 0, 0, 0.35f).pose("base.block", 26).sfx("ザッ");
-        arrive.ev(6, BOSS).text("enc.dmzkicontrol.cell.come");
+        Beat arrive = p.beat(Kind.CINE, 28);
+        arrive.shot(0, 0, "boss", 0.4, 1.8, -1.0, "group", 0, 1.5, 0, 0.9f)
+                .shot(12, 0, "mid", 5, 0.4, 1.5, "mid", 0, 1.8, 0, 1.0f, 6f);
+        arrive.ev(0, ALL).move(MoveKind.CLOSE, 0, 0, 0, 0.35f).pose("dbz_guard", 28).fx("afterimage", 8).snd(ZANZOKEN, 0.9f, 1f);
+        arrive.ev(10, BOSS).boss("attack");
+        arrive.ev(12, ALL).impact(1).shake(1.2f).snd(d("block2"));
 
-        q = p.beat(Kind.PROMPT, 156).caption("enc.dmzkicontrol.cap.combo");
+        q = p.beat(Kind.PROMPT, 170).caption("enc.dmzkicontrol.cap.combo");
         q.shot(0, 0, "mid", 4, 1.6, 0.6, "mid", 0, 1.5, 0, 0.95f)
-                .shot(52, 8, "mid", -4, 2.4, 1.4, "boss", 0, 1.6, 0, 0.9f)
-                .shot(104, 8, "boss", 1.5, 1.0, -2.5, "mid", 0, 1.6, 0, 0.85f)
-                .shot(110, 0, "me", 0.22, 1.66, -0.8, "me", 0, 1.62, 0, 0.5f, -6f)
-                .shot(122, 0, "mid", 4.4, 0.2, 1.2, "boss", 0, 2.0, 0, 1.05f, 9f);
-        Key[] combo = {Key.ATTACK, Key.JUMP, Key.LEFT, Key.RIGHT, Key.ATTACK, Key.DOWN, Key.ATTACK, Key.JUMP, Key.RIGHT, Key.ATTACK};
-        for (int i = 0; i < combo.length; i++) {
-            comboHit(q, i, 12 + 10 * i, combo[i], 4, 0.012f);
-        }
-        Cue fin = q.cue(132, Mode.ALL, Key.ATTACK, 6).lead(20).syncDmg(0.09f).hurt(0.04f);
+                .shot(46, 8, "mid", -4, 2.4, 1.4, "boss", 0, 1.6, 0, 0.9f, -5f)
+                .shot(92, 0, "boss", 1.5, 0.6, -2.0, "mid", 0, 1.7, 0, 0.85f, 7f)
+                .shot(118, 0, "me", 0.22, 1.66, -0.8, "me", 0, 1.62, 0, 0.5f, -6f)
+                .shot(130, 0, "mid", 4.4, 0.2, 1.2, "boss", 0, 2.0, 0, 1.05f, 9f);
+        Key[] combo = {Key.ATTACK, Key.JUMP, Key.LEFT, Key.RIGHT, Key.ATTACK, Key.DOWN, Key.ATTACK, Key.JUMP, Key.RIGHT, Key.ATTACK, Key.LEFT};
+        for (int i = 0; i < combo.length; i++) comboHit(q, i, 10 + 10 * i, combo[i], 4, 0.004f);
+        Cue fin = q.cue(140, Mode.ALL, Key.ATTACK, 6).lead(20).syncDmg(0.02f).hurt(0.04f);
         fin.tell(-18, SELF).move(MoveKind.OFFSET, 0, 2.4, -0.6, 0.35f).pose("base.fly_idle", 18);
         fin.onHit(0, SELF).pose("dbz_hammer", 14).move(MoveKind.CLOSE, HAMMER_REACH, HAMMER_UP, 0, 0.8f).fx("afterimage", 8).snd(ZANZOKEN, 0.8f, 1.3f);
         fin.onHit(HAMMER_CONTACT, SELF).snd(d("critic_punch2"), 1f, 0.8f);
-        fin.onSync(HAMMER_CONTACT, BOSS).fx("impact_star", 12).size(1.8f).impact(3).sfx("ドゴォン!!").shake(4.5f).move(MoveKind.ABS, 0, 0, 0, 0.55f).snd(d("ki_explosion_impact")).boss("hurt_down");
+        fin.onSync(HAMMER_CONTACT, BOSS).fx("impact_star", 12).size(1.8f).impact(3).shake(4.5f).move(MoveKind.ABS, 0, 0, 0, 0.55f).snd(d("ki_explosion_impact")).boss("hurt_down");
         fin.onSync(HAMMER_CONTACT + 6, BOSS).fx("crater", 34).size(1.5f);
-        fin.onPartial(HAMMER_CONTACT, BOSS).fx("impact_star", 9).size(1.3f).impact(2).sfx("ドッ").shake(2.5f).move(MoveKind.ABS, 0, 0.6, 0, 0.4f).boss("hurt_top");
+        fin.onPartial(HAMMER_CONTACT, BOSS).fx("impact_star", 9).size(1.3f).impact(2).shake(2.5f).move(MoveKind.ABS, 0, 0.6, 0, 0.4f).boss("hurt_top");
         fin.onHit(14, SELF).move(MoveKind.LANE, 0, 0, -20, 0.3f);
         fin.onMiss(0, SELF).pose("hit_recoil", 14).impact(1).snd(d("block3"));
         fin.onMiss(14, SELF).move(MoveKind.LANE, 0, 0, -20, 0.3f);
 
-        Beat a = p.beat(Kind.CINE, 46);
-        a.shot(0, 0, "boss", 1.4, 0.5, 2.4, "boss", 0, 1.2, 0, 0.8f)
-                .shot(24, 10, "group", 0, 2.0, 4, "boss", 0, 1.6, 0, 0.95f);
-        a.ev(6, BOSS).text("enc.dmzkicontrol.cell.interesting");
-        a.ev(20, BOSS).move(MoveKind.ABS, 0, 2.0, 0, 0.12f);
+        Beat a = p.beat(Kind.CINE, 50);
+        a.shot(0, 0, "boss", 1.4, 0.5, 2.4, "boss", 0, 1.2, 0, 0.8f, 4f)
+                .shot(24, 10, "boss", 0.3, 1.2, 1.4, "boss", 0, 1.7, 0, 0.6f);
+        a.ev(10, BOSS).fx("crater", 20).size(0.8f).shake(1f);
+        a.ev(20, BOSS).move(MoveKind.ABS, 0, 1.5, 0, 0.12f).fx("boss_charge", 28).boss("charge_on").snd(d("aura_start"), 1f, 0.7f);
+        a.ev(46, BOSS).boss("charge_off");
 
-        // ---------- fase 2: o arremesso e a janela de transformacao
-        p = s.phase(0.55f, "enc.dmzkicontrol.title.cell_throw").distance(6).lift(1.0);
+        // ---------- 2: o arremesso, a janela de transformacao e o duelo de velocidade (encadeada)
+        p = s.phase(0f, null).distance(6).lift(1.0).chained();
         b = p.beat(Kind.CINE, 104);
         b.shot(0, 0, "group", 0, 2.0, 5, "group", 0, 1.3, 0, 1.0f)
-                .shot(8, 0, "p0", 2.6, 1.6, 3.0, "p0", 0, 1.3, 0, 0.8f)
+                .shot(8, 0, "p0", 2.6, 1.6, 3.0, "p0", 0, 1.3, 0, 0.8f, -5f)
                 .shot(38, 0, "mid", 9, 3, 2, "group", 0, 2, 1, 1.05f)
-                .shot(70, 0, "boss", 0.4, 0.9, 1.2, "group", 0, 1.4, 0, 1.1f);
+                .shot(70, 0, "boss", 0.4, 0.9, 1.2, "group", 0, 1.4, 0, 1.1f, 6f);
         b.ev(4, BOSS).fx("afterimage", 12).snd(ZANZOKEN).moveTo(0, 0, 0, 1.6, 1f);
-        b.ev(10, BOSS).text("enc.dmzkicontrol.cell.behind");
-        b.ev(14, 0).pose("skp.grabbed", 40).sfx("ガシッ").impact(1).snd(d("block3"));
+        b.ev(14, 0).pose("skp.grabbed", 40).impact(1).snd(d("block3"));
         b.ev(12, BOSS).boss("attack");
         b.ev(38, BOSS).boss("attack");
         b.ev(20, BOSS).moveTo(0, 0, 3, 4.5, 0.2f);
         b.ev(20, 0).move(MoveKind.OFFSET, 0, 3, 3, 0.2f);
         // com 2 ou mais: arremessa um no outro; o resto toma a onda de choque
-        b.ev(40, 0).pose("base.flyback", 30).moveTo(1, 0, 0, 0, 0.5f).snd(d("knockback_character")).sfx("ブンッ").n(2, 4);
-        b.ev(46, 1).impact(3).sfx("ドガッ!!").shake(3.5f).fx("burst", 12).snd(d("critic_punch1")).n(2, 4);
+        b.ev(40, 0).pose("base.flyback", 30).moveTo(1, 0, 0, 0, 0.5f).snd(d("knockback_character")).n(2, 4);
+        b.ev(46, 1).impact(3).shake(3.5f).fx("impact_star", 10).size(1.4f).snd(d("critic_punch1")).n(2, 4);
         b.ev(47, 0).move(MoveKind.OFFSET, 0.8, 0.6, 7, 0.32f).hurt(0.07f).n(2, 4);
         b.ev(47, 1).move(MoveKind.OFFSET, -0.8, 0.6, 7, 0.32f).pose("base.flyback", 26).hurt(0.07f).n(2, 4);
         b.ev(47, OTHERS).fx("shockwave", 16).move(MoveKind.OFFSET, 0, 0.5, 6, 0.3f).pose("base.flyback", 22).hurt(0.04f).n(3, 4);
         // sozinho: arremessado no chao
-        b.ev(40, 0).pose("base.flyback", 40).move(MoveKind.OFFSET, 0, -4, 6, 0.45f).snd(d("knockback_character")).sfx("ブンッ").n(1, 1);
-        b.ev(46, 0).impact(3).sfx("ドガァ!!").shake(4f).fx("crater", 30).hurt(0.08f).snd(d("ki_explosion_impact")).n(1, 1);
+        b.ev(40, 0).pose("base.flyback", 40).move(MoveKind.OFFSET, 0, -4, 6, 0.45f).snd(d("knockback_character")).n(1, 1);
+        b.ev(46, 0).impact(3).shake(4f).fx("crater", 30).hurt(0.08f).snd(d("ki_explosion_impact")).n(1, 1);
         b.ev(60, BOSS).move(MoveKind.ABS, 0, 1.0, 0, 0.3f);
-        b.ev(74, BOSS).text("enc.dmzkicontrol.cell.show_me");
         b.ev(80, ALL).pose("base.ki_charge", 24);
 
         Beat w = p.beat(Kind.CHARGE, 200).caption("enc.dmzkicontrol.cap.transform");
@@ -362,61 +370,180 @@ public final class EncScripts {
         w.ev(0, ALL).pose("base.ki_charge", 200).fx("charge", 200).snd(d("ki_charge_loop"), 0.8f, 0.9f);
 
         Beat rise = p.beat(Kind.CINE, 44);
-        rise.shot(0, 0, "boss", -1.0, 0.8, 2.0, "group", 0, 1.6, 0, 0.95f);
+        rise.shot(0, 0, "boss", -1.0, 0.8, 2.0, "group", 0, 1.6, 0, 0.95f, -3f);
         rise.ev(0, ALL).move(MoveKind.LANE, 0, 0, 0, 0.22f).pose("base.fly_idle", 40);
-        rise.ev(8, BOSS).text("enc.dmzkicontrol.cell.excellent").impact(1);
+        rise.ev(8, BOSS).impact(1).boss("attack");
 
-        q = p.beat(Kind.PROMPT, 126).caption("enc.dmzkicontrol.cap.speed");
+        q = p.beat(Kind.PROMPT, 160).caption("enc.dmzkicontrol.cap.speed");
         q.shot(0, 0, "group", 0, 2.6, 5.5, "group", 0, 1.2, -1, 1.05f)
-                .shot(64, 12, "mid", 7, 2.0, 1, "group", 0, 1.3, 0, 1.0f);
-        Key[] spd = {Key.LEFT, Key.UP, Key.RIGHT, Key.DOWN, Key.ATTACK, Key.JUMP};
+                .shot(56, 12, "mid", 7, 2.0, 1, "group", 0, 1.3, 0, 1.0f, 5f)
+                .shot(110, 10, "boss", -1.2, 1.6, -1.8, "group", 0, 1.3, 0, 0.95f, -4f);
+        Key[] spd = {Key.LEFT, Key.UP, Key.RIGHT, Key.DOWN, Key.ATTACK, Key.JUMP, Key.LEFT, Key.ATTACK};
         for (int i = 0; i < spd.length; i++) {
-            Cue c = q.cue(16 + 17 * i, Mode.TURN, spd[i], 4).lead(14).dmg(0.015f).hurt(0.04f);
+            Cue c = q.cue(16 + 17 * i, Mode.TURN, spd[i], 4).lead(14).dmg(0.004f).hurt(0.04f);
             c.tell(-10, BOSS).moveTo(SELF, 0, 0, -1.15, 1f).fx("afterimage", 10).snd(ZANZOKEN, 0.9f, 1.2f);
             c.tell(-3, BOSS).boss("attack");
-            c.onHit(0, SELF).pose(i % 2 == 0 ? "base.block" : "base.jab_left", 9).snd(d(i % 2 == 0 ? "block1" : "punch3"));
-            c.onHit(1, BOSS).fx("hit_spark", 6).impact(1).shake(1f).boss(HURTS[i % HURTS.length]).shove(0.5f);
+            c.onHit(0, SELF).pose(i % 2 == 0 ? "base.block" : "dbz_dash_punch", 10).snd(d(i % 2 == 0 ? "block1" : "punch3"));
+            c.onHit(4, BOSS).fx(i % 2 == 0 ? "deflect_spark" : "impact_star", 7).impact(1).shake(1f).boss(HURTS[i % HURTS.length]).shove(0.5f);
             c.onMiss(0, SELF).pose("hit_recoil", 10).impact(1).shake(1.5f).snd(d("critic_punch1"));
         }
 
-        a = p.beat(Kind.CINE, 30);
-        a.shot(0, 0, "boss", 0.8, 1.7, 2.4, "boss", 0, 1.7, 0, 0.75f);
-        a.ev(0, BOSS).move(MoveKind.ABS, 0, 1.0, 0, 1f).fx("afterimage", 10).snd(ZANZOKEN);
-        a.ev(4, BOSS).text("enc.dmzkicontrol.cell.not_bad");
+        // a furia: some na frente dele, soco no estomago, gancho que lanca e martelo ate o chao
+        Beat rg = p.beat(Kind.CINE, 36);
+        rg.shot(0, 0, "boss", 0.5, 1.0, 2.0, "boss", 0, 1.7, 0, 0.6f, -5f)
+                .shot(16, 0, "group", 0.4, 1.0, 2.4, "group", 0, 1.5, 0, 0.7f, 4f);
+        rg.ev(0, BOSS).boss("attack").snd(d("aura_start"), 0.8f, 0.6f);
+        rg.ev(16, ALL).fx("afterimage", 10).snd(ZANZOKEN, 1f, 0.9f).move(MoveKind.CLOSE, 1.74, 0, 0, 1f).pose("dbz_guard", 20).fx("rage", 20);
 
-        // ---------- fase 3: Kamehameha contra Kamehameha
-        p = s.phase(0.25f, "enc.dmzkicontrol.title.cell_kame").distance(11).lift(3.0);
-        b = p.beat(Kind.CINE, 92);
+        Beat gut = p.beat(Kind.PROMPT, 118).caption("enc.dmzkicontrol.cap.rage");
+        gut.shot(0, 0, "boss", 1.7, 0.5, 1.3, "boss", 0, 1.1, 0, 0.72f, 7f)
+                .shot(46, 0, "boss", 0.5, 0.2, 2.2, "boss", 0, 2.6, 0, 0.95f, -5f)
+                .shot(80, 0, "boss", 2.6, 3.4, 1.0, "boss", 0, 0.4, 0, 1.0f, 8f);
+        Cue g1 = gut.cue(22, Mode.ALL, Key.ATTACK, 6).lead(18).syncDmg(0.02f).hurt(0.03f);
+        g1.onHit(0, SELF).pose("dbz_gut_punch", 16).move(MoveKind.CLOSE, 1.74, 0, 0, 0.9f);
+        g1.onSync(6, BOSS).fx("impact_star", 14).size(2.2f).impact(3).shake(4f).boss("hurt_down").shove(0.4f).snd(d("critic_punch2"), 1.2f, 0.7f);
+        g1.onSync(8, BOSS).fx("shockwave", 16).size(1.2f);
+        g1.onPartial(6, BOSS).fx("impact_star", 10).size(1.4f).impact(2).shake(2.5f).boss("hurt_down").snd(d("critic_punch1"));
+        g1.onMiss(0, SELF).pose("hit_recoil", 12).impact(1).snd(d("block3"));
+        Cue g2 = gut.cue(56, Mode.ALL, Key.JUMP, 6).lead(16).syncDmg(0.02f).hurt(0.03f);
+        g2.onHit(0, SELF).pose("dbz_rising_uppercut", 16).move(MoveKind.CLOSE, 1.24, 0, 0, 0.9f);
+        g2.onSync(6, BOSS).fx("impact_star", 12).size(1.9f).impact(3).shake(3.5f).boss("hurt_top").move(MoveKind.ABS, 0, 7.5, 1.0, 0.3f).snd(d("critic_punch2"), 1f, 0.9f);
+        g2.onPartial(6, BOSS).fx("impact_star", 9).size(1.3f).impact(2).boss("hurt_top").move(MoveKind.ABS, 0, 5, 1.0, 0.3f);
+        g2.onHit(12, SELF).pose("base.fly_fast", 16).move(MoveKind.OFFSET, 0, 6.2, 0, 0.28f).fx("speedlines", 16);
+        Cue g3 = gut.cue(92, Mode.ALL, Key.DOWN, 6).lead(16).syncDmg(0.02f).hurt(0.03f);
+        g3.onHit(0, SELF).pose("dbz_hammer", 14).move(MoveKind.CLOSE, HAMMER_REACH, HAMMER_UP, 0, 0.85f).fx("afterimage", 8).snd(ZANZOKEN, 0.8f, 1.3f);
+        g3.onSync(HAMMER_CONTACT, BOSS).fx("impact_star", 14).size(2.0f).impact(3).shake(5f).boss("knocked_out").move(MoveKind.ABS, 0, 0, 0, 0.6f).snd(d("ki_explosion_impact"), 1.2f, 0.8f);
+        g3.onSync(HAMMER_CONTACT + 6, BOSS).fx("crater", 40).size(1.8f).shake(3f);
+        g3.onPartial(HAMMER_CONTACT, BOSS).fx("impact_star", 9).size(1.3f).impact(2).boss("hurt_down").move(MoveKind.ABS, 0, 1, 0, 0.5f);
+        g3.onHit(16, SELF).move(MoveKind.LANE, 0, 1.5, 0, 0.25f).pose("base.fly_idle", 20);
+        g3.onMiss(0, SELF).pose("hit_recoil", 12).impact(1).snd(d("block3"));
+        g3.onMiss(10, SELF).move(MoveKind.LANE, 0, 1.5, 0, 0.25f);
+
+        // ---------- 3: Kamehameha contra Kamehameha - o golpe final (encadeada)
+        p = s.phase(0f, null).distance(11).lift(3.0).chained();
+        b = p.beat(Kind.CINE, 100);
         b.shot(0, 0, "boss", 1.3, 1.4, 2.4, "boss", 0, 1.5, 0, 0.8f)
-                .shot(46, 0, "group", 2.2, 1.0, 3.0, "group", 0, 1.4, 0, 0.85f)
-                .shot(72, 14, "mid", 11, 0.4, 0, "mid", 0, 1.8, 0, 1.0f);
-        b.ev(0, BOSS).fx("kame_charge", 92).size(1.4f).snd(d("ki_kame_charge")).boss("charge_on");
-        b.ev(8, BOSS).text("enc.dmzkicontrol.cell.kame");
-        b.ev(46, ALL).pose("ki.kameha_cast", 46).fx("kame_charge", 46).snd(d("ki_kame_charge"), 1f, 1.1f);
-        b.ev(52, ALL).sfx("か");
-        b.ev(62, ALL).sfx("め");
-        b.ev(72, ALL).sfx("は");
-        b.ev(82, ALL).sfx("め");
+                .shot(26, 0, "boss", 0.3, 1.7, 1.2, "boss", 0, 1.7, 0, 0.5f, -6f)
+                .shot(46, 0, "group", 2.2, 1.0, 3.0, "group", 0, 1.4, 0, 0.85f, 4f)
+                .shot(70, 0, "p0", 0.25, 1.6, -0.9, "p0", 0, 1.3, 0, 0.55f, 5f)
+                .shot(84, 12, "mid", 11, 0.4, 0, "mid", 0, 1.8, 0, 1.0f);
+        b.ev(0, BOSS).fx("kame_charge", 100).size(1.5f).snd(d("ki_kame_charge")).boss("charge_on");
+        b.ev(46, ALL).pose("ki.kameha_cast", 54).fx("kame_charge", 54).snd(d("ki_kame_charge"), 1f, 1.1f);
+        b.ev(70, ALL).fx("rage", 30).shake(1f);
 
-        Beat m = p.beat(Kind.MASH, 260).caption("enc.dmzkicontrol.cap.mash").tug(0.011f, 0.040f).surge(90, 120).surge(190, 220);
+        Beat m = p.beat(Kind.MASH, 320).caption("enc.dmzkicontrol.cap.mash").tug(0.011f, 0.036f).surge(90, 130).surge(190, 230).surge(270, 300).finisher();
         m.shot(0, 0, "mid", 11, 1.0, 0, "mid", 0, 1.8, 0, 1.0f)
-                .shot(120, 30, "group", 2.0, 1.4, 4.6, "mid", 0, 1.8, 0, 0.95f)
-                .shot(200, 20, "boss", -1.6, 1.8, -3, "mid", 0, 1.8, 0, 0.9f);
-        m.ev(0, ALL).pose("ki.kameha_fire", 260).sfx("波ーッ!!").impact(2).shake(2f).snd(d("ki_kame_fire"));
-        m.ev(0, BOSS).fx("clash", 260).snd(d("ki_kame_fire"), 1f, 0.8f).boss("charge_off");
-        m.ev(90, BOSS).text("enc.dmzkicontrol.cell.surge").shake(2f);
-        m.ev(190, BOSS).text("enc.dmzkicontrol.cell.surge2").shake(2.5f);
-        Beat win = m.onWin(70, 0.16f);
-        win.shot(0, 0, "boss", 2.4, 1.2, -4, "boss", 0, 1.6, 0, 0.95f);
-        win.ev(0, BOSS).fx("beam_win", 48).impact(3).sfx("ドォォォン!!").shake(5f).snd(d("ki_explosion_impact"), 1.3f, 0.7f).boss("knocked_out").shove(2.5f);
-        win.ev(18, BOSS).text("enc.dmzkicontrol.cell.scream");
-        win.ev(46, ALL).pose("base.fly_idle", 24);
+                .shot(70, 20, "group", 1.2, 0.5, 3.4, "mid", 0, 2.2, 0, 0.85f, 6f)
+                .shot(130, 0, "boss", -1.6, 1.8, -3, "mid", 0, 1.8, 0, 0.9f, -4f)
+                .shot(190, 24, "mid", -9, 3.0, 2, "mid", 0, 1.6, 0, 1.05f)
+                .shot(270, 0, "p0", 0.3, 1.7, -1.0, "mid", 0, 1.6, 0, 0.7f, 8f);
+        m.ev(0, ALL).pose("ki.kameha_fire", 320).impact(2).shake(2f).snd(d("ki_kame_fire"));
+        m.ev(0, BOSS).fx("clash", 320).snd(d("ki_kame_fire"), 1f, 0.8f).boss("charge_off");
+        m.ev(90, BOSS).shake(2f).fx("boss_charge", 40);
+        m.ev(190, BOSS).shake(2.5f).fx("boss_charge", 40);
+        m.ev(270, ALL).fx("rage", 30).shake(3f).impact(1);
+        Beat win = m.onWin(84, 0.0f);
+        win.shot(0, 0, "group", 1.0, 0.8, 3.0, "boss", 0, 1.6, 0, 0.9f, 5f)
+                .shot(20, 0, "boss", 2.4, 1.2, -4, "boss", 0, 1.6, 0, 0.95f)
+                .shot(52, 18, "mid", 0, 9, 22, "boss", 0, 1, 0, 1.15f);
+        win.ev(0, BOSS).fx("beam_win", 60).size(1.4f).impact(3).shake(5f).snd(d("ki_explosion_impact"), 1.3f, 0.7f).boss("knocked_out").shove(2.5f);
+        win.ev(14, BOSS).fx("disintegrate", 40).size(1.4f);
+        win.ev(50, BOSS).fx("sky_explosion", 34).size(2.2f).impact(3).shake(4f).snd(d("ki_explosion_impact"), 1.4f, 0.6f);
+        win.ev(66, ALL).pose("base.fly_idle", 18);
         Beat lose = m.onLose(56, 0.16f);
         lose.shot(0, 0, "group", 3, 2, 6, "group", 0, 1.2, 0, 1.1f);
         lose.ev(0, ALL).fx("beam_lose", 30).pose("base.flyback", 30).impact(2).shake(3.5f).move(MoveKind.OFFSET, 0, 1, 6, 0.35f)
                 .snd(d("ki_explosion_impact"));
-        lose.ev(8, BOSS).text("enc.dmzkicontrol.cell.laugh");
         lose.ev(34, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("base.fly_idle", 20);
+        return s;
+    }
+
+    // ------------------------------------------------------------------ Cell Super Perfeito: Kamehameha pai e filho
+
+    /**
+     * A finalizacao do Cell Super Perfeito: o Kamehameha pai e filho. O Cell sobe e solta o Kamehameha dele;
+     * quem segura o feixe do grupo (o "Gohan") dispara com uma mao so, o braco machucado pendurado. O cabo de
+     * guerra aperta, o espirito do Goku aparece atras do ombro dele e o feixe do grupo dobra de tamanho;
+     * no ultimo cabo de guerra o Cell se desfaz dentro do Kamehameha.
+     */
+    private static EncScript cellSuperPerfect() {
+        EncScript s = new EncScript("cell_superperfect", d("saga_cell_superperfect"));
+        Phase p = s.phase(0.20f, "enc.dmzkicontrol.title.father_son").distance(12).lift(2.5);
+
+        Beat b = p.beat(Kind.CINE, 110);
+        b.shot(0, 0, "group", 0, 0.3, 4.0, "boss", 0, 3.5, 0, 1.05f, 4f)
+                .shot(34, 0, "boss", 0.4, 1.7, 1.3, "boss", 0, 1.7, 0, 0.5f, -5f)
+                .shot(56, 0, "p0", 1.2, 1.0, 1.6, "p0", 0, 1.3, 0, 0.7f, 6f)
+                .shot(82, 14, "mid", 12, 1.6, 0, "mid", 0, 2.4, 0, 1.0f);
+        b.ev(0, BOSS).move(MoveKind.ABS, 0, 6.0, -1.0, 0.08f).boss("charge_on").snd(d("aura_start"), 1f, 0.7f);
+        b.ev(10, BOSS).fx("kame_charge", 100).size(2.4f).snd(d("ki_kame_charge"), 1.2f, 0.8f);
+        b.ev(30, BOSS).shake(1.5f).fx("boss_charge", 60);
+        b.ev(56, 0).pose("dbz_kame_onehand_loop", 60).fx("kame_charge", 54).snd(d("ki_kame_charge"), 1f, 1.1f);
+        b.ev(56, OTHERS).pose("ki.kameha_cast", 54).fx("kame_charge", 54);
+        b.ev(56, 1).pose("ki.kameha_cast", 54).fx("kame_charge", 54).n(2, 4);
+        b.ev(96, ALL).fx("rage", 14).shake(1f);
+
+        // o Cell dispara primeiro; o grupo responde e os feixes se encontram
+        Beat f = p.beat(Kind.CINE, 30);
+        f.shot(0, 0, "boss", -0.6, 2.0, -1.6, "group", 0, 1.2, 0, 0.85f, -4f)
+                .shot(14, 0, "mid", 9, 0.6, 1.0, "mid", 0, 2.0, 0, 1.0f, 3f);
+        f.ev(0, BOSS).fx("dmz_beam", 30, 0).size(1.6f).boss("charge_off").snd(d("ki_kame_fire"), 1.3f, 0.7f).shake(2f);
+        f.ev(14, 0).pose("dbz_kame_onehand_loop", 400).impact(2).shake(2.5f).snd(d("ki_kame_fire"));
+        f.ev(14, OTHERS).pose("ki.kameha_fire", 400);
+        f.ev(14, 1).pose("ki.kameha_fire", 400).n(2, 4);
+        f.ev(14, BOSS).fx("clash", 16).impact(3).fx("shockwave", 20);
+
+        // primeiro cabo de guerra: o Cell e mais forte, o grupo vai perdendo
+        Beat m1 = p.beat(Kind.MASH, 220).caption("enc.dmzkicontrol.cap.mash").tug(0.013f, 0.034f).start(0.42f)
+                .surge(50, 100).surge(150, 210).mustWin();
+        m1.shot(0, 0, "mid", 10, 0.8, 0, "mid", 0, 2.0, 0, 1.0f)
+                .shot(60, 20, "p0", -0.6, 1.2, 2.2, "mid", 0, 2.2, 0, 0.8f, -6f)
+                .shot(120, 0, "boss", 0.8, 2.1, -1.4, "mid", 0, 1.6, 0, 0.85f, 4f)
+                .shot(170, 16, "group", 0, 0.2, 3.2, "mid", 0, 2.6, 0, 0.9f, 7f);
+        m1.ev(0, BOSS).fx("clash", 220).size(1.0f);
+        m1.ev(50, BOSS).fx("boss_charge", 50).shake(2f);
+        m1.ev(150, BOSS).fx("boss_charge", 60).shake(2.8f);
+        m1.ev(150, ALL).hurt(0.02f).fx("burst", 10).size(0.6f);
+        // o espirito do Goku aparece: "pai e filho"
+        Beat sp = m1.onWin(90, 0.0f);
+        sp.shot(0, 0, "p0", 0.25, 1.65, -0.85, "p0", 0, 1.6, 0, 0.5f, -4f)
+                .shot(24, 22, "p0", -1.6, 1.4, 1.8, "p0", 0, 1.4, 0, 0.75f, 3f)
+                .shot(62, 0, "mid", 10, 0.6, 0, "mid", 0, 2.0, 0, 1.0f);
+        sp.ev(0, BOSS).fx("clash", 90).size(1.1f);
+        sp.ev(16, 0).fx("spirit", 600).impact(1).snd(d("aura_start"), 1.2f, 1.2f);
+        sp.ev(50, ALL).fx("aura_burst", 30).size(1.6f).impact(2).shake(3f).snd(d("transform_on"), 1f, 0.9f);
+        sp.ev(50, BOSS).fx("clash", 40).size(1.6f);
+        Beat l1 = m1.onLose(56, 0.12f);
+        l1.shot(0, 0, "group", 3, 2, 6, "group", 0, 1.2, 0, 1.1f);
+        l1.ev(0, BOSS).fx("beam_lose", 34);
+        l1.ev(0, ALL).pose("base.flyback", 30).impact(2).shake(3.5f).move(MoveKind.OFFSET, 0, 1, 6, 0.35f).snd(d("ki_explosion_impact"));
+        l1.ev(34, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("base.fly_idle", 20);
+
+        // segundo cabo de guerra: pai e filho, feixe dobrado - vencer acaba com o Cell
+        Beat m2 = p.beat(Kind.MASH, 200).caption("enc.dmzkicontrol.cap.father_son").tug(0.010f, 0.050f).start(0.5f)
+                .surge(100, 140).finisher();
+        m2.shot(0, 0, "group", 0.5, 0.0, 3.6, "mid", 0, 2.4, 0, 0.9f, 6f)
+                .shot(60, 24, "mid", -10, 1.6, 1.5, "mid", 0, 2.0, 0, 1.05f)
+                .shot(130, 0, "boss", 0.6, 2.2, -1.5, "group", 0, 1.2, 0, 0.9f, -5f)
+                .shot(170, 0, "p0", 0.3, 1.7, -1.0, "mid", 0, 1.6, 0, 0.62f, 9f);
+        m2.ev(0, BOSS).fx("clash", 200).size(1.8f);
+        m2.ev(0, ALL).impact(2).shake(2.5f).fx("charge", 200).snd(d("ki_kame_fire"), 1.2f, 0.9f);
+        m2.ev(100, BOSS).fx("boss_charge", 40).shake(3f);
+        m2.ev(170, ALL).fx("rage", 30).shake(3.5f).impact(1);
+        Beat win = m2.onWin(110, 0.0f);
+        win.shot(0, 0, "group", 1.0, 0.6, 3.2, "boss", 0, 1.6, 0, 0.9f, 6f)
+                .shot(18, 0, "boss", 0.4, 1.8, 1.6, "boss", 0, 1.7, 0, 0.55f, -6f)
+                .shot(40, 0, "boss", 3.0, 1.2, -5, "boss", 0, 1.6, 0, 1.0f)
+                .shot(70, 24, "mid", 0, 12, 26, "boss", 0, 1, 0, 1.2f);
+        win.ev(0, BOSS).fx("beam_win", 80).size(2.2f).impact(3).shake(6f).snd(d("ki_explosion_impact"), 1.4f, 0.6f).boss("knocked_out");
+        win.ev(18, BOSS).fx("disintegrate", 50).size(1.8f).impact(2);
+        win.ev(66, BOSS).fx("sky_explosion", 40).size(3.0f).impact(3).shake(5f).snd(d("ki_explosion_impact"), 1.5f, 0.5f);
+        win.ev(92, ALL).pose("base.fly_idle", 18);
+        Beat lose = m2.onLose(60, 0.16f);
+        lose.shot(0, 0, "group", 3, 2, 6, "group", 0, 1.2, 0, 1.1f);
+        lose.ev(0, BOSS).fx("beam_lose", 34);
+        lose.ev(0, ALL).pose("base.flyback", 30).impact(2).shake(4f).move(MoveKind.OFFSET, 0, 1, 7, 0.35f).snd(d("ki_explosion_impact"));
+        lose.ev(36, ALL).move(MoveKind.LANE, 0, 0, 0, 0.2f).pose("base.fly_idle", 20);
         return s;
     }
 
@@ -425,5 +552,6 @@ public final class EncScripts {
         add(friezaBase());
         add(friezaFullPower());
         add(cellPerfect());
+        add(cellSuperPerfect());
     }
 }

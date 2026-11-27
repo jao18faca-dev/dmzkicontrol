@@ -85,8 +85,14 @@ public final class EncounterDirector {
     static final class Run {
         final int id;
         final EncScript script;
-        final int phaseIdx;
-        final Phase phase;
+        int phaseIdx;
+        Phase phase;
+        /** fase em que a cena comecou (o gatilho de vida) - as encadeadas vem depois dela */
+        final int firstPhase;
+        /** golpe final vencido: o chefe e derrotado quando a cena acaba */
+        boolean killPending;
+        /** finalizacao perdida: a cena acaba e pode voltar depois */
+        boolean lost;
         final ServerLevel level;
         final LivingEntity boss;
         final List<ServerPlayer> players;
@@ -121,6 +127,7 @@ public final class EncounterDirector {
             this.id = id;
             this.script = script;
             this.phaseIdx = phaseIdx;
+            this.firstPhase = phaseIdx;
             this.phase = script.phases.get(phaseIdx);
             this.level = level;
             this.boss = boss;
@@ -207,12 +214,13 @@ public final class EncounterDirector {
         if (now - pd.getLong(LAST) < (long) (cfg.cooldownSeconds * 20) && pd.contains(LAST)) return;
         int pick = -1;
         for (int i = 0; i < script.phases.size(); i++) {
-            if ((done & (1 << i)) != 0) continue;
+            if ((done & (1 << i)) != 0 || script.phases.get(i).chained) continue;
             if (frac < script.phases.get(i).at) { pick = i; break; }
         }
         if (pick < 0) return;
-        // fases que ficaram para tras (dano grande de uma vez) nao voltam
+        // fases que ficaram para tras (dano grande de uma vez) nao voltam; as encadeadas vao junto
         for (int i = 0; i <= pick; i++) done |= 1 << i;
+        for (int i = pick + 1; i < script.phases.size() && script.phases.get(i).chained; i++) done |= 1 << i;
         pd.putInt(DONE, done);
         final int phase = pick;
         PENDING.add(() -> start(script, phase, boss, attacker));
@@ -484,12 +492,32 @@ public final class EncounterDirector {
             // a variante (vitoria/derrota) ja foi aberta em resolveMash
             return;
         }
-        int next = run.beatIdx + 1;
-        if (next >= run.phase.beats.size()) {
+        // derrota num cabo de guerra que precisava ser vencido: a cena acaba aqui
+        if (run.variant == 2 && run.phase.beats.get(run.beatIdx).endOnLose) {
+            run.lost = true;
             finish(run, false);
             return;
         }
+        int next = run.beatIdx + 1;
+        if (next >= run.phase.beats.size()) {
+            endPhase(run);
+            return;
+        }
         beginBeat(run, next, 0);
+    }
+
+    /** Fim de uma fase: segue direto para a proxima se ela for encadeada (mesma cena), senao encerra. */
+    private static void endPhase(Run run) {
+        int next = run.phaseIdx + 1;
+        if (!run.lost && next < run.script.phases.size() && run.script.phases.get(next).chained) {
+            run.phaseIdx = next;
+            run.phase = run.script.phases.get(next);
+            run.bossTarget = new Vec3(0, run.phase.lift, 0);
+            KiControlMod.LOGGER.info("[Lutas] {} segue para a fase {} (encadeada).", run.script.id, next + 1);
+            beginBeat(run, 0, 0);
+            return;
+        }
+        finish(run, false);
     }
 
     private static void beginBeat(Run run, int idx, int variant) {
@@ -503,7 +531,7 @@ public final class EncounterDirector {
         run.off = new float[b.cues.size()][n];
         run.resolved = new boolean[b.cues.size()];
         run.mash = new int[n];
-        run.progress = 0.5f;
+        run.progress = b.kind == Kind.MASH ? b.startProgress : 0.5f;
         run.mashDone = false;
         run.charge = new int[n];
         run.charged = new byte[n];
@@ -524,6 +552,17 @@ public final class EncounterDirector {
         boss.getPersistentData().putLong(LAST, run.level.getGameTime());
         for (ServerPlayer p : run.players) restorePlayer(p);
         sendState(run, true);
+        if (!aborted && run.killPending) killBoss(run);
+        if (aborted || run.lost) {
+            // a finalizacao nao terminou: as fases desta cena podem tocar de novo depois do intervalo
+            CompoundTag pd = boss.getPersistentData();
+            int done = pd.getInt(DONE);
+            for (int i = run.firstPhase; i < run.script.phases.size(); i++) {
+                if (i > run.firstPhase && !run.script.phases.get(i).chained) break;
+                done &= ~(1 << i);
+            }
+            pd.putInt(DONE, done);
+        }
         if (TEST_SPAWNED.remove(boss) && boss.isAlive()) {
             // chefe do /dmzluta: some num zanzoken quando a cena acaba (nao fica solto pelo mundo)
             run.level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, boss.getX(), boss.getY() + 1, boss.getZ(), 30, 0.4, 0.8, 0.4, 0.02);
@@ -531,6 +570,27 @@ public final class EncounterDirector {
             boss.discard();
         } else if (boss instanceof Mob mob && !run.players.isEmpty()) mob.setTarget(run.players.get(0));
         KiControlMod.LOGGER.info("[Lutas] {} fase {} {}.", run.script.id, run.phaseIdx + 1, aborted ? "interrompida" : "concluida");
+    }
+
+    /** Golpe final vencido: o chefe cai de verdade, com o abate creditado ao grupo (as missoes do DMZ contam). */
+    private static void killBoss(Run run) {
+        LivingEntity boss = run.boss;
+        if (!boss.isAlive()) return;
+        ServerPlayer killer = null;
+        for (ServerPlayer p : run.players) if (p.isAlive()) { killer = p; break; }
+        var src = killer != null ? run.level.damageSources().playerAttack(killer) : run.level.damageSources().magic();
+        try {
+            boss.setInvulnerable(false);
+            boss.setHealth(Math.min(boss.getHealth(), 1f));
+            boss.hurt(src, Float.MAX_VALUE / 8f);
+            if (boss.isAlive()) {
+                boss.setHealth(0f);
+                boss.die(src);
+            }
+            KiControlMod.LOGGER.info("[Lutas] {} derrotado no golpe final (por {}).", run.script.id, killer == null ? "ninguem" : killer.getGameProfile().getName());
+        } catch (Throwable t) {
+            KiControlMod.LOGGER.warn("[Lutas] nao consegui derrotar o chefe no golpe final: {}", t.toString());
+        }
     }
 
     private static void restoreBoss(LivingEntity boss, CompoundTag lock) {
@@ -769,6 +829,7 @@ public final class EncounterDirector {
         avg /= n;
         if (win) {
             if (beat.dmgWin > 0) damageBoss(run, beat.dmgWin * avg);
+            if (beat.killOnWin) run.killPending = true;
         } else if (beat.hurtLose > 0) {
             for (int i = 0; i < n; i++) hurt(run, i, beat.hurtLose);
         }
@@ -776,8 +837,13 @@ public final class EncounterDirector {
         if (next != null) beginBeat(run, run.beatIdx, win ? 1 : 2);
         else {
             run.mashDone = false;
+            if (!win && beat.endOnLose) {
+                run.lost = true;
+                finish(run, false);
+                return;
+            }
             int idx = run.beatIdx + 1;
-            if (idx >= run.phase.beats.size()) finish(run, false);
+            if (idx >= run.phase.beats.size()) endPhase(run);
             else beginBeat(run, idx, 0);
         }
     }

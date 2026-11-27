@@ -23,14 +23,15 @@ import java.util.Map;
  * Teste das lutas cinematograficas sem precisar fazer a missao.
  * /dmzluta <chefe> [fase]   -> invoca o chefe na sua frente (ou usa um que ja esteja perto) e comeca a fase
  * /dmzluta parar            -> encerra a cena em andamento
- * Chefes: freeza (forma final), freeza100, cell. Precisa de permissao de comandos (cheats ligados no LAN).
+ * Chefes: freeza (forma final), freeza100, cell (Perfeito), cellsuper (Super Perfeito). Precisa de permissao de comandos (cheats ligados no LAN).
  */
 @Mod.EventBusSubscriber(modid = KiControlMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class EncounterCommand {
     private static final Map<String, String> ALIASES = Map.of(
             "freeza", "frieza_base", "frieza", "frieza_base", "frieza_base", "frieza_base",
             "freeza100", "frieza_fp", "frieza_fp", "frieza_fp",
-            "cell", "cell_perfect", "cell_perfect", "cell_perfect");
+            "cell", "cell_perfect", "cell_perfect", "cell_perfect",
+            "cellsuper", "cell_superperfect", "cell_superperfect", "cell_superperfect");
 
     private EncounterCommand() {}
 
@@ -40,7 +41,7 @@ public final class EncounterCommand {
                 .requires(s -> s.hasPermission(2))
                 .then(Commands.literal("parar").executes(EncounterCommand::stop))
                 .then(Commands.argument("chefe", StringArgumentType.word())
-                        .suggests((c, b) -> SharedSuggestionProvider.suggest(List.of("freeza", "freeza100", "cell"), b))
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(List.of("freeza", "freeza100", "cell", "cellsuper"), b))
                         .executes(c -> start(c, 1))
                         .then(Commands.argument("fase", IntegerArgumentType.integer(1, 9))
                                 .executes(c -> start(c, IntegerArgumentType.getInteger(c, "fase"))))));
@@ -55,7 +56,7 @@ public final class EncounterCommand {
         String id = ALIASES.get(StringArgumentType.getString(c, "chefe").toLowerCase());
         EncScript script = id == null ? null : EncScripts.byId(id);
         if (script == null) {
-            src.sendFailure(Component.literal("Chefe desconhecido. Use: freeza, freeza100 ou cell."));
+            src.sendFailure(Component.literal("Chefe desconhecido. Use: freeza, freeza100, cell ou cellsuper."));
             return 0;
         }
         if (phase > script.phases.size()) {

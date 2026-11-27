@@ -118,6 +118,19 @@ public final class EncFx {
                 level.addParticle(f.size > 1 ? ParticleTypes.EXPLOSION_EMITTER : ParticleTypes.EXPLOSION, c.x, c.y, c.z, 0, 0, 0);
                 for (int i = 0; i < 16; i++) level.addParticle(ParticleTypes.ELECTRIC_SPARK, c.x, c.y, c.z, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5);
             }
+            case "spirit" -> {
+                EncClient.State st = EncClient.state();
+                if (st != null) {
+                    int role = 0;
+                    for (int i = 0; i < st.n(); i++) if (st.players[i] == f.src) role = i;
+                    EncSpirit.show(st, role, f.dur);
+                }
+                level.addParticle(ParticleTypes.FLASH, c.x, c.y, c.z, 0, 0, 0);
+                for (int i = 0; i < 24; i++) level.addParticle(ParticleTypes.END_ROD, c.x + r.nextGaussian() * 0.6, c.y + r.nextGaussian(), c.z + r.nextGaussian() * 0.6, 0, 0.03, 0);
+            }
+            case "disintegrate" -> {
+                for (int i = 0; i < 40; i++) level.addParticle(ParticleTypes.END_ROD, c.x, c.y, c.z, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5);
+            }
             case "impact_star" -> {
                 for (int i = 0; i < 18; i++) level.addParticle(ParticleTypes.CRIT, c.x, c.y, c.z, r.nextGaussian() * 0.8, r.nextGaussian() * 0.8, r.nextGaussian() * 0.8);
                 for (int i = 0; i < 6; i++) level.addParticle(ParticleTypes.CLOUD, c.x, c.y, c.z, r.nextGaussian() * 0.25, r.nextGaussian() * 0.25, r.nextGaussian() * 0.25);
@@ -308,6 +321,22 @@ public final class EncFx {
                     double rad = (0.4 + 1.4 * easeOut(u)) * sz;
                     glow(r, p, rad, new float[]{1f, 0.8f, 0.4f}, (float) (1 - u));
                 }
+                case "spirit" -> {
+                    Entity sp = EncSpirit.puppet();
+                    if (sp != null) {
+                        Vec3 sc = sp.getPosition(partial).add(0, sp.getBbHeight() * 0.55, 0);
+                        float pulse = (float) (0.8 + 0.2 * Math.sin(now * 0.9));
+                        glow(r, sc, 1.5 * pulse, new float[]{1f, 0.85f, 0.35f}, fade * 0.45f);
+                        glow(r, sc, 0.8, new float[]{1f, 1f, 0.85f}, fade * 0.35f);
+                    }
+                }
+                case "disintegrate" -> {
+                    // o chefe some dentro do feixe: brilho que cresce e, no fim, o corpo apaga
+                    glow(r, c, (1.2 + 4 * easeOut(u)) * sz, new float[]{0.85f, 0.95f, 1f}, fade * 0.8f);
+                    glow(r, c, (0.6 + 2 * easeOut(u)) * sz, new float[]{1f, 1f, 1f}, fade);
+                    Entity be = Minecraft.getInstance().level.getEntity(f.src);
+                    if (be != null && u > 0.55) be.setInvisible(true);
+                }
                 case "impact_star" -> {
                     // estrela de impacto de manga: estoura grande em 2 ticks, segura e some
                     double pop = u < 0.25 ? 0.55 + 0.75 * easeOut(u / 0.25) : 1.3 - 0.15 * (u - 0.25);
@@ -376,8 +405,10 @@ public final class EncFx {
                     Vec3 dir = c.subtract(from).normalize();
                     Vec3 to = c.add(dir.scale(30));
                     double w = 1.1 * (1 + 0.1 * Math.sin(now * 3));
-                    beam(r, from, to, w, new float[]{0.35f, 0.75f, 1f}, fade * 0.6f);
-                    beam(r, from, to, w * 0.45, new float[]{0.9f, 0.97f, 1f}, fade);
+                    if (!EncBeams.available()) {
+                        beam(r, from, to, w, new float[]{0.35f, 0.75f, 1f}, fade * 0.6f);
+                        beam(r, from, to, w * 0.45, new float[]{0.9f, 0.97f, 1f}, fade);
+                    }
                     glow(r, c, 2.5 + 3 * easeOut(u), new float[]{0.7f, 0.9f, 1f}, fade * 0.6f);
                 }
                 case "beam_lose" -> {
@@ -385,8 +416,10 @@ public final class EncFx {
                     Vec3 dir = g.subtract(c).normalize();
                     Vec3 to = g.add(dir.scale(25));
                     float[] col = bossColor(s);
-                    beam(r, c, to, 1.4, col, fade * 0.6f);
-                    beam(r, c, to, 0.6, new float[]{1f, 0.95f, 1f}, fade);
+                    if (!EncBeams.available()) {
+                        beam(r, c, to, 1.4, col, fade * 0.6f);
+                        beam(r, c, to, 0.6, new float[]{1f, 0.95f, 1f}, fade);
+                    }
                 }
                 case "speedlines" -> speedlines(r, s, partial, now, fade);
                 case "shockwave" -> {
@@ -440,6 +473,82 @@ public final class EncFx {
         return s == null ? b.add(0, 14, 0) : b.add(s.dir(0, 14, 4));
     }
 
+    /**
+     * Pedidos dos Kamehamehas do DMZ para este quadro (chamado no estagio AFTER_ENTITIES, antes do desenho
+     * dos outros efeitos): cabo de guerra, vitoria, derrota e disparos soltos.
+     */
+    public static void beamPass(float partial) {
+        EncClient.State s = EncClient.state();
+        Minecraft mc = Minecraft.getInstance();
+        if (s == null || mc.level == null || FX.isEmpty()) return;
+        double now = mc.level.getGameTime() + partial;
+        for (Fx f : FX) {
+            double age = now - f.start;
+            if (age < 0 || age > f.dur + 2) continue;
+            float grow = (float) Mth.clamp(age / 5.0, 0, 1);
+            float shrink = (float) Mth.clamp((f.dur + 2 - age) / 5.0, 0, 1);
+            float k = grow * shrink;
+            if (k <= 0.02f) continue;
+            switch (f.kind) {
+                case "clash" -> {
+                    Vec3 p = clashPoint(s, partial);
+                    float pr = Mth.clamp(s.progressShown, 0f, 1f);
+                    // quem esta ganhando tem o feixe mais grosso; o tamanho do efeito (pai e filho) engrossa o do grupo
+                    float mine = (0.75f + 0.7f * pr) * f.size * k;
+                    float theirs = (1.5f - 0.6f * pr) * k;
+                    for (int i = 0; i < s.n(); i++) {
+                        Entity e = s.player(i);
+                        if (e == null) continue;
+                        Vec3 from = hands(e, p, partial);
+                        EncBeams.beam("p" + i, from, p, mine / (float) Math.sqrt(s.n()), EncBeams.KAME);
+                    }
+                    Entity b = s.boss();
+                    if (b != null) EncBeams.beam("boss", hands(b, p, partial), p, theirs, EncBeams.KAME);
+                }
+                case "beam_win" -> {
+                    Vec3 c = chest(f.src, f.srcSnap, partial);
+                    if (c == null) continue;
+                    for (int i = 0; i < s.n(); i++) {
+                        Entity e = s.player(i);
+                        if (e == null) continue;
+                        Vec3 from = hands(e, c, partial);
+                        Vec3 to = c.add(c.subtract(from).normalize().scale(30));
+                        EncBeams.beam("p" + i, from, to, 1.6f * f.size * k / (float) Math.sqrt(s.n()), EncBeams.KAME);
+                    }
+                }
+                case "beam_lose" -> {
+                    Vec3 c = chest(f.src, f.srcSnap, partial);
+                    if (c == null) continue;
+                    Vec3 g = groupChest(partial);
+                    Entity b = s.boss();
+                    Vec3 from = b != null ? hands(b, g, partial) : c;
+                    EncBeams.beam("boss", from, g.add(g.subtract(from).normalize().scale(25)), 1.9f * k, EncBeams.KAME);
+                }
+                case "dmz_beam" -> {
+                    // disparo solto: o feixe sai de quem atira e cresce ate o alvo
+                    Entity src = mc.level.getEntity(f.src);
+                    if (src == null) continue;
+                    Vec3 target = f.dst >= 0 && mc.level.getEntity(f.dst) != null ? chest(f.dst, f.dstSnap, partial)
+                            : (src == s.boss() ? groupChest(partial) : clashPoint(s, partial));
+                    if (target == null) continue;
+                    Vec3 from = hands(src, target, partial);
+                    Vec3 to = from.lerp(target, Mth.clamp(age / 6.0, 0.05, 1.0));
+                    EncBeams.beam("solo" + f.src, from, to, 1.2f * f.size * k, EncBeams.KAME);
+                }
+                default -> {}
+            }
+        }
+    }
+
+    /** Ponto das maos de quem dispara (na altura do peito, um pouco a frente, virado para o alvo). */
+    private static Vec3 hands(Entity e, Vec3 target, float partial) {
+        Vec3 base = e.getPosition(partial).add(0, e.getBbHeight() * 0.6, 0);
+        Vec3 d = target.subtract(base);
+        Vec3 h = new Vec3(d.x, 0, d.z);
+        if (h.lengthSqr() < 1e-4) return base;
+        return base.add(h.normalize().scale(0.55 + e.getBbWidth() * 0.3));
+    }
+
     private static Vec3 clashPoint(EncClient.State s, float partial) {
         Entity b = s.boss();
         Vec3 bc = b != null ? b.getPosition(partial).add(0, b.getBbHeight() * 0.62, 0) : s.world(0, s.phase.lift + 1.2, 0);
@@ -455,6 +564,7 @@ public final class EncFx {
             Entity e = s.player(i);
             if (e == null) continue;
             Vec3 from = e.getPosition(partial).add(0, e.getBbHeight() * 0.62, 0).add(s.dir(0, 0, -0.6));
+            if (EncBeams.available()) continue;
             beam(r, from, p, 0.42, new float[]{0.3f, 0.65f, 1f}, fade * 0.55f * flick);
             beam(r, from, p, 0.18, new float[]{0.9f, 0.97f, 1f}, fade * flick);
         }
@@ -462,8 +572,10 @@ public final class EncFx {
         if (b != null) {
             Vec3 from = b.getPosition(partial).add(0, b.getBbHeight() * 0.62, 0).add(s.dir(0, 0, 0.7));
             float[] col = bossColor(s);
-            beam(r, from, p, 0.5, col, fade * 0.55f * flick);
-            beam(r, from, p, 0.2, new float[]{1f, 0.95f, 1f}, fade * flick);
+            if (!EncBeams.available()) {
+                beam(r, from, p, 0.5, col, fade * 0.55f * flick);
+                beam(r, from, p, 0.2, new float[]{1f, 0.95f, 1f}, fade * flick);
+            }
         }
         double rad = 1.4 + 0.3 * Math.sin(now * 2.3) + 0.4 * (s.n() - 1) * 0.3;
         glow(r, p, rad * 1.8, new float[]{0.8f, 0.75f, 1f}, fade * 0.45f);

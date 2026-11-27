@@ -116,8 +116,8 @@ public final class ArmAnimDriver {
                 boolean dmzAnim = !want.startsWith("dmzkicontrol.");
                 // golpes "dbz_" (feitos no Blockbench) entram como golpe; a guarda e a defesa ficam paradas
                 boolean dbz = want.startsWith("dmzkicontrol.cs.dbz_");
-                boolean dbzStrike = dbz && !want.endsWith("_guard") && !want.endsWith("_block");
-                boolean looping = DMZ_LOOPS.contains(want) || want.equals("dmzkicontrol.cs.dbz_guard")
+                boolean dbzStrike = dbz && !want.endsWith("_guard") && !want.endsWith("_block") && !want.endsWith("_loop");
+                boolean looping = DMZ_LOOPS.contains(want) || want.equals("dmzkicontrol.cs.dbz_guard") || (dbz && want.endsWith("_loop"))
                         || (want.startsWith("dmzkicontrol.cs.") && !dbz && !ONE_SHOT.contains(want));
                 boolean strike = ONE_SHOT.contains(want) || dbzStrike || (dmzAnim && !looping);
                 if (!want.equals(last[0]) || (strike && ser != lastSerial[0])) {

@@ -213,11 +213,14 @@ public final class EncHud implements IGuiOverlay {
 
         // titulo da fase
         double ps = now - phaseAt;
-        if (ps >= 0 && ps < 70) {
+        if (ps >= 0 && ps < 70 && s.phase.title != null) {
             float a = (float) Math.min(1, Math.min(ps / 6.0, (70 - ps) / 10.0));
             float slide = (float) Math.max(0, 1 - ps / 8.0) * 40f;
             DmzStyle.text(g, Component.translatable(s.phase.title), w / 2f - slide, h * 0.40f, 3.0f, 0.5f, GOLD, a);
-            DmzStyle.text(g, Component.translatable("enc.dmzkicontrol.phase", s.phaseIdx + 1, s.script.phases.size()),
+            // "fase X de N" so quando as fases sao cenas separadas (a finalizacao encadeada e uma cena so)
+            boolean chain = false;
+            for (var ph : s.script.phases) if (ph.chained) chain = true;
+            if (!chain) DmzStyle.text(g, Component.translatable("enc.dmzkicontrol.phase", s.phaseIdx + 1, s.script.phases.size()),
                     w / 2f + slide, h * 0.40f + 30, 1.0f, 0.5f, 0xFFFFFF, a * 0.85f);
         }
         // legenda da cena (o que fazer)

@@ -72,6 +72,8 @@ public final class EncScript {
         public double distance = 7.0;
         /** Altura dos jogadores e do chefe na arena (voando). */
         public double lift = 0.0;
+        /** Fase encadeada: comeca sozinha logo depois da anterior, na mesma cena (sem gatilho de vida). */
+        public boolean chained;
 
         Phase(float at, String title) {
             this.at = at;
@@ -81,6 +83,8 @@ public final class EncScript {
         public Phase distance(double d) { this.distance = d; return this; }
 
         public Phase lift(double y) { this.lift = y; return this; }
+
+        public Phase chained() { this.chained = true; return this; }
 
         public Beat beat(Kind kind, int len) {
             Beat b = new Beat(kind, len);
@@ -102,6 +106,12 @@ public final class EncScript {
         public Beat win, lose;
         /** Momentos em que o chefe empurra mais forte no cabo de guerra: {inicio, fim}. */
         public final List<int[]> surges = new ArrayList<>();
+        /** Onde o cabo de guerra comeca (0 = chefe ganhando, 1 = jogadores ganhando). */
+        public float startProgress = 0.5f;
+        /** Vencer este cabo de guerra derrota o chefe de vez (golpe final). */
+        public boolean killOnWin;
+        /** Perder aqui encerra a cena (o chefe fica com pouca vida e a finalizacao pode voltar depois). */
+        public boolean endOnLose;
         private int turns;
 
         Beat(Kind kind, int len) {
@@ -137,6 +147,12 @@ public final class EncScript {
         public Beat tug(float push, float gain) { this.push = push; this.gain = gain; return this; }
 
         public Beat surge(int from, int to) { surges.add(new int[]{from, to}); return this; }
+
+        public Beat start(float progress) { this.startProgress = progress; return this; }
+
+        public Beat finisher() { this.killOnWin = true; this.endOnLose = true; return this; }
+
+        public Beat mustWin() { this.endOnLose = true; return this; }
 
         public float pushAt(int t) {
             float p = push * (1f + 0.35f * (float) Math.sin(t / 9.0));

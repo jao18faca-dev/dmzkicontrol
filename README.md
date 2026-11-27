@@ -179,6 +179,7 @@ Quando a vida de um chefe final cai abaixo de certos pontos, a luta vira uma cen
 - **Erros:** errar tira vida, mas nunca mata. A cena continua.
 - **Golpes no estilo Dragon Ball:** feitos no Blockbench a partir da luta Goku/Gohan x Cell: arrancada voando deitado com o punho na frente, soco no estômago com o corpo todo (base baixa, ombro e peso pra frente), chute voador, gancho que lança e o martelo duplo do golpe final, mergulhando na cabeça do chefe. Cada golpe segura a pose no contato, com estrela de impacto, e o chefe só voa depois desse congelamento. Antes do golpe final tem um close nos olhos e uma câmera baixa e torta.
 - **Golpes que encostam:** cada soco e chute coloca você na distância medida no Blockbench para o punho ou o pé tocar o chefe, e a reação dele sai no instante do contato.
+- **Kamehameha do DMZ:** os Kamehamehas das lutas usam o modelo e o shader do próprio DragonMineZ (só a imagem: não causam dano nem quebram blocos).
 - **Efeitos:** impact frames (tela invertida, quadro preto com linhas de impacto, clarão), câmera que congela um instante nos golpes fortes (hitstop) e entorta de leve, tela tremendo, faixas de cinema e sons do próprio DMZ.
 
 Cenas:
@@ -187,10 +188,11 @@ Cenas:
 |---|---|
 | Freeza (forma final, missão 14) | 50%: **A Fúria**. Freeza explode o Kuririn no céu e abre a janela de transformação. |
 | Freeza 100% (missão 15) | 70%: **Kienzan**, desviar de discos e rebatê-los todos juntos.<br>45%: **Raio da Morte**, rebater e desviar em rodízio e depois contra-atacar com um combo.<br>20%: **Embate final**, Kamehameha contra a rajada dele. |
-| Cell Perfeito (saga dos Androides) | 85%: **A Arrancada**, voar em zigue-zague trocando de lado entre as rajadas e fechar com um combo e o martelo duplo.<br>55%: **O Despertar**. Cell agarra um e arremessa no outro (sozinho, no chão), vocês voam para trás e se transformam.<br>25%: **Kamehameha contra Kamehameha**. |
+| Cell Perfeito (saga dos Androides) | 20%: **O Fim do Cell**, a finalização inteira numa cena longa: a arrancada vista pelo Cell (desviando das rajadas), o combo e o martelo, o arremesso com a janela de transformação, o duelo de velocidade, a fúria (soco no estômago, gancho que lança e martelo até o chão) e o Kamehameha contra Kamehameha. Vencer derrota o Cell; perder deixa ele vivo e a finalização volta depois. |
+| Cell Super Perfeito (Jogos de Cell) | 20%: **Kamehameha Pai e Filho**. O Cell sobe e solta o Kamehameha dele; quem segura o feixe do grupo dispara com uma mão só, o braço machucado pendurado. Primeiro cabo de guerra perdendo; o espírito do Goku aparece atrás do ombro e o feixe dobra de tamanho; no último o Cell se desfaz dentro do Kamehameha. |
 
 **Comando de teste** (precisa de cheats ligados; no LAN, marque "Permitir comandos"):
-- `/dmzluta cell 1`: invoca o Cell Perfeito na sua frente e começa a fase 1. Os chefes são `freeza`, `freeza100` e `cell`, e a fase é opcional.
+- `/dmzluta cell`: invoca o Cell Perfeito na sua frente e começa a finalização dele. Os chefes são `freeza`, `freeza100`, `cell` e `cellsuper` (Cell Super Perfeito); a fase é opcional (no Cell, 2 e 3 começam no meio da finalização).
 - Se o chefe já estiver por perto (32 blocos), a cena usa ele em vez de invocar outro.
 - `/dmzluta parar`: encerra a cena.
 

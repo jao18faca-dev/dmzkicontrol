@@ -192,6 +192,13 @@ public final class EncClient {
             SCHEDULED.clear();
             EncFx.clear();
         }
+        boolean newPhase = !fresh && S.phaseIdx != m.phase();
+        if (newPhase) {
+            // fase encadeada (mesma cena): troca o arranjo da arena sem cortar nada
+            S.phaseIdx = m.phase();
+            S.phase = script.phases.get(m.phase());
+            SCHEDULED.clear();
+        }
         S.beatIdx = m.beat();
         S.variant = m.variant();
         S.start = m.start();
@@ -206,12 +213,21 @@ public final class EncClient {
         S.mine.clear();
         S.mineAt.clear();
         S.resultAt.clear();
-        S.progress = S.progressShown = 0.5f;
+        {
+            Beat nb = m.beat() >= 0 && m.beat() < S.phase.beats.size() ? S.phase.beats.get(m.beat()) : null;
+            float sp = nb != null && nb.kind == Kind.MASH && m.variant() == 0 ? nb.startProgress : 0.5f;
+            S.progress = S.progressShown = sp;
+        }
         S.mashResult = -1;
         S.charged = new byte[4];
         int me = -1;
         for (int i = 0; i < S.players.length; i++) if (S.players[i] == mc.player.getId()) me = i;
         S.myRole = me;
+        if (newPhase && me >= 0) {
+            S.anchor = new Vec3(EncScript.laneX(me, S.n()), S.phase.lift, S.phase.distance);
+            S.speed = 0.22f;
+            if (S.phase.title != null) EncHud.onPhaseStart(S);
+        }
         if (fresh && me >= 0) {
             S.anchor = new Vec3(EncScript.laneX(me, S.n()), S.phase.lift, S.phase.distance);
             S.speed = 0.22f;
@@ -273,11 +289,18 @@ public final class EncClient {
 
     public static void stop() {
         Minecraft mc = Minecraft.getInstance();
+        // o chefe pode ter sumido dentro do Kamehameha (so no desenho); se ainda existir, volta a aparecer
+        if (S != null && mc.level != null) {
+            Entity bb = mc.level.getEntity(S.bossId);
+            if (bb != null && bb.isAlive()) bb.setInvisible(false);
+        }
         if (S != null && S.participant() && previousCamera != null) mc.options.setCameraType(previousCamera);
         previousCamera = null;
         S = null;
         SCHEDULED.clear();
         EncTransformCine.reset();
+        EncBeams.clear();
+        EncSpirit.clear();
         EncFx.clear();
         EncHud.reset();
     }
@@ -344,6 +367,8 @@ public final class EncClient {
         }
         S.lastFired = Math.max(S.lastFired, t);
         EncTransformCine.tick(S);
+        EncBeams.tick();
+        EncSpirit.tick(S);
         Iterator<Object[]> it = SCHEDULED.iterator();
         List<Object[]> due = new ArrayList<>();
         while (it.hasNext()) {
