@@ -529,6 +529,22 @@ public class KiControlConfig {
 
     public Textures textures = new Textures();
 
+    /** Metropoles (precisa do DMZ Sparking): bairros inteiros crescem em volta das cidades dele. */
+    public static class Cities {
+        /** true = as cidades do Sparking viram metropoles enormes. */
+        public boolean megaCities = true;
+        /** Aneis de bairros em volta da cidade: 1 = 3x3 (~1700 blocos), 2 = 5x5 (~2800 blocos), 3 = 7x7. */
+        public int rings = 2;
+        /** Milissegundos por tick para construir os bairros perto dos jogadores (mais = mais rapido, mais pesado). */
+        public int buildMillisPerTick = 4;
+        /** Distancia (blocos) em volta de cada jogador em que os bairros sao construidos. */
+        public int buildRadius = 144;
+        /** Ajuste fino da altura do chao dos bairros em relacao a cidade original (blocos). */
+        public int groundOffset = 0;
+    }
+
+    public Cities cities = new Cities();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -667,6 +683,7 @@ public class KiControlConfig {
         if (story == null) story = new Story();
         if (combat == null) combat = new Combat();
         if (textures == null) textures = new Textures();
+        if (cities == null) cities = new Cities();
         if (kiVision == null) kiVision = new KiVision();
         if (bubbles == null) bubbles = new Bubbles();
         if (movement == null) movement = new Movement();

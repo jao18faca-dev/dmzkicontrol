@@ -225,6 +225,15 @@ Agache e clique com o botão direito no Aparelho de Gravidade. São 6 ondas de d
 
 O pacote **DMZ HD Texturepack 2.1, do ZoneMC**, vem dentro do mod, já ligado e por cima dos outros pacotes (aparece como "DMZ HD (ZoneMC)"). O drone de treino e o Bubbles ganharam texturas novas em HD no mesmo estilo de anime (`tools/textures/hd_boxuv.py`).
 
+## Metrópoles (4.9, precisa do DMZ Sparking)
+
+As cidades do Sparking (West City, Central City, East City e Satan City) viram metrópoles **enormes**. Em volta de cada uma nascem bairros inteiros, cada um uma West City completa, montada com os próprios pedaços de 16×16 do Sparking (lidos do jar dele, nada é copiado) e girada para os bairros não ficarem iguais.
+
+- **Tamanho:** com 2 anéis (padrão), a cidade vira 5×5 bairros, uns 2800 × 2800 blocos. Com 3 anéis, 7×7 (`cities.rings`).
+- **Construção:** os bairros são construídos aos poucos, perto de quem está andando por lá, como o Sparking faz com a cidade dele. O terreno é aplainado no nível da cidade, com aterro embaixo e o morro cortado em cima. Funciona também com cidades que já existem no seu mundo.
+- **Monstros:** não nascem monstros nas ruas dos bairros.
+- **Ajustes:** `cities.buildMillisPerTick` (velocidade da construção), `cities.buildRadius` (distância em volta de cada jogador), `cities.groundOffset` (altura do chão). Para desligar: `cities.megaCities = false`.
+
 ## Grupo (party) do DMZ
 
 - **TP dividido:** o DMZ 2.2.1 só dividia o TP com o grupo se quem ganhou tivesse a Transmissão Instantânea. Agora divide com quem está no mesmo mundo e dentro do alcance do grupo (`partyQuestShareRange` do DMZ), na proporção do DMZ (`partyTpShareRatio`). Desligar: `party.fixTpShare = false`.
