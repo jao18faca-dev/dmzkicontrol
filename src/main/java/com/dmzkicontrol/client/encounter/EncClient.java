@@ -437,8 +437,7 @@ public final class EncClient {
         if (tg.isEmpty()) return;
         boolean once = ev.who == EncScript.ALL || ev.who == EncScript.OTHERS;
         boolean mine = tg.contains(S.myRole);
-        if (ev.text != null) EncHud.subtitle(S, ev.text, ev.who == EncScript.BOSS, nameOf(tg.get(0)));
-        if (ev.sfx != null) EncHud.sfx(ev.sfx);
+        // sem falas nem onomatopeias na tela: so a acao (e as teclas)
         if (S.participant() && ev.impact > 0) EncHud.impact(ev.impact);
         if (S.participant() && ev.shake > 0) EncHud.shake(ev.shake);
         boolean soundDone = false;
