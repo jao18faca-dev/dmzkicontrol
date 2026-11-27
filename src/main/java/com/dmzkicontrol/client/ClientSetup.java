@@ -103,6 +103,7 @@ public final class ClientSetup {
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_SHOT.get(), CerealShotRenderer::new);
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.CEREAL_BEAM.get(), CerealBeamRenderer::new);
             event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.BUBBLES.get(), BubblesRenderer::new);
+            event.registerEntityRenderer(com.dmzkicontrol.registry.ModRegistry.TRAINING_DRONE.get(), TrainingDroneRenderer::new);
             // inimigos das sagas do Moro e do Granolah: renderizador de saga do proprio DMZ (aura, voo, ki)
             com.dmzkicontrol.saga.SagaEnemies.ALL.values().forEach(t ->
                     event.registerEntityRenderer(t.get(), com.dragonminez.client.init.entities.renderer.sagas.DBSagasRenderer::new));
@@ -121,6 +122,7 @@ public final class ClientSetup {
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "cereal_eye", CerealianEyeClient.OVERLAY);
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "ki_vision", KiVision.OVERLAY);
             event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "bubbles_training", BubblesHud.OVERLAY);
+            event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "story_deadline", PrepHud.OVERLAY);
             event.registerAboveAll("aura_cutscene", CutsceneOverlay.INSTANCE);
             event.registerAboveAll("form_scene", com.dmzkicontrol.client.scene.SceneOverlay.INSTANCE);
             event.registerAboveAll("encounter", com.dmzkicontrol.client.encounter.EncHud.INSTANCE);
@@ -271,6 +273,7 @@ public final class ClientSetup {
             CerealianEyeClient.reset();
             KiVision.reset();
             BubblesHud.reset();
+            PrepHud.reset();
         }
     }
 }

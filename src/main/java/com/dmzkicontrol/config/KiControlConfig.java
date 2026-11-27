@@ -230,7 +230,7 @@ public class KiControlConfig {
     /** Por nivel: multiplicador da tensao interna (quanto menor, mais tempo da para segurar). */
     public List<Double> auraLevelStrain = new ArrayList<>(List.of(1.00, 0.90, 0.80, 0.70, 0.60));
     /** Versao do formato do arquivo. */
-    public int configVersion = 8;
+    public int configVersion = 9;
     /** Escala do treino: com este tanto de segundos de pratica efetiva numa forma voce chega a ~95% (antes do trainTimeMultiplier). */
     public double trainSeconds = 900.0;
     /** Dominio inicial (0..1) numa forma que voce nunca treinou. */
@@ -476,6 +476,27 @@ public class KiControlConfig {
 
     public Encounters encounters = new Encounters();
 
+    /** Historia (4.7): prazo para treinar antes de cada chegada, chefes mais fortes, lutas nos lugares certos. */
+    public static class Story {
+        /** Prazo para treinar entre um chefe e o proximo (o "1 ano ate os Saiyajins chegarem"). */
+        public boolean trainingDeadlines = true;
+        /** Multiplica todos os prazos (1.0 = padrao; 2.0 = o dobro de tempo para treinar). */
+        public double deadlineScale = 1.0;
+        /** Dentro da Sala do Tempo o relogio de fora quase para (1 dia la fora = 1 ano la dentro). */
+        public boolean timeChamberSlowsClock = true;
+        /** As lutas da historia acontecem no lugar certo (Cell na Arena do Cell, Freeza em Namekusei...). */
+        public boolean battleStages = true;
+        /** Vida dos chefes da historia (multiplica a da dificuldade escolhida no DMZ). */
+        public double bossHealthMultiplier = 1.8;
+        /** Dano dos chefes da historia (multiplica o da dificuldade escolhida no DMZ). */
+        public double bossDamageMultiplier = 1.5;
+        /** true = com o DMZ Sparking, as paginas de missoes dele (Agora, Historia, Episodios, Missoes extras)
+         *  abrem a arvore de missoes do proprio DragonMineZ. */
+        public boolean keepDmzQuestMenu = true;
+    }
+
+    public Story story = new Story();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -598,6 +619,10 @@ public class KiControlConfig {
             formScenes.quick = true;
             configVersion = 8;
         }
+        if (configVersion < 9) {
+            if (story == null) story = new Story();
+            configVersion = 9;
+        }
     }
 
     private void fillMissing() {
@@ -607,6 +632,7 @@ public class KiControlConfig {
         if (auraControlTeachers == null) auraControlTeachers = new ArrayList<>();
         if (auraLevelStoryRequirements == null) auraLevelStoryRequirements = new LinkedHashMap<>();
         if (integrations == null) integrations = new Integrations();
+        if (story == null) story = new Story();
         if (kiVision == null) kiVision = new KiVision();
         if (bubbles == null) bubbles = new Bubbles();
         if (movement == null) movement = new Movement();

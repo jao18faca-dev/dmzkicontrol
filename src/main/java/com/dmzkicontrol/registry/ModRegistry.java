@@ -48,6 +48,14 @@ public final class ModRegistry {
                     .clientTrackingRange(10)
                     .build("bubbles"));
 
+    /** Drone de treino da Capsule Corp (treino da sala de gravidade). */
+    public static final RegistryObject<EntityType<com.dmzkicontrol.training.TrainingDroneEntity>> TRAINING_DRONE = ENTITIES.register("training_drone",
+            () -> EntityType.Builder.<com.dmzkicontrol.training.TrainingDroneEntity>of(com.dmzkicontrol.training.TrainingDroneEntity::new, MobCategory.MISC)
+                    .sized(0.7f, 0.8f)
+                    .clientTrackingRange(8)
+                    .noSave()
+                    .build("training_drone"));
+
     public static final RegistryObject<Item> BUBBLES_EGG = ITEMS.register("bubbles_spawn_egg",
             () -> new net.minecraftforge.common.ForgeSpawnEggItem(BUBBLES, 0x3A2618, 0xD9A877, new Item.Properties()));
 
@@ -66,6 +74,7 @@ public final class ModRegistry {
 
     private static void attributes(net.minecraftforge.event.entity.EntityAttributeCreationEvent event) {
         event.put(BUBBLES.get(), com.dmzkicontrol.kaio.BubblesEntity.createAttributes().build());
+        event.put(TRAINING_DRONE.get(), com.dmzkicontrol.training.TrainingDroneEntity.createAttributes().build());
     }
 
     private static void addToTabs(BuildCreativeModeTabContentsEvent event) {
