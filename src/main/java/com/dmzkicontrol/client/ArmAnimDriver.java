@@ -89,7 +89,25 @@ public final class ArmAnimDriver {
             REQUESTS.remove(p.getId());
         }
         if (KiBowRenderer.isCharging(p)) return BOW_CAST;
+        // dentro de uma luta, entre um golpe e outro fica na guarda (antes voltava de estalo para a pose do DMZ
+        // e dava um "tranco" no boneco entre os golpes)
+        if (inEncounter(p)) return ENC_IDLE;
         return null;
+    }
+
+    private static final String ENC_IDLE = "dmzkicontrol.cs.dbz_guard";
+
+    private static boolean inEncounter(AbstractClientPlayer p) {
+        try {
+            com.dmzkicontrol.client.encounter.EncClient.State s = com.dmzkicontrol.client.encounter.EncClient.state();
+            if (s == null || s.players == null) return false;
+            // na janela de transformacao o DMZ anima o corpo (carregar ki, transformar)
+            var b = s.beat();
+            if (b != null && b.kind == com.dmzkicontrol.encounter.EncScript.Kind.CHARGE) return false;
+            for (int id : s.players) if (id == p.getId()) return true;
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 
     /** Garante o nosso controlador no gerenciador de animacoes do jogador (criado quando ele e renderizado). */

@@ -36,8 +36,8 @@ public final class FormSceneServer {
 
     private static final Map<UUID, Running> RUNNING = new ConcurrentHashMap<>();
 
-    /** Cutscenes de transformacao removidas a pedido (4.0.4). O codigo fica para uma volta futura. */
-    private static final boolean SCENES_ON = false;
+    /** Cena completa so na primeira vez de cada forma; da segunda em diante, a transformacao rapida (3 s). */
+    private static final String SEEN = "dmzkicontrol_seen_forms";
 
     private FormSceneServer() {}
 
@@ -67,12 +67,28 @@ public final class FormSceneServer {
 
     private static void start(ServerPlayer sp, String group, String form) {
         KiControlConfig.FormScenes cfg = KiControlConfig.get().formScenes;
-        if (!SCENES_ON || !cfg.enabled) return;
+        if (!cfg.enabled) return;
+        // dentro de uma luta com quick time event a transformacao tem a cena propria dela
+        if (com.dmzkicontrol.encounter.EncounterDirector.isLocked(sp)) return;
         String key = (group + "." + form).toLowerCase(Locale.ROOT);
         for (String off : cfg.disabledForms) if (off != null && key.equals(off.toLowerCase(Locale.ROOT))) return;
         StatsData data = AuraSealManager.stats(sp);
         String race = data == null ? "" : data.getCharacter().getRaceName();
         String scene = SceneLibrary.resolve(race, group, form);
+        // primeira vez nesta forma: cena completa; depois, a versao rapida
+        net.minecraft.nbt.CompoundTag keep = sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
+        net.minecraft.nbt.CompoundTag seen = keep.getCompound(SEEN);
+        String seenKey = (race + ":" + key).toLowerCase(Locale.ROOT);
+        boolean first = !seen.getBoolean(seenKey);
+        if (first) {
+            seen.putBoolean(seenKey, true);
+            keep.put(SEEN, seen);
+            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+        }
+        if (!first || !cfg.firstTimeFull) {
+            if (!cfg.quick) return;
+            scene = SceneLibrary.QUICK + scene;
+        }
         int len = SceneLibrary.length(scene);
         long now = sp.level().getGameTime();
         Running prev = RUNNING.get(sp.getUUID());

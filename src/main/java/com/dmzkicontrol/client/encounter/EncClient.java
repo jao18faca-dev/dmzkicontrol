@@ -359,6 +359,7 @@ public final class EncClient {
                     for (Ev ev : c.tell) {
                         if (c.t + ev.t != tt) continue;
                         int r = c.role(S.n());
+                        if (r == Cue.NONE) continue;
                         if (r >= 0) fire(ev, r);
                         else for (int i = 0; i < S.n(); i++) fire(ev, i);
                     }

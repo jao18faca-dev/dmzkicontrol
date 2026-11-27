@@ -82,11 +82,15 @@ public final class EncHud implements IGuiOverlay {
     }
 
     public static void subtitle(EncClient.State s, String key, boolean boss, Component name) {
+        // sem falas na tela (pedido do jogador): a cena conta tudo com camera, pose e efeito
+        if (true) return;
         LINES.add(new Line(Component.translatable(key), boss, name, now(0)));
         while (LINES.size() > 2) LINES.remove(0);
     }
 
     public static void sfx(String txt) {
+        // sem onomatopeias escritas (nem japonesas, nem traduzidas)
+        if (true) return;
         float[][] spots = {{0.24f, 0.30f}, {0.74f, 0.26f}, {0.30f, 0.62f}, {0.70f, 0.58f}, {0.5f, 0.22f}};
         float[] p = spots[R.nextInt(spots.length)];
         SFX.add(new Sfx(txt, p[0], p[1], (R.nextFloat() - 0.5f) * 24f, now(0), R.nextBoolean() ? 0xFFFFFF : 0xFFE27A));
@@ -264,6 +268,7 @@ public final class EncHud implements IGuiOverlay {
     private static void prompts(GuiGraphics g, EncClient.State s, Beat beat, double t, int w, int h) {
         int slot = 0;
         for (Cue c : beat.cues) {
+            if (!c.active(s.n())) continue;
             int win = EncClient.window(c);
             if (t < c.t - c.lead || t > c.t + win + 8) continue;
             boolean mine = c.involves(s.myRole, s.n());

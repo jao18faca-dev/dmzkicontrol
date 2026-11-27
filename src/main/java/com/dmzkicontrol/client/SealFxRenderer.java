@@ -156,8 +156,9 @@ public final class SealFxRenderer {
                     double twist = 1.4; // espiral: o risco gira enquanto entra
                     Vec3 outer = hand.add(sphere(th + twist * (1 - phase), ph, r));
                     Vec3 inner = hand.add(sphere(th + twist * (1 - phase) + 0.35, ph * 0.8, r2));
-                    float thick = (float) ((0.35 + 0.35 * k) * sc * Math.sin(Math.PI * Math.min(1.0, phase * 1.1)));
-                    if (thick < 0.03f) continue;
+                    // riscos finos (nada de faixas grossas atravessando a tela) e nenhum colado na camera
+                    float thick = (float) ((0.07 + 0.07 * k) * sc * Math.sin(Math.PI * Math.min(1.0, phase * 1.1)));
+                    if (thick < 0.012f || Math.min(outer.length(), inner.length()) < 1.3) continue;
                     line(vc, glow, m, cam, inner, outer, thick, c, seed);
                 }
                 // nucleo de ki concentrando na mao
@@ -178,8 +179,8 @@ public final class SealFxRenderer {
                 double ph = (hash(i * 11 + 9, seed) - 0.5) * 1.8;
                 double r1 = (0.3 + (violent ? 3.6 : 2.4) * easeOut(k)) * sc;
                 double r0 = Math.max(0.2 * sc, r1 - (violent ? 1.4 : 1.0) * sc);
-                float thick = (float) ((violent ? 0.7 : 0.5) * sc * (1 - k));
-                if (thick < 0.03f) continue;
+                float thick = (float) ((violent ? 0.16 : 0.11) * sc * (1 - k));
+                if (thick < 0.012f) continue;
                 line(vc, glow, m, cam, chest.add(sphere(th, ph, r1)), chest.add(sphere(th, ph, r0)), thick, c, seed);
             }
         }

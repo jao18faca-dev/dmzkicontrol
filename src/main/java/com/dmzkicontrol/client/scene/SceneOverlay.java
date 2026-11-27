@@ -43,11 +43,8 @@ public final class SceneOverlay implements IGuiOverlay {
                 case "hold" -> g.fill(0, 0, w, h, DmzStyle.argb(a * Math.min(1f, Math.min(u / 0.1f, (1f - u) / 0.2f)), rgb));
                 case "tint" -> vignette(g, w, h, rgb, a * Math.min(1f, Math.min(u / 0.15f, (1f - u) / 0.25f)));
                 case "focus" -> focusLines(g, w, h, Math.min(1f, Math.min(u / 0.15f, (1f - u) / 0.2f)) * a, (int) (t / 2), rgb);
-                case "sfx" -> vertical(g, Scene.str(q, "txt", "ゴゴゴ"), w * (float) Scene.num(q, "x", 0.75), h * (float) Scene.num(q, "y", 0.2),
-                        (float) Scene.num(q, "s", 2.4), (float) Scene.num(q, "tilt", 4), Math.min(1f, Math.min(u / 0.12f, (1f - u) / 0.25f)),
-                        (float) Scene.num(q, "shake", 1.0), t - f.t(), rgb);
-                case "bigsfx" -> big(g, Scene.str(q, "txt", "ドン"), w * (float) Scene.num(q, "x", 0.25), h * (float) Scene.num(q, "y", 0.35),
-                        (float) Scene.num(q, "s", 3.4), (float) Scene.num(q, "tilt", -10), t - f.t(), f.d(), rgb);
+                // onomatopeias em japones tiradas a pedido: so a acao
+                case "sfx", "bigsfx" -> {}
                 default -> {}
             }
         }

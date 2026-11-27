@@ -23,15 +23,21 @@ import java.util.Map;
  * Teste das lutas cinematograficas sem precisar fazer a missao.
  * /dmzluta <chefe> [fase]   -> invoca o chefe na sua frente (ou usa um que ja esteja perto) e comeca a fase
  * /dmzluta parar            -> encerra a cena em andamento
- * Chefes: freeza (forma final), freeza100, cell (Perfeito), cellsuper (Super Perfeito). Precisa de permissao de comandos (cheats ligados no LAN).
+ * Chefes: freeza2, freeza (forma final), freeza100, cell, cellsuper, vegetamajin, superbuu, kidbuu, beerus. Precisa de permissao de comandos (cheats ligados no LAN).
  */
 @Mod.EventBusSubscriber(modid = KiControlMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class EncounterCommand {
-    private static final Map<String, String> ALIASES = Map.of(
-            "freeza", "frieza_base", "frieza", "frieza_base", "frieza_base", "frieza_base",
-            "freeza100", "frieza_fp", "frieza_fp", "frieza_fp",
-            "cell", "cell_perfect", "cell_perfect", "cell_perfect",
-            "cellsuper", "cell_superperfect", "cell_superperfect", "cell_superperfect");
+    private static final Map<String, String> ALIASES = Map.ofEntries(
+            Map.entry("freeza", "frieza_base"), Map.entry("frieza", "frieza_base"),
+            Map.entry("freeza100", "frieza_fp"),
+            Map.entry("freeza2", "frieza_second"),
+            Map.entry("cell", "cell_perfect"),
+            Map.entry("cellsuper", "cell_superperfect"),
+            Map.entry("vegetamajin", "vegeta_majin"), Map.entry("majinvegeta", "vegeta_majin"),
+            Map.entry("superbuu", "superbuu"), Map.entry("buu", "kidbuu"), Map.entry("kidbuu", "kidbuu"),
+            Map.entry("beerus", "beerus"), Map.entry("bills", "beerus"));
+    private static final List<String> NAMES = List.of("freeza2", "freeza", "freeza100", "cell", "cellsuper",
+            "vegetamajin", "superbuu", "kidbuu", "beerus");
 
     private EncounterCommand() {}
 
@@ -41,7 +47,7 @@ public final class EncounterCommand {
                 .requires(s -> s.hasPermission(2))
                 .then(Commands.literal("parar").executes(EncounterCommand::stop))
                 .then(Commands.argument("chefe", StringArgumentType.word())
-                        .suggests((c, b) -> SharedSuggestionProvider.suggest(List.of("freeza", "freeza100", "cell", "cellsuper"), b))
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(NAMES, b))
                         .executes(c -> start(c, 1))
                         .then(Commands.argument("fase", IntegerArgumentType.integer(1, 9))
                                 .executes(c -> start(c, IntegerArgumentType.getInteger(c, "fase"))))));
@@ -53,10 +59,11 @@ public final class EncounterCommand {
             src.sendFailure(Component.literal("Use dentro do jogo."));
             return 0;
         }
-        String id = ALIASES.get(StringArgumentType.getString(c, "chefe").toLowerCase());
+        String raw = StringArgumentType.getString(c, "chefe").toLowerCase();
+        String id = ALIASES.getOrDefault(raw, raw);
         EncScript script = id == null ? null : EncScripts.byId(id);
         if (script == null) {
-            src.sendFailure(Component.literal("Chefe desconhecido. Use: freeza, freeza100, cell ou cellsuper."));
+            src.sendFailure(Component.literal("Chefe desconhecido. Use: " + String.join(", ", NAMES) + "."));
             return 0;
         }
         if (phase > script.phases.size()) {

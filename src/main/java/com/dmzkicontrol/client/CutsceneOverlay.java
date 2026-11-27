@@ -42,27 +42,7 @@ public final class CutsceneOverlay implements IGuiOverlay {
             g.fill(0, 0, w, h, DmzStyle.argb(a, 0xFFFFFF));
         }
 
-        // "batimento" escrito como onomatopeia de manga
-        dokun(g, w, h, sincePulse, 0f, 1.0f);
-        // segundo batimento, em pe ao lado do personagem
-        if (sincePulse >= 7f && sincePulse < 19f) {
-            float k = sincePulse - 7f;
-            vertical(g, "\u30C9\u30AF\u30F3", w * 0.70f, h * 0.20f, 2.6f, -6f, fadeInOut(k, 2f, 12f), k < 4f ? (4f - k) * 0.6f : 0f, k, 0xFFFFFF);
-        }
-
-        // ゴゴゴゴ: a aura sendo puxada (dois blocos em pe, um de cada lado)
-        if (t > 6f && t < pulse + 2f) {
-            float a = fadeInOut(t - 6f, 6f, pulse + 2f - 6f);
-            float shake = 0.6f + 1.2f * Mth.clamp((t - 6f) / (pulse - 6f), 0f, 1f);
-            vertical(g, "\u30B4\u30B4\u30B4\u30B4", w * 0.76f, h * 0.16f, 2.4f, 4f, a * reveal(t - 6f, 4), shake, t - 6f, 0xFFFFFF);
-            vertical(g, "\u30B4\u30B4\u30B4", w * 0.17f, h * 0.30f, 1.8f, -4f, a * reveal(t - 12f, 3), shake * 0.8f, t - 12f, 0xFFFFFF);
-        }
-        // シーン…: silencio total depois do selo, como agua parada
-        if (sincePulse > 10f) {
-            float k = sincePulse - 10f;
-            float a = Math.min(Mth.clamp(k / 6f, 0f, 1f), Mth.clamp((dur - t) / 6f, 0f, 1f));
-            vertical(g, "\u30B7\u30FC\u30F3\u2026", w * 0.80f, h * 0.18f, 2.2f, 0f, a, 0f, k, 0xE8F8FF);
-        }
+        // (onomatopeias em japones tiradas a pedido: so a acao)
 
         // titulo
         if (t > 47) {
@@ -130,7 +110,7 @@ public final class CutsceneOverlay implements IGuiOverlay {
         if (mc.player == null || mc.level == null || mc.options.hideGui) return;
         float since = SealFxRenderer.localQuickSince(partial);
         if (since < 0f || since > 14f) return;
-        vertical(g, "\u30C9\u30AF\u30F3", w * 0.66f, h * 0.24f, 2.0f, -5f, fadeInOut(since, 2f, 14f), since < 4f ? (4f - since) * 0.5f : 0f, since, 0xFFFFFF);
+        // sem onomatopeia em japones (pedido): o selo rapido e so a animacao e o efeito no mundo
     }
 
     private static float fadeInOut(float t, float in, float total) {

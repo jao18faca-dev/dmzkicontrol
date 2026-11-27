@@ -461,6 +461,8 @@ public final class EncounterDirector {
                 boolean all = true;
                 for (Cue c : beat.cues) {
                     if (run.resolved[c.index]) continue;
+                    // deixa de um papel que nao esta na cena (combo em equipe com menos jogadores): nao existe
+                    if (!c.active(run.n())) { run.resolved[c.index] = true; continue; }
                     if (ready(run, c, t)) resolve(run, beat, c, now);
                     else all = false;
                 }
@@ -613,6 +615,7 @@ public final class EncounterDirector {
         List<Integer> out = new ArrayList<>();
         int n = run.n();
         int r = c.role(n);
+        if (r == Cue.NONE) return out;
         if (r >= 0) out.add(r);
         else for (int i = 0; i < n; i++) out.add(i);
         return out;

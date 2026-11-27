@@ -54,7 +54,9 @@ public final class Scene {
         JsonArray su = o.has("sub") ? o.getAsJsonArray("sub") : null;
         subT = su != null ? su.get(0).getAsInt() : titleT + 6;
         subD = su != null ? su.get(1).getAsInt() : titleD - 6;
-        String k = id.replace(":", ".").replace("*", "any");
+        // a versao rapida usa o mesmo nome da forma que a cena completa
+        String base = id.startsWith("quick:") ? id.substring("quick:".length()) : id;
+        String k = base.replace(":", ".").replace("*", "any");
         titleKey = "scene.dmzkicontrol." + k + ".title";
         subKey = "scene.dmzkicontrol." + k + ".sub";
     }

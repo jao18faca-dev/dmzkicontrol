@@ -1,5 +1,7 @@
 package com.dmzkicontrol.client.encounter;
 
+import com.dmzkicontrol.client.AuraFx;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
@@ -128,6 +130,11 @@ public final class EncFx {
                 level.addParticle(ParticleTypes.FLASH, c.x, c.y, c.z, 0, 0, 0);
                 for (int i = 0; i < 24; i++) level.addParticle(ParticleTypes.END_ROD, c.x + r.nextGaussian() * 0.6, c.y + r.nextGaussian(), c.z + r.nextGaussian() * 0.6, 0, 0.03, 0);
             }
+            case "genki_win", "hakai_win" -> {
+                level.addParticle(ParticleTypes.FLASH, c.x, c.y, c.z, 0, 0, 0);
+                level.addParticle(ParticleTypes.EXPLOSION_EMITTER, c.x, c.y, c.z, 0, 0, 0);
+                for (int i = 0; i < 40; i++) level.addParticle(ParticleTypes.END_ROD, c.x, c.y, c.z, r.nextGaussian() * 0.7, r.nextGaussian() * 0.7, r.nextGaussian() * 0.7);
+            }
             case "disintegrate" -> {
                 for (int i = 0; i < 40; i++) level.addParticle(ParticleTypes.END_ROD, c.x, c.y, c.z, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5);
             }
@@ -232,6 +239,32 @@ public final class EncFx {
                         level.addParticle(ParticleTypes.EXPLOSION, g.x + r.nextGaussian() * 2, g.y + r.nextGaussian(), g.z + r.nextGaussian() * 2, 0, 0, 0);
                     }
                 }
+                case "genki", "genki_clash" -> {
+                    if (r.nextInt(2) == 0) {
+                        Vec3 p = genkiPos(f, s, 0, age / f.dur);
+                        double rad = genkiRad(f, age / f.dur);
+                        Vec3 o = new Vec3(r.nextGaussian(), r.nextGaussian(), r.nextGaussian()).normalize().scale(rad * 1.05);
+                        level.addParticle(ParticleTypes.END_ROD, p.x + o.x, p.y + o.y, p.z + o.z, o.x * 0.03, o.y * 0.03, o.z * 0.03);
+                    }
+                    if (f.kind.equals("genki_clash") && age % 4 == 0) {
+                        Vec3 p = genkiPos(f, s, 0, 0);
+                        level.addParticle(ParticleTypes.CLOUD, p.x + r.nextGaussian() * 2, p.y - 3, p.z + r.nextGaussian() * 2, 0, -0.05, 0);
+                    }
+                }
+                case "hakai", "hakai_clash" -> {
+                    if (r.nextInt(2) == 0) {
+                        Vec3 p = hakaiPos(f, s, 0, age / f.dur);
+                        double rad = hakaiRad(f, age / f.dur);
+                        Vec3 o = new Vec3(r.nextGaussian(), r.nextGaussian(), r.nextGaussian()).normalize().scale(rad);
+                        level.addParticle(ParticleTypes.FLAME, p.x + o.x, p.y + o.y, p.z + o.z, o.x * 0.02, o.y * 0.02, o.z * 0.02);
+                    }
+                }
+                case "fist_clash" -> {
+                    Vec3 p = clashPoint(s, 0);
+                    if (age % 9 == 0) level.addParticle(ParticleTypes.FLASH, p.x, p.y, p.z, 0, 0, 0);
+                    if (r.nextInt(2) == 0) level.addParticle(ParticleTypes.ELECTRIC_SPARK, p.x, p.y, p.z, r.nextGaussian() * 0.8, r.nextGaussian() * 0.8, r.nextGaussian() * 0.8);
+                    if (age % 3 == 0) level.addParticle(ParticleTypes.CLOUD, p.x + r.nextGaussian() * 3, p.y - 3, p.z + r.nextGaussian() * 3, r.nextGaussian() * 0.4, 0.05, r.nextGaussian() * 0.4);
+                }
                 case "sky_explosion" -> {
                     if (age % 6 == 0) {
                         Vec3 p = skyPoint(f, 0);
@@ -307,9 +340,28 @@ public final class EncFx {
                     Vec3 dir = to.subtract(from);
                     Vec3 p = k <= 1 ? from.lerp(to, k) : to.add(dir.normalize().scale((k - 1) * 18));
                     float a = (float) Math.min(1, (f.dur * 1.4 - age) / 3.0);
-                    glow(r, p, 0.45 * sz, new float[]{1f, 0.85f, 0.3f}, a);
+                    float[] kc = f.src == s.bossId ? bossColor(s) : new float[]{1f, 0.85f, 0.3f};
+                    glow(r, p, 0.45 * sz, kc, a);
                     glow(r, p, 0.22 * sz, new float[]{1f, 1f, 0.9f}, a);
-                    streak(r, p, p.subtract(dir.normalize().scale(1.8)), 0.25 * sz, new float[]{1f, 0.8f, 0.3f}, a * 0.6f, 0f);
+                    streak(r, p, p.subtract(dir.normalize().scale(1.8)), 0.25 * sz, kc, a * 0.6f, 0f);
+                }
+                case "ki_rain" -> {
+                    // chuva de rajadas caindo do ceu em cima do alvo (Ataque de Extincao Humana)
+                    Vec3 to = chest(f.dst, f.dstSnap, partial);
+                    if (to == null) continue;
+                    RandomSource rr = RandomSource.create(f.seed);
+                    float[] kc = bossColor(s);
+                    for (int i = 0; i < 5; i++) {
+                        double delay = i * 0.12, k = (u - delay) / 0.6;
+                        if (k < 0 || k > 1.15) continue;
+                        Vec3 off = new Vec3((rr.nextDouble() - 0.5) * 2.4, 0, (rr.nextDouble() - 0.5) * 2.4);
+                        Vec3 from = to.add(off.scale(3)).add(0, 14, 0), hit = to.add(off);
+                        Vec3 p = from.lerp(hit, Math.min(1, k));
+                        float a = (float) Math.min(1, (1.15 - k) * 4);
+                        glow(r, p, 0.42 * sz, kc, a);
+                        glow(r, p, 0.2 * sz, new float[]{1f, 0.95f, 1f}, a);
+                        streak(r, p, p.add(from.subtract(hit).normalize().scale(2.4)), 0.22 * sz, kc, a * 0.6f, 0f);
+                    }
                 }
                 case "burst" -> {
                     double rad = (0.5 + 1.6 * easeOut(u)) * sz;
@@ -380,16 +432,21 @@ public final class EncFx {
                     ring(r, p, rad * 1.3, rad * 0.12, new float[]{1f, 0.9f, 0.7f}, fade * (float) (1 - u), new Vec3(0, 1, 0));
                 }
                 case "rage" -> {
-                    Vec3 ft = feet(f.src, f.srcSnap, partial);
+                    // furia: chamas da aura balancando e faiscas eletricas rente ao corpo
+                    Vec3 ft = feet(f.src, f.srcSnap, partial).subtract(r.cam);
                     double h = height(f.src);
-                    bolts(r, ft, h, now, f.seed, new float[]{1f, 0.95f, 0.5f}, fade);
-                    pillar(r, ft, 0.8, h * 1.4, new float[]{1f, 0.85f, 0.35f}, fade * 0.35f * (float) (0.7 + 0.3 * Math.sin(now * 1.3)));
+                    float[] col = auraOf(f.src, new float[]{1f, 0.85f, 0.3f});
+                    AuraFx.flames(r.vc, r.m, ft, h, 1.2 * sz, col, fade * 0.7f, now, f.seed);
+                    AuraFx.sparks(r.vc, r.m, ft, h, 1.0 * sz, col, fade, now, f.seed, 8);
                 }
                 case "charge" -> {
+                    // carregando ki: aura calma subindo e um anel leve no chao
                     Vec3 ft = feet(f.src, f.srcSnap, partial);
                     double h = height(f.src);
-                    pillar(r, ft, 0.75, h * 1.3, new float[]{0.9f, 0.95f, 1f}, fade * 0.3f * (float) (0.7 + 0.3 * Math.sin(now * 1.7)));
-                    ring(r, ft.add(0, 0.05, 0), 1.2 + 0.6 * ((now * 0.1) % 1), 0.15, new float[]{0.9f, 0.95f, 1f}, fade * 0.5f, new Vec3(0, 1, 0));
+                    float[] col = auraOf(f.src, new float[]{0.85f, 0.93f, 1f});
+                    AuraFx.flames(r.vc, r.m, ft.subtract(r.cam), h, 1.05, col, fade * 0.5f * (float) (0.85 + 0.15 * Math.sin(now * 0.9)), now, f.seed);
+                    double rr = (now * 0.06) % 1;
+                    ring(r, ft.add(0, 0.05, 0), 0.8 + 1.6 * rr, 0.05, col, fade * 0.45f * (float) (1 - rr), new Vec3(0, 1, 0));
                 }
                 case "kame_charge", "boss_charge" -> {
                     Vec3 p = ballPos(f, partial);
@@ -433,12 +490,83 @@ public final class EncFx {
                     ring(r, ft.add(0, 0.1, 0), rad, 0.5 * sz, new float[]{1f, 0.9f, 0.7f}, (float) (1 - u), new Vec3(0, 1, 0));
                 }
                 case "aura_burst", "power_burst" -> {
+                    // explosao de poder: luz subindo macia, a aura estourando grande e voltando ao tamanho normal,
+                    // onda no chao e um clarao curto no peito
                     Vec3 ft = feet(f.src, f.srcSnap, partial);
                     double h = height(f.src);
-                    float[] col = f.kind.equals("aura_burst") ? new float[]{1f, 0.9f, 0.35f} : new float[]{0.6f, 0.85f, 1f};
-                    pillar(r, ft, 0.9 + 0.6 * u, h * (1.5 + 3 * easeOut(u)), col, (float) (1 - u) * 0.7f);
-                    ring(r, ft.add(0, 0.1, 0), 0.5 + 6 * easeOut(u), 0.4, col, (float) (1 - u), new Vec3(0, 1, 0));
-                    glow(r, c, 1.2 + 2 * u, new float[]{1f, 1f, 1f}, (float) (1 - u));
+                    float[] col = auraOf(f.src, f.kind.equals("aura_burst") ? new float[]{1f, 0.88f, 0.35f} : new float[]{0.6f, 0.85f, 1f});
+                    float k = (float) (1 - u);
+                    AuraFx.column(r.vc, r.m, ft.subtract(r.cam), h * (1.6 + 5 * easeOut(Math.min(1, u * 2))), 0.9 * sz, col, k * 0.6f, now);
+                    AuraFx.flames(r.vc, r.m, ft.subtract(r.cam), h, (1.7 - 0.6 * easeOut(u)) * sz, col, k * 0.85f, now, f.seed);
+                    ring(r, ft.add(0, 0.08, 0), 0.5 + 5.5 * easeOut(u), 0.18 * (1 - u) + 0.04, col, k * 0.8f, new Vec3(0, 1, 0));
+                    ring(r, ft.add(0, 0.08, 0), 0.3 + 4 * easeOut(u), 0.03, new float[]{1f, 1f, 1f}, k, new Vec3(0, 1, 0));
+                    if (u < 0.3) glow(r, c, 0.8 + 2 * u, new float[]{1f, 1f, 1f}, (float) (1 - u / 0.3));
+                }
+                case "genki", "genki_clash", "genki_win" -> {
+                    Vec3 p = genkiPos(f, s, partial, u);
+                    double rad = genkiRad(f, u);
+                    float a = f.kind.equals("genki_win") ? (float) (1 - Math.max(0, u - 0.55) / 0.45) * fade : fade;
+                    // halo macio por fora (o corpo da esfera e o modelo do DMZ; sem ele, desenha a nossa)
+                    glow(r, p, rad * 1.7, new float[]{0.55f, 0.9f, 1f}, a * 0.32f);
+                    if (!EncBeams.available()) {
+                        glow(r, p, rad, new float[]{0.75f, 0.97f, 1f}, a * 0.9f);
+                        glow(r, p, rad * 0.6, new float[]{1f, 1f, 1f}, a);
+                    }
+                    if (f.kind.equals("genki")) {
+                        // energia de todos os seres vindo de longe ate a esfera
+                        RandomSource rr = RandomSource.create(f.seed);
+                        for (int i = 0; i < 22; i++) {
+                            double th = rr.nextDouble() * Math.PI * 2, ph = 0.2 + rr.nextDouble() * 1.1;
+                            Vec3 dir = new Vec3(Math.cos(th) * Math.cos(ph), -Math.sin(ph) * 0.4 + 0.2, Math.sin(th) * Math.cos(ph)).normalize();
+                            double k = (now * (0.05 + rr.nextDouble() * 0.03) + rr.nextDouble()) % 1.0;
+                            Vec3 head = p.add(dir.scale(rad + (1 - k) * 16)), tail = head.add(dir.scale(2.2));
+                            float al = (float) (Math.sin(Math.PI * k)) * a * 0.75f;
+                            streak(r, head, tail, 0.07, new float[]{0.7f, 0.95f, 1f}, al, 0f);
+                        }
+                    } else if (f.kind.equals("genki_clash")) {
+                        Entity b = s.boss();
+                        if (b != null) {
+                            // o Boo segurando a esfera com as maos, ki rosa estalando no contato
+                            Vec3 hb = hands(b, p, partial);
+                            glow(r, hb, 0.9 + 0.15 * Math.sin(now * 3), bossColor(s), a * 0.7f);
+                            bolts(r, p.subtract(0, rad, 0), rad * 2, now, f.seed, new float[]{0.85f, 0.95f, 1f}, a * 0.7f);
+                        }
+                    } else if (u > 0.4) {
+                        double k = (u - 0.4) / 0.6;
+                        glow(r, p, rad * (1.2 + 2.5 * easeOut(k)), new float[]{1f, 1f, 1f}, a * (float) (1 - k));
+                        ring(r, p, rad * (1.4 + 4 * easeOut(k)), 0.4, new float[]{0.7f, 0.95f, 1f}, a * (float) (1 - k), new Vec3(0, 1, 0));
+                    }
+                }
+                case "hakai", "hakai_clash", "hakai_win" -> {
+                    Vec3 p = hakaiPos(f, s, partial, u);
+                    double rad = hakaiRad(f, u);
+                    float a = f.kind.equals("hakai_win") ? (float) (1 - Math.max(0, u - 0.5) / 0.5) * fade : fade;
+                    glow(r, p, rad * 1.8, new float[]{1f, 0.55f, 0.2f}, a * 0.35f);
+                    if (!EncBeams.available()) {
+                        glow(r, p, rad, new float[]{1f, 0.72f, 0.3f}, a * 0.9f);
+                        glow(r, p, rad * 0.55, new float[]{1f, 0.97f, 0.85f}, a);
+                    }
+                    // estalos vermelhos correndo pela superficie
+                    bolts(r, p.subtract(0, rad * 0.9, 0), rad * 1.8, now, f.seed, new float[]{1f, 0.35f, 0.2f}, a * 0.8f);
+                    if (f.kind.equals("hakai_win") && u > 0.35) {
+                        double k = (u - 0.35) / 0.65;
+                        glow(r, p, rad * (1.5 + 4 * easeOut(k)), new float[]{1f, 0.9f, 0.7f}, a * (float) (1 - k));
+                        ring(r, p, rad * (1.6 + 6 * easeOut(k)), 0.6, new float[]{1f, 0.6f, 0.25f}, a * (float) (1 - k), new Vec3(0, 1, 0));
+                    }
+                }
+                case "fist_clash" -> {
+                    // choque de punhos entre deuses: ondas de choque em pulsos, raios roxos e dourados
+                    Vec3 p = clashPoint(s, partial);
+                    Vec3 axis = s.dir(0, 0, 1);
+                    float flick = (float) (0.85 + 0.15 * Math.sin(now * 4.3));
+                    glow(r, p, (1.2 + 0.25 * Math.sin(now * 2.1)) * sz, new float[]{1f, 0.95f, 0.85f}, fade * flick);
+                    glow(r, p, 2.6 * sz, auraOf(s.player(0) == null ? -1 : s.player(0).getId(), new float[]{1f, 0.85f, 0.35f}), fade * 0.35f);
+                    for (int i = 0; i < 3; i++) {
+                        double k = ((now / 9.0) + i / 3.0) % 1.0;
+                        ring(r, p, (0.6 + 7 * easeOut(k)) * sz, 0.35 * (1 - k) + 0.05, new float[]{1f, 1f, 1f}, fade * (float) (1 - k) * 0.8f, axis);
+                    }
+                    bolts(r, p.subtract(0, 1.6, 0), 3.2, now, f.seed, bossColor(s), fade * 0.8f);
+                    bolts(r, p.subtract(0, 1.6, 0), 3.2, now + 1, f.seed + 3, new float[]{1f, 0.9f, 0.45f}, fade * 0.8f);
                 }
                 default -> {}
             }
@@ -446,8 +574,34 @@ public final class EncFx {
         bs.endBatch(RenderType.lightning());
     }
 
+    /** Cor da aura de quem e jogador (a do DMZ, da forma atual); o resto usa a cor padrao do efeito. */
+    private static float[] auraOf(int id, float[] fallback) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level != null && mc.level.getEntity(id) instanceof net.minecraft.world.entity.player.Player p) {
+            try {
+                return com.dmzkicontrol.client.KiFx.rgb(com.dmzkicontrol.client.SealEffects.auraColor(p));
+            } catch (Throwable ignored) {
+            }
+        }
+        return fallback;
+    }
+
     private static float[] bossColor(EncClient.State s) {
-        return s.script.id.startsWith("frieza") ? new float[]{0.9f, 0.3f, 1f} : new float[]{0.3f, 1f, 0.85f};
+        String id = s == null || s.script == null ? "" : s.script.id;
+        if (id.startsWith("frieza")) return new float[]{0.9f, 0.3f, 1f};
+        if (id.contains("buu")) return new float[]{1f, 0.42f, 0.78f};
+        if (id.startsWith("beerus")) return new float[]{0.72f, 0.42f, 1f};
+        if (id.startsWith("vegeta")) return new float[]{0.78f, 0.35f, 1f};
+        return new float[]{0.3f, 1f, 0.85f};
+    }
+
+    /** Cores do feixe do chefe (modelo do DMZ): Cell = Kamehameha; Freeza e Vegeta = roxo; Boo = rosa; Beerus = laranja. */
+    static int[] bossBeam(EncClient.State s) {
+        String id = s == null || s.script == null ? "" : s.script.id;
+        if (id.startsWith("frieza") || id.startsWith("vegeta")) return EncBeams.PURPLE;
+        if (id.contains("buu")) return EncBeams.PINK;
+        if (id.startsWith("beerus")) return EncBeams.HAKAI;
+        return EncBeams.KAME;
     }
 
     private static float[] bossOrBlue(int id) {
@@ -465,6 +619,62 @@ public final class EncFx {
         boolean boss = f.src == s.bossId;
         Vec3 right = boss ? s.dir(-1, 0, 0) : s.dir(1, 0, 0);
         return c.add(0, -0.25, 0).add(right.scale(0.45)).add(forward(f.src).scale(-0.1));
+    }
+
+    /** Genki Dama: em cima do grupo (carregando), entre o grupo e o chefe (cabo de guerra) e dentro do chefe (vitoria). */
+    private static Vec3 genkiPos(Fx f, EncClient.State s, float partial, double u) {
+        Vec3 above = EncCamera.group(s, partial).add(0, 6.0 + 3.5 * f.size, 0).add(s.dir(0, 0, 0.6));
+        Entity b = s.boss();
+        Vec3 bc = b != null ? b.getPosition(partial).add(0, b.getBbHeight() * 0.7, 0) : s.world(0, s.phase.lift + 1.4, 0);
+        Vec3 face = bc.add(s.dir(0, 0, 1).scale(3.0 * f.size + 0.4));
+        switch (f.kind) {
+            case "genki_clash" -> {
+                double pr = Mth.clamp(s.progressShown, 0f, 1f);
+                return above.lerp(face, 0.55 + 0.45 * pr);
+            }
+            case "genki_win" -> {
+                return face.lerp(bc, easeOut(Math.min(1, u / 0.45)));
+            }
+            default -> {
+                return above;
+            }
+        }
+    }
+
+    private static double genkiRad(Fx f, double u) {
+        return switch (f.kind) {
+            case "genki" -> (0.6 + 2.6 * easeOut(Math.min(1, u * 1.2))) * f.size;
+            default -> 3.2 * f.size;
+        };
+    }
+
+    /** Esfera da Destruicao: em cima do Beerus, empurrada pelo grupo, e devolvida a ele na vitoria. */
+    private static Vec3 hakaiPos(Fx f, EncClient.State s, float partial, double u) {
+        Entity b = s.boss();
+        Vec3 bf = b != null ? b.getPosition(partial) : s.world(0, s.phase.lift, 0);
+        double h = b != null ? b.getBbHeight() : 2.0;
+        Vec3 over = bf.add(0, h + 1.4 + hakaiRad(f, 1) , 0);
+        switch (f.kind) {
+            case "hakai_clash" -> {
+                Vec3 g = groupChest(partial);
+                double pr = Mth.clamp(s.progressShown, 0f, 1f);
+                // perdendo, a esfera chega perto do grupo; ganhando, volta para o Beerus
+                return g.lerp(over, 0.2 + 0.7 * pr);
+            }
+            case "hakai_win" -> {
+                return over.lerp(bf.add(0, h * 0.6, 0), easeOut(Math.min(1, u / 0.35)));
+            }
+            default -> {
+                return over;
+            }
+        }
+    }
+
+    private static double hakaiRad(Fx f, double u) {
+        return switch (f.kind) {
+            case "hakai" -> (0.4 + 2.4 * easeOut(Math.min(1, u * 1.3))) * f.size;
+            default -> 2.8 * f.size;
+        };
     }
 
     private static Vec3 skyPoint(Fx f, float partial) {
@@ -503,7 +713,7 @@ public final class EncFx {
                         EncBeams.beam("p" + i, from, p, mine / (float) Math.sqrt(s.n()), EncBeams.KAME);
                     }
                     Entity b = s.boss();
-                    if (b != null) EncBeams.beam("boss", hands(b, p, partial), p, theirs, EncBeams.KAME);
+                    if (b != null) EncBeams.beam("boss", hands(b, p, partial), p, theirs, bossBeam(s));
                 }
                 case "beam_win" -> {
                     Vec3 c = chest(f.src, f.srcSnap, partial);
@@ -522,7 +732,30 @@ public final class EncFx {
                     Vec3 g = groupChest(partial);
                     Entity b = s.boss();
                     Vec3 from = b != null ? hands(b, g, partial) : c;
-                    EncBeams.beam("boss", from, g.add(g.subtract(from).normalize().scale(25)), 1.9f * k, EncBeams.KAME);
+                    EncBeams.beam("boss", from, g.add(g.subtract(from).normalize().scale(25)), 1.9f * k, bossBeam(s));
+                }
+                case "genki", "genki_clash", "genki_win" -> {
+                    double u = Mth.clamp(age / f.dur, 0, 1);
+                    float a = f.kind.equals("genki_win") ? (float) Mth.clamp(1 - (u - 0.55) / 0.45, 0, 1) : 1f;
+                    double rad = genkiRad(f, u) * (f.kind.equals("genki_win") ? 1 + 0.6 * Mth.clamp((u - 0.4) / 0.6, 0, 1) : 1);
+                    if (a * k > 0.05f) EncBeams.ball("genki", genkiPos(f, s, partial, u), (float) (rad * a * k), EncBeams.GENKI_TYPE, EncBeams.GENKI);
+                }
+                case "hakai", "hakai_clash", "hakai_win" -> {
+                    double u = Mth.clamp(age / f.dur, 0, 1);
+                    float a = f.kind.equals("hakai_win") ? (float) Mth.clamp(1 - (u - 0.5) / 0.5, 0, 1) : 1f;
+                    Vec3 hp = hakaiPos(f, s, partial, u);
+                    EncBeams.ball("hakai", hp, (float) (hakaiRad(f, u) * a * k), EncBeams.LARGE_TYPE, EncBeams.HAKAI);
+                    if (f.kind.equals("hakai_clash")) {
+                        // o grupo segura a esfera com Kamehamehas
+                        float pr = Mth.clamp(s.progressShown, 0f, 1f);
+                        for (int i = 0; i < s.n(); i++) {
+                            Entity e = s.player(i);
+                            if (e == null) continue;
+                            Vec3 from = hands(e, hp, partial);
+                            Vec3 to = hp.add(from.subtract(hp).normalize().scale(hakaiRad(f, u) * 0.85));
+                            EncBeams.beam("p" + i, from, to, (0.8f + 0.6f * pr) * k / (float) Math.sqrt(s.n()), EncBeams.KAME);
+                        }
+                    }
                 }
                 case "dmz_beam" -> {
                     // disparo solto: o feixe sai de quem atira e cresce ate o alvo
@@ -533,7 +766,7 @@ public final class EncFx {
                     if (target == null) continue;
                     Vec3 from = hands(src, target, partial);
                     Vec3 to = from.lerp(target, Mth.clamp(age / 6.0, 0.05, 1.0));
-                    EncBeams.beam("solo" + f.src, from, to, 1.2f * f.size * k, EncBeams.KAME);
+                    EncBeams.beam("solo" + f.src, from, to, 1.2f * f.size * k, src == s.boss() ? bossBeam(s) : EncBeams.KAME);
                 }
                 default -> {}
             }

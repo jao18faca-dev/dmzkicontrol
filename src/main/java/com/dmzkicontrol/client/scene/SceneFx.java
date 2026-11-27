@@ -228,12 +228,14 @@ public final class SceneFx {
                         ring(vc, m, feet.add(0, h * Scene.num(q, "y", 0.05), 0), rad, w, c, a * (float) (1.0 - u * 0.6), Scene.num(q, "tilt", 0));
                     }
                     case "pillar" -> {
+                        // coluna de luz macia (sem tubo solido) + as chamas da aura em volta do corpo
                         double grow = Math.min(1.0, u / 0.2);
-                        double rad = Scene.num(q, "r", 0.9) * unit * (1.0 + 0.06 * Math.sin(t * 1.7));
+                        double rad = Scene.num(q, "r", 0.9) * unit;
                         double hh = Scene.num(q, "h", 10) * unit * grow;
-                        cylinder(vc, m, feet, rad, hh, c, a * 0.55f);
-                        cylinder(vc, m, feet, rad * 0.45, hh, new float[]{Math.min(1, c[0] + 0.4f), Math.min(1, c[1] + 0.4f), Math.min(1, c[2] + 0.4f)}, a * 0.8f);
+                        com.dmzkicontrol.client.AuraFx.column(vc, m, feet, hh, rad * 1.1, c, a * 0.55f, t);
+                        com.dmzkicontrol.client.AuraFx.flames(vc, m, feet, h, unit * (1.15 + 0.25 * (1 - grow)), c, a * 0.75f, t, p.seed + i);
                     }
+                    case "aura" -> com.dmzkicontrol.client.AuraFx.flames(vc, m, feet, h, unit * Scene.num(q, "s", 1.1), c, a, t, p.seed + i);
                     case "beam" -> {
                         double grow = Math.min(1.0, u / 0.15);
                         cylinder(vc, m, feet.add(0, h * 0.9, 0), Scene.num(q, "r", 0.12) * unit, Scene.num(q, "h", 60) * unit * grow, c, a);
@@ -242,7 +244,7 @@ public final class SceneFx {
                         double rad = Scene.num(q, "r", 1.2) * unit * (1.0 + Scene.num(q, "pulse", 0.08) * Math.sin(t * 0.9));
                         disc(vc, m, feet.add(0, h * Scene.num(q, "y", 0.55), 0), L, U, rad, c, a * 0.6f);
                     }
-                    case "bolts" -> bolts(vc, m, feet, cam, h, unit, q, c, a, p.seed + i, t);
+                    case "bolts" -> com.dmzkicontrol.client.AuraFx.sparks(vc, m, feet, h, unit, c, a, t, p.seed + i, (int) Scene.num(q, "n", 5) * 2);
                     case "halo" -> ring(vc, m, feet.add(0, h + 0.18 * unit, 0), 0.3 * unit, 0.05 * unit, c, a, 0);
                     case "orbs" -> {
                         int n = (int) Scene.num(q, "n", 6);
@@ -427,9 +429,9 @@ public final class SceneFx {
             double d = out ? Mth.lerp(cyc, 0.4 * unit, far) : Mth.lerp(cyc, far, 0.35 * unit);
             Vec3 dir = new Vec3(Math.cos(ang), 0, Math.sin(ang));
             Vec3 p0 = feet.add(dir.scale(d)).add(0, y, 0);
-            Vec3 p1 = feet.add(dir.scale(d + (out ? -0.8 : 0.8) * unit)).add(0, y, 0);
+            Vec3 p1 = feet.add(dir.scale(d + (out ? -0.5 : 0.5) * unit)).add(0, y, 0);
             float al = a * (float) Math.sin(cyc * Math.PI);
-            ribbon(vc, m, p0, p1, Vec3.ZERO, 0.025 * unit, c, al, 0f);
+            com.dmzkicontrol.client.AuraFx.streak(vc, m, out ? p0 : p1, out ? p1 : p0, 0.018 * unit, c, al);
         }
     }
 

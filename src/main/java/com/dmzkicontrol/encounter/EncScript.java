@@ -122,12 +122,18 @@ public final class EncScript {
         public Beat caption(String key) { this.caption = key; return this; }
 
         public Beat shot(int t, int blend, String from, double r, double u, double f, String at, double ar, double au, double af, float fov) {
-            shots.add(new Shot(t, blend, from, new double[]{r, u, f}, at, new double[]{ar, au, af}, fov, 0f));
-            return this;
+            return addShot(new Shot(t, blend, from, new double[]{r, u, f}, at, new double[]{ar, au, af}, fov, 0f));
         }
 
         public Beat shot(int t, int blend, String from, double r, double u, double f, String at, double ar, double au, double af, float fov, float roll) {
-            shots.add(new Shot(t, blend, from, new double[]{r, u, f}, at, new double[]{ar, au, af}, fov, roll));
+            return addShot(new Shot(t, blend, from, new double[]{r, u, f}, at, new double[]{ar, au, af}, fov, roll));
+        }
+
+        /** Mantem os planos em ordem de tempo (as rodadas de combo em equipe acrescentam planos no meio). */
+        private Beat addShot(Shot sh) {
+            int i = shots.size();
+            while (i > 0 && shots.get(i - 1).t() > sh.t()) i--;
+            shots.add(i, sh);
             return this;
         }
 
@@ -284,13 +290,33 @@ public final class EncScript {
 
         public Ev tell(int dt, int who) { Ev e = new Ev(dt, who); tell.add(e); return e; }
 
-        /** Papel que responde a esta deixa (so para TURN; -1 = todos). */
+        /** Papel fixo (combo em equipe): so esse jogador responde, e a deixa so existe se ele estiver na cena. */
+        public int fixed = -1;
+
+        /** Ninguem responde (papel fixo de um jogador que nao esta na cena). */
+        public static final int NONE = -2;
+
+        public Cue only(int role) { this.fixed = role; return this; }
+
+        /** Quantos jogadores precisam estar na cena para esta deixa existir. */
+        public int minN = 1, maxN = 4;
+
+        public Cue n(int min, int max) { this.minN = min; this.maxN = max; return this; }
+
+        /** Papel que responde a esta deixa (TURN ou papel fixo; -1 = todos; NONE = ninguem). */
         public int role(int n) {
+            if (n < minN || n > maxN) return NONE;
+            if (fixed >= 0) return fixed < n ? fixed : NONE;
             return mode == Mode.TURN ? turn % Math.max(1, n) : -1;
+        }
+
+        public boolean active(int n) {
+            return role(n) != NONE;
         }
 
         public boolean involves(int role, int n) {
             int r = role(n);
+            if (r == NONE) return false;
             return r < 0 || r == role;
         }
     }

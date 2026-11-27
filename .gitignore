@@ -4,3 +4,5 @@ run/
 out/
 .idea/
 *.iml
+libs/*.jar
+__pycache__/

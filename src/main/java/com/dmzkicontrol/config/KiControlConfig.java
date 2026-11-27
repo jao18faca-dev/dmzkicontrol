@@ -230,7 +230,7 @@ public class KiControlConfig {
     /** Por nivel: multiplicador da tensao interna (quanto menor, mais tempo da para segurar). */
     public List<Double> auraLevelStrain = new ArrayList<>(List.of(1.00, 0.90, 0.80, 0.70, 0.60));
     /** Versao do formato do arquivo. */
-    public int configVersion = 7;
+    public int configVersion = 8;
     /** Escala do treino: com este tanto de segundos de pratica efetiva numa forma voce chega a ~95% (antes do trainTimeMultiplier). */
     public double trainSeconds = 900.0;
     /** Dominio inicial (0..1) numa forma que voce nunca treinou. */
@@ -435,7 +435,11 @@ public class KiControlConfig {
     /** Cutscenes de transformacao (4.0): uma cena para cada forma de cada raca, Kaioken, Instinto Superior... */
     public static class FormScenes {
         /** Liga/desliga as cutscenes de transformacao para todo mundo. */
-        public boolean enabled = false;
+        public boolean enabled = true;
+        /** A cena completa toca so na primeira vez de cada forma (por personagem). */
+        public boolean firstTimeFull = true;
+        /** Da segunda vez em diante, a transformacao rapida (3 s). false = sem cena nenhuma depois da primeira. */
+        public boolean quick = true;
         /** Quem esta na cena nao leva dano nem empurrao. */
         public boolean invulnerable = true;
         /** Quem esta na cena fica parado no lugar (no chao ou no ar). */
@@ -585,6 +589,14 @@ public class KiControlConfig {
                 }
             }
             configVersion = 7;
+        }
+        if (configVersion < 8) {
+            // as cenas de transformacao voltam: completa na primeira vez, rapida (3 s) nas outras
+            if (formScenes == null) formScenes = new FormScenes();
+            formScenes.enabled = true;
+            formScenes.firstTimeFull = true;
+            formScenes.quick = true;
+            configVersion = 8;
         }
     }
 

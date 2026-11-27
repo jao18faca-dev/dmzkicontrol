@@ -197,12 +197,66 @@ def guard_loop():
     return keys
 MOVES["dbz_guard"] = (1.0, guard_loop())
 
+
+# Rajada de socos (varios socos seguidos, os bracos somem no borrao) - loop de 0,24 s
+def rush_loop():
+    L = 10
+    R_OUT = dict(r=[-90 - L, 2, 4], s=[1, 1.25, 1]); R_IN = dict(r=[-28, 10, 14])
+    L_OUT = dict(r=[-90 - L, -2, -4], s=[1, 1.25, 1]); L_IN = dict(r=[-28, -10, -14])
+    a = P(root=dict(r=[L, 0, 0], p=[0, -0.8, -0.6]), waist=dict(r=[4, -20, 0]), head=dict(r=[-L - 2, 8, 0]),
+          right_arm=R_OUT, left_arm=L_IN, right_leg=dict(r=[16, 0, 4]), left_leg=dict(r=[-18, 0, -4]))
+    b = P(root=dict(r=[L, 0, 0], p=[0, -0.8, -0.2]), waist=dict(r=[4, 20, 0]), head=dict(r=[-L - 2, -8, 0]),
+          right_arm=R_IN, left_arm=L_OUT, right_leg=dict(r=[16, 0, 4]), left_leg=dict(r=[-18, 0, -4]))
+    return [(0.00, a, "snap"), (0.12, b, "snap"), (0.24, a, "snap")]
+MOVES["dbz_rush_loop"] = (0.24, rush_loop())
+
+# Rajada de ki (Vegeta disparando com as duas maos alternadas) - loop de 0,3 s
+def volley_loop():
+    a = P(root=dict(r=[4, 0, 0], p=[0, -1, 0]), waist=dict(r=[2, -14, 0]), head=dict(r=[-6, 6, 0]),
+          right_arm=dict(r=[-96, 4, 10]), left_arm=dict(r=[-60, -14, -16]),
+          right_leg=dict(r=[22, 0, 6]), left_leg=dict(r=[-20, 0, -6]))
+    b = P(root=dict(r=[4, 0, 0], p=[0, -1, 0]), waist=dict(r=[2, 14, 0]), head=dict(r=[-6, -6, 0]),
+          right_arm=dict(r=[-60, 14, 16]), left_arm=dict(r=[-96, -4, -10]),
+          right_leg=dict(r=[22, 0, 6]), left_leg=dict(r=[-20, 0, -6]))
+    return [(0.00, a, "snap"), (0.15, b, "snap"), (0.30, a, "snap")]
+MOVES["dbz_ki_volley_loop"] = (0.3, volley_loop())
+
+# Genki Dama: os dois bracos esticados para o ceu, cabeca olhando para cima, tremendo de esforco (loop)
+def spirit_raise():
+    keys = []
+    for i, t in enumerate([0, 0.35, 0.7, 1.0]):
+        j = [0, 1.5, -1.2, 0][i]
+        keys.append((t, P(root=dict(r=[-4, 0, 0], p=[0, -0.4 + j * 0.1, 0]), waist=dict(r=[-6, 0, 0]),
+                          head=dict(r=[-34 + j, 0, 0]),
+                          right_arm=dict(r=[-176 + j, 0, -10]), left_arm=dict(r=[-176 - j, 0, 10]),
+                          right_leg=dict(r=[6, 0, 5]), left_leg=dict(r=[-6, 0, -5])), "io"))
+    return keys
+MOVES["dbz_spirit_raise_loop"] = (1.0, spirit_raise())
+
+# Genki Dama: arremesso - joga os bracos para tras e depois para a frente com o corpo todo, segura no fim
+MOVES["dbz_spirit_throw"] = (0.7, [
+    (0.00, P(root=dict(r=[-4, 0, 0], p=[0, -0.4, 0]), waist=dict(r=[-6, 0, 0]), head=dict(r=[-34, 0, 0]),
+             right_arm=dict(r=[-176, 0, -10]), left_arm=dict(r=[-176, 0, 10]),
+             right_leg=dict(r=[6, 0, 5]), left_leg=dict(r=[-6, 0, -5])), "out"),
+    (0.16, P(root=dict(r=[-14, 0, 0], p=[0, 0, 1.2]), waist=dict(r=[-18, 0, 0]), head=dict(r=[-30, 0, 0]),
+             right_arm=dict(r=[-206, 0, -14]), left_arm=dict(r=[-206, 0, 14]),
+             right_leg=dict(r=[-12, 0, 5]), left_leg=dict(r=[14, 0, -5])), "in"),
+    (0.26, P(root=dict(r=[16, 0, 0], p=[0, -0.6, -1.6]), waist=dict(r=[20, 0, 0]), head=dict(r=[-24, 0, 0]),
+             right_arm=dict(r=[-118, 0, -12], s=[1, 1.2, 1]), left_arm=dict(r=[-118, 0, 12], s=[1, 1.2, 1]),
+             right_leg=dict(r=[-26, 0, 5]), left_leg=dict(r=[24, 0, -5])), "out"),
+    (0.70, P(root=dict(r=[14, 0, 0], p=[0, -0.6, -1.4]), waist=dict(r=[18, 0, 0]), head=dict(r=[-22, 0, 0]),
+             right_arm=dict(r=[-112, 0, -12]), left_arm=dict(r=[-112, 0, 12]),
+             right_leg=dict(r=[-24, 0, 5]), left_leg=dict(r=[22, 0, -5])), "hold"),
+])
+
+# Defesa com um dedo (Beerus parando o golpe) - usado pelos jogadores so como "empurrado para tras"
+
 def export():
     anims = {}
     for name, (length, keys) in MOVES.items():
         a = build(keys, length)
         if name in ("dbz_guard",) or name.endswith("_loop"): a["loop"] = True
-        if name in ("dbz_cross_block",): a["loop"] = "hold_on_last_frame"
+        if name in ("dbz_cross_block", "dbz_spirit_throw"): a["loop"] = "hold_on_last_frame"
         anims["dmzkicontrol.cs." + name] = a
     return {"format_version": "1.8.0", "animations": anims}
 
