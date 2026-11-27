@@ -72,6 +72,10 @@ public final class EncounterDirector {
     private static final List<Object[]> DELAYED = new ArrayList<>();
     /** Chefes do comando de teste esperando a cena comecar: ninguem bate neles nesse meio-tempo. */
     private static final java.util.Set<LivingEntity> PROTECT = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+    /** Chefes invocados pelo /dmzluta: somem quando a cena acaba. */
+    private static final java.util.Set<LivingEntity> TEST_SPAWNED = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+    /** Por que um chefe de teste saiu do mundo antes da cena (para avisar o jogador e o log). */
+    private static final Map<LivingEntity, String> LEFT = new java.util.WeakHashMap<>();
     private static int nextId = 1;
 
     private EncounterDirector() {}
@@ -216,7 +220,14 @@ public final class EncounterDirector {
 
     private static void start(EncScript script, int phaseIdx, LivingEntity boss, ServerPlayer attacker) {
         PROTECT.remove(boss);
-        if (!boss.isAlive() || !attacker.isAlive() || !(boss.level() instanceof ServerLevel level)) return;
+        if (!(boss.level() instanceof ServerLevel level)) return;
+        if (boss.isRemoved() || level.getEntity(boss.getId()) != boss) {
+            String why = LEFT.getOrDefault(boss, "outro mod tirou ele");
+            KiControlMod.LOGGER.warn("[Lutas] {}: o chefe saiu do mundo antes da cena ({}); cena cancelada.", script.id, why);
+            attacker.sendSystemMessage(net.minecraft.network.chat.Component.literal("O chefe sumiu do mundo antes da cena (" + why + "). A cena nao comecou."));
+            return;
+        }
+        if (!boss.isAlive() || !attacker.isAlive()) return;
         if (attacker.level() != level || isLocked(boss) || isLocked(attacker)) return;
         KiControlConfig.Encounters cfg = KiControlConfig.get().encounters;
         List<ServerPlayer> ps = new ArrayList<>();
@@ -289,16 +300,9 @@ public final class EncounterDirector {
         }
         if (boss != null && isLocked(boss)) return "Esse chefe ja esta numa cena.";
         if (boss == null) {
-            Vec3 look = sp.getLookAngle();
-            Vec3 h = new Vec3(look.x, 0, look.z);
-            if (h.lengthSqr() < 1e-4) h = new Vec3(0, 0, 1);
-            Vec3 at = sp.position().add(h.normalize().scale(6));
-            // em cima do chao de verdade (nunca dentro de morro ou embaixo da terra)
-            int top = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) Math.floor(at.x), (int) Math.floor(at.z));
-            BlockPos pos = BlockPos.containing(at.x, Math.max(top, (int) Math.floor(sp.getY())), at.z);
-            var spawned = type.spawn(level, pos, net.minecraft.world.entity.MobSpawnType.COMMAND);
-            if (!(spawned instanceof LivingEntity le)) return "Nao consegui invocar o chefe.";
-            boss = le;
+            boss = spawnTestBoss(level, type, sp);
+            if (boss == null) return "O chefe nao conseguiu entrar no mundo aqui (outro mod ou estrutura do DMZ barrou). Tente num lugar aberto, longe de estruturas. Detalhes no latest.log ([Lutas]).";
+            TEST_SPAWNED.add(boss);
         }
         // no teste, o chefe brilha (da para ver atraves de paredes) e o chat diz onde ele esta
         boss.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20 * 120, 0, false, false));
@@ -310,6 +314,49 @@ public final class EncounterDirector {
         // espera meio segundo: o chefe recem-criado chega aos clientes antes da cena
         DELAYED.add(new Object[]{level, level.getGameTime() + 10, (Runnable) () -> start(script, phase, b, sp)});
         return null;
+    }
+
+    /**
+     * Invoca o chefe de teste e confere se ele entrou mesmo no mundo (outros mods podem barrar a entrada,
+     * por exemplo em cima de estruturas). Tenta alguns lugares ao redor antes de desistir.
+     */
+    private static LivingEntity spawnTestBoss(ServerLevel level, net.minecraft.world.entity.EntityType<?> type, ServerPlayer sp) {
+        Vec3 look = sp.getLookAngle();
+        Vec3 h = new Vec3(look.x, 0, look.z);
+        if (h.lengthSqr() < 1e-4) h = new Vec3(0, 0, 1);
+        h = h.normalize();
+        Vec3 side = new Vec3(-h.z, 0, h.x);
+        Vec3[] tries = {h.scale(6), h.scale(14), side.scale(12), side.scale(-12), h.scale(-10), h.scale(28)};
+        for (Vec3 off : tries) {
+            Vec3 at = sp.position().add(off);
+            // em cima do chao de verdade (nunca dentro de morro ou embaixo da terra)
+            int top = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) Math.floor(at.x), (int) Math.floor(at.z));
+            BlockPos pos = BlockPos.containing(at.x, Math.max(top, (int) Math.floor(sp.getY())), at.z);
+            var spawned = type.spawn(level, pos, net.minecraft.world.entity.MobSpawnType.COMMAND);
+            if (spawned instanceof LivingEntity le && !le.isRemoved() && level.getEntity(le.getId()) == le) {
+                LEFT.remove(le);
+                return le;
+            }
+            KiControlMod.LOGGER.warn("[Lutas] /dmzluta: o chefe {} nao entrou no mundo em {} ({}); tentando outro lugar.", type, pos,
+                    spawned == null ? "nada criado" : spawned.isRemoved() ? "removido: " + spawned.getRemovalReason() : "entrada barrada por outro mod");
+            if (spawned != null && !spawned.isRemoved()) spawned.discard();
+        }
+        return null;
+    }
+
+    /** Registra quem tirou um chefe de teste ou de cena do mundo (motivo e pilha), para achar o mod responsavel. */
+    @SubscribeEvent
+    public static void onLeave(net.minecraftforge.event.entity.EntityLeaveLevelEvent event) {
+        if (event.getLevel().isClientSide || !(event.getEntity() instanceof LivingEntity le)) return;
+        boolean watched = TEST_SPAWNED.contains(le) || PROTECT.contains(le);
+        if (!watched) for (Run r : RUNS.values()) if (r.boss == le) watched = true;
+        if (!watched || le.isDeadOrDying()) return;
+        String why = String.valueOf(le.getRemovalReason());
+        LEFT.put(le, why);
+        if (le.getRemovalReason() != net.minecraft.world.entity.Entity.RemovalReason.UNLOADED_TO_CHUNK
+                && le.getRemovalReason() != net.minecraft.world.entity.Entity.RemovalReason.UNLOADED_WITH_PLAYER) {
+            KiControlMod.LOGGER.warn("[Lutas] o chefe {} (id {}) saiu do mundo ({}) - quem tirou:", le.getType(), le.getId(), why, new Throwable("pilha"));
+        }
     }
 
     /** /dmzluta parar */
@@ -477,7 +524,12 @@ public final class EncounterDirector {
         boss.getPersistentData().putLong(LAST, run.level.getGameTime());
         for (ServerPlayer p : run.players) restorePlayer(p);
         sendState(run, true);
-        if (boss instanceof Mob mob && !run.players.isEmpty()) mob.setTarget(run.players.get(0));
+        if (TEST_SPAWNED.remove(boss) && boss.isAlive()) {
+            // chefe do /dmzluta: some num zanzoken quando a cena acaba (nao fica solto pelo mundo)
+            run.level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, boss.getX(), boss.getY() + 1, boss.getZ(), 30, 0.4, 0.8, 0.4, 0.02);
+            run.level.playSound(null, boss.getX(), boss.getY(), boss.getZ(), net.minecraft.sounds.SoundEvents.ENDERMAN_TELEPORT, net.minecraft.sounds.SoundSource.HOSTILE, 0.6f, 1.4f);
+            boss.discard();
+        } else if (boss instanceof Mob mob && !run.players.isEmpty()) mob.setTarget(run.players.get(0));
         KiControlMod.LOGGER.info("[Lutas] {} fase {} {}.", run.script.id, run.phaseIdx + 1, aborted ? "interrompida" : "concluida");
     }
 

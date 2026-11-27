@@ -275,14 +275,17 @@ public final class EncScripts {
         Phase p = s.phase(0.85f, "enc.dmzkicontrol.title.cell_rush").distance(26).lift(2.0);
         Beat b = p.beat(Kind.CINE, 52);
         b.shot(0, 0, "boss", 0.9, 1.9, 2.6, "boss", 0, 1.8, 0, 0.75f)
-                .shot(26, 0, "group", 10, 1.4, 0, "group", 0, 1.2, -3, 0.95f);
+                // a arrancada vista pelo Cell: por cima do ombro dele, os jogadores vindo de longe
+                .shot(26, 0, "boss", 0.75, 2.35, -1.5, "group", 0, 1.0, 0, 0.8f, 3f);
         b.ev(2, BOSS).text("enc.dmzkicontrol.cell.taunt");
         b.ev(26, ALL).pose("base.fly_fast", 200).fx("speedlines", 180).snd(d("tp_short"), 1f, 0.6f).sfx("ゴォッ");
 
         Beat q = p.beat(Kind.PROMPT, 150).caption("enc.dmzkicontrol.cap.rush");
-        q.shot(0, 0, "group", 10, 1.4, 0, "group", 0, 1.2, -3, 0.9f)
-                .shot(66, 18, "group", 0, 2.2, 5.5, "boss", 0, 1.6, 0, 1.05f)
-                .shot(116, 12, "group", -10, 1.6, 0, "group", 0, 1.2, -3, 0.9f);
+        // visao do Cell: as rajadas saem do ombro dele e voam ate os jogadores, que desviam em zigue-zague e crescem
+        // na tela a cada desvio; no meio troca de ombro; no fim, de frente, eles chegando
+        q.shot(0, 0, "boss", 0.75, 2.35, -1.5, "group", 0, 1.0, 0, 0.8f, 3f)
+                .shot(66, 0, "boss", -0.8, 2.2, -1.4, "group", 0, 1.0, 0, 0.85f, -4f)
+                .shot(116, 10, "boss", 0.5, 1.9, -1.2, "group", 0, 1.2, 0, 0.95f, 2f);
         q.ev(0, ALL).move(MoveKind.LANE, 0, 0, -14, -0.12f);
         int[] rt = {26, 52, 74, 94, 112, 128};
         int[] rw = {5, 5, 4, 4, 4, 3};
