@@ -1,6 +1,6 @@
 {
   "_info": "Curadoria de formas do DragonMineZ Evolution. Roda a cada inicio, DEPOIS do DragonMineZ, DMZ Sparking e Dragon Block Noea: tira formas fan-made, remove repeticoes, conserta pre-requisitos/niveis e aplica o balanceamento e o visual abaixo. Para mudar numeros ou cores edite ESTE arquivo (os arquivos do DMZ sao reescritos por ele). Chave = grupo.forma.",
-  "version": 5,
+  "version": 6,
   "enabled": true,
   "removeForms": [
     "legendaryforms.ssjlegendary3",
@@ -21,7 +21,18 @@
     "superforms.dragonclan",
     "pureforms.primalmajin",
     "evolutionforms.fifthfullpower",
-    "bioevolution.hyperperfect"
+    "bioevolution.hyperperfect",
+    "godkienhancement.primalgod",
+    "godkienhancement.awakenedheir",
+    "godkienhancement.stolendivinity",
+    "hellfusion.furtherevolution",
+    "hellfusion.ultimateandroid",
+    "majincells.ravenous",
+    "majincells.connoisseur",
+    "majincells.soullink",
+    "majincells.perfectfeast",
+    "kaioshinforms.consecrated",
+    "kaioshinforms.halo"
   ],
   "removeGroups": [
     "dmzsparking_af",
@@ -60,7 +71,10 @@
     "chaosforms",
     "maliceforms",
     "miraforms",
-    "reflectionforms"
+    "reflectionforms",
+    "godclass",
+    "supremekai",
+    "overclock"
   ],
   "dedupe": [
     [
@@ -480,5 +494,6 @@
       "hasLightnings": true,
       "lightningColor": "#FFD27A"
     }
-  }
+  },
+  "_sparking151": "DMZ Sparking 1.5.1: saem as combinacoes de God Ki inventadas (Primal God, Awakened Heir, Stolen Divinity - o Super Saiyajin Raiva do Trunks fica), God Class (Heroes), Grand Supreme Kai e Kai Awakening, Android Core/Overclock, Consecration e Halo, e as formas extras de Hell Fusion e Majin Cells. Ficam: Super 17 (Hell Fusion), Forma Verdadeira (Androide 21), Majuub, Buu em forma (Shape-Up), Kibito-Kai, Gigante e a Mimica do Duu (Daima)."
 }

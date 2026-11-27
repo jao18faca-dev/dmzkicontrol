@@ -230,7 +230,7 @@ public class KiControlConfig {
     /** Por nivel: multiplicador da tensao interna (quanto menor, mais tempo da para segurar). */
     public List<Double> auraLevelStrain = new ArrayList<>(List.of(1.00, 0.90, 0.80, 0.70, 0.60));
     /** Versao do formato do arquivo. */
-    public int configVersion = 6;
+    public int configVersion = 7;
     /** Escala do treino: com este tanto de segundos de pratica efetiva numa forma voce chega a ~95% (antes do trainTimeMultiplier). */
     public double trainSeconds = 900.0;
     /** Dominio inicial (0..1) numa forma que voce nunca treinou. */
@@ -298,9 +298,10 @@ public class KiControlConfig {
 
     private static Map<String, String> defaultStoryRequirements() {
         Map<String, String> m = new LinkedHashMap<>();
-        m.put("3", "beerus_saga:7");   // a licao do Whis (DMZ Sparking)
-        m.put("4", "black_saga:3");    // o primeiro encontro com o Black
-        m.put("5", "black_saga:7");    // o controle perfeito contra o Black e o Zamasu
+        // "saga:missao|outra:missao" = vale a primeira saga que existir (ids do DMZ Sparking 1.5 e os antigos)
+        m.put("3", "dmzsparking_s1_beerus:11|beerus_saga:11");   // a licao do Whis
+        m.put("4", "dmzsparking_s4_black:1|black_saga:1");       // o primeiro encontro com o Black
+        m.put("5", "dmzsparking_s4_black:10|black_saga:10");     // o controle perfeito contra o Black e o Zamasu juntos
         return m;
     }
 
@@ -465,6 +466,8 @@ public class KiControlConfig {
         public double cooldownSeconds = 8.0;
         /** Cenas desligadas, pelo id (ex.: "frieza_fp", "frieza_base", "cell_perfect"). */
         public java.util.List<String> disabled = new java.util.ArrayList<>();
+        /** true = com a historia do DMZ Sparking ligada, a cena "A Furia" (Freeza forma final) nao toca: o Sparking ja conta a morte do Kuririn. */
+        public boolean yieldToSparkingStory = true;
     }
 
     public Encounters encounters = new Encounters();
@@ -572,6 +575,17 @@ public class KiControlConfig {
             configVersion = 5;
         }
         if (configVersion < 6) configVersion = 6;
+        if (configVersion < 7) {
+            // DMZ Sparking 1.5: sagas do Super com ids proprios e missoes renumeradas; troca so os padroes antigos
+            if (auraLevelStoryRequirements != null) {
+                Map<String, String> old = Map.of("3", "beerus_saga:7", "4", "black_saga:3", "5", "black_saga:7");
+                Map<String, String> now = defaultStoryRequirements();
+                for (Map.Entry<String, String> e : old.entrySet()) {
+                    if (e.getValue().equals(auraLevelStoryRequirements.get(e.getKey()))) auraLevelStoryRequirements.put(e.getKey(), now.get(e.getKey()));
+                }
+            }
+            configVersion = 7;
+        }
     }
 
     private void fillMissing() {

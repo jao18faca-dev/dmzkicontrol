@@ -31,6 +31,70 @@ public final class AddonCompat {
         return ModList.get() != null && ModList.get().isLoaded(NOEA);
     }
 
+    private static Boolean sparkingStory;
+
+    /**
+     * A historia do DMZ Sparking esta ligada (modulo "story" do config/dmzsparking/common.toml, ligado por padrao)?
+     * Nela o proprio Sparking conta cenas como a morte do Kuririn em Namek.
+     */
+    public static boolean sparkingStory() {
+        if (sparkingStory != null) return sparkingStory;
+        boolean on = sparking();
+        if (on) {
+            try {
+                java.nio.file.Path f = net.minecraftforge.fml.loading.FMLPaths.CONFIGDIR.get().resolve("dmzsparking").resolve("common.toml");
+                if (java.nio.file.Files.isRegularFile(f)) {
+                    for (String line : java.nio.file.Files.readAllLines(f)) {
+                        String l = line.trim().replace(" ", "");
+                        if (l.equals("story=false")) on = false;
+                    }
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        sparkingStory = on;
+        return on;
+    }
+
+    private static java.lang.reflect.Method godKiActive, godKiLearned;
+    private static boolean godKiTried;
+
+    private static void godKi() {
+        if (godKiTried) return;
+        godKiTried = true;
+        if (!sparking()) return;
+        try {
+            Class<?> rules = Class.forName("com.yami.dmzsparking.form.GodKiRules");
+            Class<?> stats = Class.forName("com.dragonminez.common.stats.StatsData");
+            godKiActive = rules.getMethod("active", stats);
+            godKiLearned = rules.getMethod("learned", stats);
+        } catch (Throwable t) {
+            KiControlMod.LOGGER.info("DMZ Sparking sem a API de God Ki esperada; a visao de ki ve todo mundo.");
+        }
+    }
+
+    /** Ki divino ativo (DMZ Sparking): quem nao tem ki divino nao sente essa pessoa. */
+    public static boolean godKiActive(Object statsData) {
+        godKi();
+        if (godKiActive == null || statsData == null) return false;
+        try {
+            return Boolean.TRUE.equals(godKiActive.invoke(null, statsData));
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /** Ja aprendeu o ki divino (DMZ Sparking)? So assim da para sentir quem usa ki divino. */
+    public static boolean godKiLearned(Object statsData) {
+        godKi();
+        if (godKiLearned == null || statsData == null) return false;
+        try {
+            return Boolean.TRUE.equals(godKiLearned.invoke(null, statsData));
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     /** O jogador esta meditando pelo sistema de meditacao do DMZ Sparking? */
     public static boolean isMeditating(UUID id) {
         if (!meditatingTried) {

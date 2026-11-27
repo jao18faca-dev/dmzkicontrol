@@ -716,5 +716,7 @@
   "enc.dmzkicontrol.turn_of": "Vez de %s",
   "enc.dmzkicontrol.window": "JANELA DE TRANSFORMAÇÃO",
   "enc.dmzkicontrol.window_charge": "ou segure %s (Carregar Ki) para elevar o ki",
-  "enc.dmzkicontrol.window_transform": "Segure %s para se transformar!"
+  "enc.dmzkicontrol.window_transform": "Segure %s para se transformar!",
+  "dmz.saga.dmzsparking_s1_beerus": "Saga do Beerus",
+  "dmz.saga.dmzsparking_s4_black": "Saga do Goku Black"
 }

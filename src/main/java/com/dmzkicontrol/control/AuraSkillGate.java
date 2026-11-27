@@ -60,7 +60,14 @@ public final class AuraSkillGate {
         for (int lv = 2; lv <= 5; lv++) {
             String req = cfg.auraLevelStoryRequirements.get(String.valueOf(lv));
             if (req == null || req.isBlank()) continue;
-            String[] parts = req.split(":");
+            // alternativas "a:1|b:2": vale a primeira saga que existe neste mundo
+            String pick = null;
+            for (String alt : req.split("\\|")) {
+                String id = alt.split(":")[0].trim();
+                if (!id.isEmpty() && sagaExists(id)) { pick = alt; break; }
+            }
+            if (pick == null) continue;
+            String[] parts = pick.split(":");
             int quest = parts.length > 1 ? parseInt(parts[1]) : 0;
             if (!questDone(data, parts[0].trim(), quest)) { cap = lv - 1; blocking = parts[0].trim(); break; }
         }
@@ -74,6 +81,15 @@ public final class AuraSkillGate {
         sp.displayClientMessage(Component.translatable("message.dmzkicontrol.aura_story_cap", cap + 1,
                 Component.translatable("dmz.saga." + blocking)).withStyle(ChatFormatting.GOLD), false);
         return cap;
+    }
+
+    private static boolean sagaExists(String sagaId) {
+        try {
+            var saga = com.dragonminez.common.quest.QuestRegistry.getSaga(sagaId);
+            return saga != null && saga.getQuests() != null && !saga.getQuests().isEmpty();
+        } catch (Throwable t) {
+            return false;
+        }
     }
 
     private static int parseInt(String v) {

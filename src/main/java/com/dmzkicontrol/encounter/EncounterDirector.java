@@ -189,6 +189,9 @@ public final class EncounterDirector {
         if (key == null) return;
         EncScript script = EncScripts.forBoss(key.toString());
         if (script == null || cfg.disabled.contains(script.id)) return;
+        // com a historia do DMZ Sparking, a morte do Kuririn ja e contada pela cena dele (abertura da missao 15);
+        // a nossa ("A Furia", no Freeza forma final) ficaria dobrada. /dmzluta freeza continua testando.
+        if (cfg.yieldToSparkingStory && script.id.equals("frieza_base") && com.dmzkicontrol.compat.AddonCompat.sparkingStory()) return;
         if (isLocked(boss) || isLocked(attacker)) return;
         float max = boss.getMaxHealth();
         float after = boss.getHealth() - event.getAmount();

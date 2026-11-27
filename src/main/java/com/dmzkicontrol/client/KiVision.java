@@ -235,6 +235,18 @@ public final class KiVision {
         }
     }
 
+    private static boolean godKiHidden(Entity e, Entity self) {
+        if (!com.dmzkicontrol.compat.AddonCompat.sparking()) return false;
+        try {
+            Object them = StatsProvider.get(StatsCapability.INSTANCE, e).resolve().orElse(null);
+            if (them == null || !com.dmzkicontrol.compat.AddonCompat.godKiActive(them)) return false;
+            Object me = StatsProvider.get(StatsCapability.INSTANCE, self).resolve().orElse(null);
+            return !com.dmzkicontrol.compat.AddonCompat.godKiLearned(me);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     /** 0 = ignora, 1 = ser vivo, 2 = rajada de ki. */
     private static int kind(Entity e) {
         if (e instanceof LivingEntity le) return le.isSpectator() || !le.isAlive() ? 0 : 1;
@@ -273,6 +285,8 @@ public final class KiVision {
                 double reach = sealed ? range * c.sealedVisibility : range;
                 double d = e.distanceTo(self);
                 if (d > reach) continue;
+                // ki divino (DMZ Sparking) nao se sente: so quem tambem ja tem ki divino enxerga
+                if (kind == 1 && godKiHidden(e, self)) continue;
 
                 int color;
                 float strength;
