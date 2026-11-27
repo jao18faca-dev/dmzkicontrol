@@ -27,7 +27,8 @@ public final class EncSpirit {
     /** Faz o espirito aparecer atras do jogador do papel indicado, por {@code ticks}. */
     public static void show(EncClient.State s, int forRole, int ticks) {
         Minecraft mc = Minecraft.getInstance();
-        if (!(mc.level instanceof ClientLevel level) || s == null) return;
+        ClientLevel level = mc.level;
+        if (level == null || s == null) return;
         clear();
         try {
             EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(TYPE));
@@ -89,7 +90,8 @@ public final class EncSpirit {
 
     public static void clear() {
         Minecraft mc = Minecraft.getInstance();
-        if (puppet != null && mc.level instanceof ClientLevel level) {
+        if (puppet != null && mc.level != null) {
+            ClientLevel level = mc.level;
             try {
                 level.removeEntity(ID, Entity.RemovalReason.DISCARDED);
             } catch (Throwable ignored) {
