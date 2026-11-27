@@ -302,6 +302,8 @@ public final class EncFx {
             Vec3 c = chest(f.src, f.srcSnap, partial);
             if (c == null) continue;
             float sz = f.size;
+            // ataques de ki que o proprio DMZ desenha (bola, disco, laser, explosao): aqui nao desenha de novo
+            if (EncBeams.projOk() && DMZ_DRAWN.contains(f.kind)) continue;
             switch (f.kind) {
                 case "kienzan_charge" -> {
                     Vec3 p = feet(f.src, f.srcSnap, partial).add(0, height(f.src) * 1.12 + 0.5 * sz, 0);
@@ -595,6 +597,9 @@ public final class EncFx {
     }
 
     /** Cores do feixe do chefe (modelo do DMZ): Cell = Kamehameha; Freeza e Vegeta = roxo; Boo = rosa; Beerus = laranja. */
+    private static final java.util.Set<String> DMZ_DRAWN = java.util.Set.of("kiblast", "ki_rain", "kienzan_charge", "kienzan",
+            "kienzan_low", "kienzan_return", "deathbeam", "burst", "blast_behind", "sky_explosion");
+
     static int[] bossBeam(EncClient.State s) {
         String id = s == null || s.script == null ? "" : s.script.id;
         if (id.startsWith("frieza") || id.startsWith("vegeta")) return EncBeams.PURPLE;
@@ -755,6 +760,66 @@ public final class EncFx {
                             EncBeams.beam("p" + i, from, to, (0.8f + 0.6f * pr) * k / (float) Math.sqrt(s.n()), EncBeams.KAME);
                         }
                     }
+                }
+                case "kiblast" -> {
+                    Vec3 c = chest(f.src, f.srcSnap, partial), to = chest(f.dst, f.dstSnap, partial);
+                    if (c == null || to == null) continue;
+                    Vec3 from = c.add(forward(f.src).scale(0.8));
+                    double kk = age / f.dur;
+                    Vec3 dir = to.subtract(from);
+                    Vec3 p = kk <= 1 ? from.lerp(to, kk) : to.add(dir.normalize().scale((kk - 1) * 18));
+                    EncBeams.proj("kb" + f.seed, EncBeams.BLAST, p, dir, 0.55f * f.size, f.src == s.bossId ? bossBeam(s) : EncBeams.YELLOW, 0, (int) age);
+                }
+                case "ki_rain" -> {
+                    Vec3 to = chest(f.dst, f.dstSnap, partial);
+                    if (to == null) continue;
+                    RandomSource rr = RandomSource.create(f.seed);
+                    double u = Mth.clamp(age / f.dur, 0, 1);
+                    for (int i = 0; i < 5; i++) {
+                        double delay = i * 0.12, kk = (u - delay) / 0.6;
+                        Vec3 off = new Vec3((rr.nextDouble() - 0.5) * 2.4, 0, (rr.nextDouble() - 0.5) * 2.4);
+                        if (kk < 0 || kk > 1) continue;
+                        Vec3 from = to.add(off.scale(3)).add(0, 14, 0), hit = to.add(off);
+                        EncBeams.proj("kr" + f.seed + "_" + i, EncBeams.BLAST, from.lerp(hit, kk), hit.subtract(from), 0.5f * f.size, bossBeam(s), 0, (int) age);
+                    }
+                }
+                case "kienzan_charge" -> {
+                    double u = Mth.clamp(age / f.dur, 0, 1);
+                    Vec3 p = feet(f.src, f.srcSnap, partial).add(0, height(f.src) * 1.12 + 0.5 * f.size, 0);
+                    EncBeams.proj("kz" + f.seed, EncBeams.DISK, p, forward(f.src), (float) (0.9 * f.size * Math.min(1, u * 2.5)), EncBeams.DISK_COL, 0, (int) age);
+                }
+                case "kienzan", "kienzan_low" -> {
+                    Vec3 from = feet(f.src, f.srcSnap, partial).add(0, height(f.src) * 1.12, 0);
+                    Vec3 to = f.kind.equals("kienzan_low") ? feet(f.dst, f.dstSnap, partial).add(0, 0.35, 0) : chest(f.dst, f.dstSnap, partial);
+                    if (to == null) continue;
+                    double kk = age / f.dur;
+                    Vec3 dir = to.subtract(from);
+                    Vec3 side = new Vec3(-dir.z, 0, dir.x).normalize();
+                    Vec3 p = kk <= 1 ? from.lerp(to, kk).add(side.scale(Math.sin(kk * Math.PI) * 1.6)) : to.add(dir.normalize().scale((kk - 1) * 14));
+                    EncBeams.proj("kz" + f.seed, EncBeams.DISK, p, dir, 0.7f * f.size, EncBeams.DISK_COL, 0, (int) age);
+                }
+                case "kienzan_return" -> {
+                    double u = Mth.clamp(age / f.dur, 0, 1);
+                    Vec3 c = chest(f.src, f.srcSnap, partial);
+                    if (c == null) continue;
+                    Vec3 from = groupChest(partial).add(0, 1.2, 0);
+                    EncBeams.proj("kz" + f.seed, EncBeams.DISK, from.lerp(c, u), c.subtract(from), 0.8f * f.size, EncBeams.DISK_COL, 0, (int) age);
+                }
+                case "deathbeam" -> {
+                    Vec3 c = chest(f.src, f.srcSnap, partial), to = chest(f.dst, f.dstSnap, partial);
+                    if (c == null || to == null) continue;
+                    Vec3 from = c.add(forward(f.src).scale(0.6));
+                    EncBeams.proj("db" + f.seed, EncBeams.LASER, from, to.subtract(from), 0.35f * f.size, EncBeams.DEATH, (float) to.distanceTo(from), (int) age);
+                }
+                case "burst", "blast_behind", "sky_explosion" -> {
+                    Vec3 c = chest(f.src, f.srcSnap, partial);
+                    if (c == null) continue;
+                    Vec3 p = f.kind.equals("sky_explosion") ? skyPoint(f, partial) : f.kind.equals("blast_behind") ? c.add(forward(f.src).scale(-3.5)) : c;
+                    float big = f.kind.equals("sky_explosion") ? 9f : f.kind.equals("blast_behind") ? 1.6f : 1.8f;
+                    int[] col = f.src == s.bossId && !f.kind.equals("sky_explosion") ? bossBeam(s) : new int[]{0xFFFFF0, 0xFFD27A, 0xFF8A00};
+                    // a explosao do DMZ cresce em 25 ticks: encaixa no tempo do efeito
+                    int ex = (int) Math.min(25, age * 25.0 / Math.max(1, f.dur));
+                    EncBeams.proj("ex" + f.seed, EncBeams.EXPLOSION, p, null, big * f.size, col, 0, ex);
                 }
                 case "dmz_beam" -> {
                     // disparo solto: o feixe sai de quem atira e cresce ate o alvo

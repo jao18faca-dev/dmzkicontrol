@@ -37,6 +37,7 @@ public final class EncScripts {
     }
 
     private static void add(EncScript s) {
+        s.widenClashes(18);
         s.slow(tempo());
         BY_ID.put(s.id, s);
         BY_BOSS.put(s.bossType, s);

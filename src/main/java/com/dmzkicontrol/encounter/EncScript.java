@@ -269,6 +269,38 @@ public final class EncScript {
         for (Phase ph : phases) for (Beat b : ph.beats) slowBeat(b, k);
     }
 
+    /**
+     * Choque de Kamehamehas como no anime: antes e durante o cabo de guerra os lutadores se afastam ate ficarem
+     * longe um do outro e a camera abre de lado, bem longe, para os dois feixes caberem inteiros na tela.
+     */
+    public void widenClashes(double dist) {
+        for (Phase ph : phases) {
+            double extra = Math.max(0, dist - ph.distance);
+            for (Beat b : ph.beats) {
+                boolean charge = false, clash = false;
+                for (Ev e : b.evs) {
+                    if ("clash".equals(e.fx) || "hakai_clash".equals(e.fx)) clash = true;
+                    if ("kame_charge".equals(e.fx)) charge = true;
+                }
+                if (!clash && !charge) continue;
+                if (extra > 0) {
+                    Ev back = new Ev(0, ALL);
+                    back.move = new Move(MoveKind.LANE, 0, 0, extra, 0.18f, 0);
+                    b.evs.add(0, back);
+                }
+                if (!clash) continue;
+                double half = (dist + 2) * 0.5;
+                b.shots.clear();
+                // de lado, longe: os dois feixes e o ponto do choque no meio da tela; depois desliza e sobe devagar
+                b.shot(0, 12, "mid", half + 6, 2.2, 0, "mid", 0, 1.5, 0, 1.12f);
+                b.shot(b.len / 3, b.len / 4, "mid", half + 9, 4.5, 2.5, "mid", 0, 1.5, 0, 1.15f, 3f);
+                // por cima do ombro de quem segura o feixe, ainda aberto
+                b.shot(b.len * 2 / 3, 16, "group", 2.6, 2.2, 6.5, "mid", 0, 1.4, 0, 1.1f, -2f);
+                b.shot(b.len * 5 / 6, 14, "mid", -(half + 7), 3.0, -1.5, "mid", 0, 1.5, 0, 1.12f, -3f);
+            }
+        }
+    }
+
     private static int sc(int t, double k) {
         return (int) Math.round(t * k);
     }
