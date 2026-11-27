@@ -312,8 +312,7 @@ public final class EncounterDirector {
             if (boss == null) return "O chefe nao conseguiu entrar no mundo aqui (outro mod ou estrutura do DMZ barrou). Tente num lugar aberto, longe de estruturas. Detalhes no latest.log ([Lutas]).";
             TEST_SPAWNED.add(boss);
         }
-        // no teste, o chefe brilha (da para ver atraves de paredes) e o chat diz onde ele esta
-        boss.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20 * 120, 0, false, false));
+        // no teste, o chat diz onde o chefe esta (sem contorno brilhando: atrapalhava a cena)
         sp.sendSystemMessage(net.minecraft.network.chat.Component.literal(String.format("%s em %.0f, %.0f, %.0f (%.0f blocos)",
                 boss.getDisplayName().getString(), boss.getX(), boss.getY(), boss.getZ(), boss.distanceTo(sp))));
         final LivingEntity b = boss;
@@ -340,7 +339,13 @@ public final class EncounterDirector {
             // em cima do chao de verdade (nunca dentro de morro ou embaixo da terra)
             int top = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) Math.floor(at.x), (int) Math.floor(at.z));
             BlockPos pos = BlockPos.containing(at.x, Math.max(top, (int) Math.floor(sp.getY())), at.z);
-            var spawned = type.spawn(level, pos, net.minecraft.world.entity.MobSpawnType.COMMAND);
+            net.minecraft.world.entity.Entity spawned;
+            FORCING = type;
+            try {
+                spawned = type.spawn(level, pos, net.minecraft.world.entity.MobSpawnType.COMMAND);
+            } finally {
+                FORCING = null;
+            }
             if (spawned instanceof LivingEntity le && !le.isRemoved() && level.getEntity(le.getId()) == le) {
                 LEFT.remove(le);
                 return le;
@@ -350,6 +355,20 @@ public final class EncounterDirector {
             if (spawned != null && !spawned.isRemoved()) spawned.discard();
         }
         return null;
+    }
+
+    /** Tipo do chefe de teste sendo invocado agora (a entrada dele no mundo nao pode ser barrada). */
+    private static net.minecraft.world.entity.EntityType<?> FORCING;
+
+    /**
+     * O chefe do /dmzluta e so um teste pedido pelo jogador: se outro mod barrar a entrada dele (protecao de area
+     * de estrutura, chefe "unico" da historia...), a gente deixa entrar assim mesmo.
+     */
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST, receiveCanceled = true)
+    public static void onTestJoin(net.minecraftforge.event.entity.EntityJoinLevelEvent event) {
+        if (FORCING == null || !event.isCanceled() || event.getEntity().getType() != FORCING) return;
+        event.setCanceled(false);
+        KiControlMod.LOGGER.info("[Lutas] /dmzluta: outro mod barrou a entrada do chefe de teste; liberada.");
     }
 
     /** Registra quem tirou um chefe de teste ou de cena do mundo (motivo e pilha), para achar o mod responsavel. */

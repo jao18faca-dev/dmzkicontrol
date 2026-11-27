@@ -570,7 +570,7 @@
   "enc.dmzkicontrol.title.deathbeam": "DEATH BEAM",
   "enc.dmzkicontrol.title.final_clash": "THE FINAL CLASH",
   "enc.dmzkicontrol.title.frieza_base": "THE RAGE",
-  "enc.dmzkicontrol.title.kienzan": "KIENZAN!",
+  "enc.dmzkicontrol.title.kienzan": "DEATH SAUCERS",
   "enc.dmzkicontrol.together": "ALL TOGETHER!",
   "enc.dmzkicontrol.turn_of": "%s's turn",
   "enc.dmzkicontrol.window": "TRANSFORMATION WINDOW",
@@ -659,5 +659,6 @@
   "training.dmzkicontrol.drones.end_sub": "Waves cleared: %s of %s",
   "training.dmzkicontrol.drones.summary": "Drones destroyed: %s | lasers dodged: %s | hits taken: %s | +%s TP",
   "training.dmzkicontrol.drones.record": "New record: %s waves!",
-  "entity.dmzkicontrol.training_drone": "Training Drone"
+  "entity.dmzkicontrol.training_drone": "Training Drone",
+  "story.dmzkicontrol.stage.beerus_planet": "Beerus's planet!"
 }

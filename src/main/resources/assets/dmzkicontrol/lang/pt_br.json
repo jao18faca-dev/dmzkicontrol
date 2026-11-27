@@ -711,7 +711,7 @@
   "enc.dmzkicontrol.title.deathbeam": "RAIO DA MORTE",
   "enc.dmzkicontrol.title.final_clash": "O EMBATE FINAL",
   "enc.dmzkicontrol.title.frieza_base": "A FÚRIA",
-  "enc.dmzkicontrol.title.kienzan": "KIENZAN!",
+  "enc.dmzkicontrol.title.kienzan": "OS DISCOS DA MORTE",
   "enc.dmzkicontrol.together": "TODOS JUNTOS!",
   "enc.dmzkicontrol.turn_of": "Vez de %s",
   "enc.dmzkicontrol.window": "JANELA DE TRANSFORMAÇÃO",
@@ -800,5 +800,6 @@
   "training.dmzkicontrol.drones.end_sub": "Ondas vencidas: %s de %s",
   "training.dmzkicontrol.drones.summary": "Drones destruídos: %s | lasers desviados: %s | acertos levados: %s | +%s TP",
   "training.dmzkicontrol.drones.record": "Novo recorde: %s ondas!",
-  "entity.dmzkicontrol.training_drone": "Drone de Treino"
+  "entity.dmzkicontrol.training_drone": "Drone de Treino",
+  "story.dmzkicontrol.stage.beerus_planet": "O planeta do Beerus!"
 }

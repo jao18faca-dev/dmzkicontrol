@@ -60,6 +60,9 @@ public final class StoryStages {
     private static final Stage SACRED = new Stage("sacredkaiplanet", KAIOSHIN, null);
     private static final Stage CRATER = new Stage("saiyan_crater", OVER, "dragonminez:saiyan_crater");
     private static final Stage GERO = new Stage("gero_lab", OVER, "dragonminez:gero_lab");
+    /** Planeta do Beerus (dimensao do DMZ Sparking). */
+    private static final Stage BEERUS = new Stage("beerus_planet",
+            ResourceKey.create(Registries.DIMENSION, new ResourceLocation("dmzsparking", "beerus_planet")), null);
 
     private static final Map<String, Stage> STAGES = new HashMap<>();
 
@@ -72,6 +75,7 @@ public final class StoryStages {
         STAGES.put("dragonminez:saga_kidbuu", SACRED);
         for (String s : new String[]{"saga_nappa", "saga_saibaman"}) STAGES.put("dragonminez:" + s, CRATER);
         STAGES.put("dragonminez:saga_drgero", GERO);
+        STAGES.put("dmzsparking:saga_beerus", BEERUS);
     }
 
     /** Trocas de lugar em andamento: dono -> {missao, tick em que o chefe e chamado de novo}. */
@@ -198,7 +202,6 @@ public final class StoryStages {
         for (ServerPlayer p : group) {
             double a = i * Math.PI * 2 / Math.max(1, group.size());
             double r = group.size() > 1 ? 2.5 : 0;
-            p.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 30, 0, false, false, false));
             p.teleportTo(target, spot.getX() + 0.5 + Math.cos(a) * r, spot.getY(), spot.getZ() + 0.5 + Math.sin(a) * r, p.getYRot(), 0f);
             p.fallDistance = 0;
             p.sendSystemMessage(Component.translatable("story.dmzkicontrol.stage." + st.key).withStyle(ChatFormatting.GOLD));

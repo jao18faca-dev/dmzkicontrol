@@ -206,7 +206,7 @@ Configuração em `config/dmzkicontrol.json` → `encounters`:
 
 - **Prazo para treinar:** depois de certos chefes, o próximo inimigo só chega quando o tempo acaba. São eles: 1 ano até os Saiyajins (depois do Raditz), a viagem a Namekusei, 3 anos até os Androides, 10 dias até os Jogos do Cell, 7 anos até o Torneio (Babidi) e o despertar do Beerus. O relógio aparece no canto da tela, em tempo da história e em tempo de jogo. Enquanto o prazo corre o inimigo não aparece; quando acaba, ele chega, pronto ou não. Na Sala do Tempo o relógio de fora quase para. Para lutar antes, use `/dmzpronto`. Para ajustar a duração: `story.deadlineScale`.
 - **Chefes mais fortes:** os inimigos de missão têm 1,8× a vida e 1,5× o dano, por cima da dificuldade do DMZ (`story.bossHealthMultiplier`, `story.bossDamageMultiplier`).
-- **Lutas no lugar certo:** o grupo é levado até o lugar da luta e o chefe aparece lá. Cell vai para a Arena do Cell; Freeza e as Forças Especiais Ginyu, para a nave do Freeza em Namekusei; os capangas do Babidi e o Vegeta Majin, para a nave do Babidi; Super Boo, para o Palácio de Kami; Kid Boo, para o Planeta Sagrado dos Kaioshins; Nappa e os Saibamen, para a cratera do pouso; Dr. Gero, para o laboratório dele. Desligar: `story.battleStages = false`.
+- **Lutas no lugar certo:** o grupo é levado até o lugar da luta e o chefe aparece lá. Cell vai para a Arena do Cell; Freeza e as Forças Especiais Ginyu, para a nave do Freeza em Namekusei; os capangas do Babidi e o Vegeta Majin, para a nave do Babidi; Super Boo, para o Palácio de Kami; Kid Boo, para o Planeta Sagrado dos Kaioshins; Beerus, para o planeta dele (do Sparking); Nappa e os Saibamen, para a cratera do pouso; Dr. Gero, para o laboratório dele. Desligar: `story.battleStages = false`.
 - **Com o DMZ Sparking:** as páginas de missões dele (Agora, História, Episódios, Missões extras) abrem a árvore de missões do DragonMineZ (`story.keepDmzQuestMenu`). As cidades (West City, Central City, East City, Satan City) já vêm no Sparking e aparecem em terreno novo; para achar uma, use `/locate structure dmzsparking:west_city`.
 
 ## Treino dos drones na sala de gravidade (4.7)
@@ -223,7 +223,7 @@ Agache e clique com o botão direito no Aparelho de Gravidade. São 6 ondas de d
 
 ## Texturas HD (4.8)
 
-O pacote **DMZ HD Texturepack 2.1, do ZoneMC**, vem dentro do mod, já ligado e por cima dos outros pacotes (aparece como "DMZ HD (ZoneMC)"). O drone de treino e o Bubbles ganharam texturas novas em HD no mesmo estilo de anime (`tools/textures/hd_boxuv.py`).
+O pacote **DMZ HD Texturepack 2.1, do ZoneMC**, vem dentro do mod, já ligado e por cima dos outros pacotes (aparece como "DMZ HD (ZoneMC)"). Ele foi feito para o DragonMineZ 2.1, e no 2.2.1 o desenho das raças, de várias roupas e das partículas mudou; por isso só entram as texturas que ainda encaixam (chefes das sagas, mestres, parte das roupas e as telas). Não ligue o .zip original do pack junto, porque ele desalinha as raças. O drone de treino e o Bubbles ganharam texturas novas em HD no mesmo estilo de anime (`tools/textures/hd_boxuv.py`).
 
 ## Metrópoles (4.9, precisa do DMZ Sparking)
 
