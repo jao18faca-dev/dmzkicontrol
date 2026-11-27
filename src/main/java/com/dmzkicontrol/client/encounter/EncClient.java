@@ -183,6 +183,7 @@ public final class EncClient {
         if (fresh) {
             if (S != null) stop();
             S = new State();
+            EncTransformCine.reset();
             S.id = m.id();
             S.script = script;
             S.phaseIdx = m.phase();
@@ -261,6 +262,7 @@ public final class EncClient {
                 Entity p = S.player(m.a());
                 if (p != null) {
                     EncFx.spawn(m.b() == 1 ? "aura_burst" : "power_burst", p, null, 30, 1f);
+                    if (m.b() == 1) EncTransformCine.onTransformed(S, m.a());
                     playAt(p, m.b() == 1 ? "dragonminez:transform_on" : "dragonminez:aura_start", 1f, 1f);
                 }
                 EncHud.onCharged(S, m.a(), m.b());
@@ -275,6 +277,7 @@ public final class EncClient {
         previousCamera = null;
         S = null;
         SCHEDULED.clear();
+        EncTransformCine.reset();
         EncFx.clear();
         EncHud.reset();
     }
@@ -340,6 +343,7 @@ public final class EncClient {
             }
         }
         S.lastFired = Math.max(S.lastFired, t);
+        EncTransformCine.tick(S);
         Iterator<Object[]> it = SCHEDULED.iterator();
         List<Object[]> due = new ArrayList<>();
         while (it.hasNext()) {
@@ -522,9 +526,10 @@ public final class EncClient {
             case CLOSE -> {
                 Entity b = S.boss();
                 Vec3 bl = b != null ? S.local(b.position()) : new Vec3(0, S.phase.lift, 0);
-                double reach = 0.8 + (b != null ? b.getBbWidth() * 0.5 : 0.3);
+                // x > 0: distancia exata do golpe (centro a centro), medida para o membro encostar no chefe
+                double reach = m.x() > 0 ? m.x() * bossScale(b) : 0.8 + (b != null ? b.getBbWidth() * 0.5 : 0.3);
                 double ang = Math.toRadians(((S.n() - 1) / 2.0 - S.myRole) * 40.0);
-                a = bl.add(Math.sin(ang) * reach + m.x(), m.y(), Math.cos(ang) * reach + m.z());
+                a = bl.add(Math.sin(ang) * reach, m.y(), Math.cos(ang) * reach + m.z());
             }
         }
         S.anchor = a;
@@ -549,6 +554,11 @@ public final class EncClient {
     }
 
     /** O personagem sempre encara o chefe (durante a cena o mouse nao gira o corpo). */
+    /** Chefes maiores que o Cell (hitbox 0.8) ficam proporcionalmente mais longe. */
+    private static double bossScale(Entity b) {
+        return b == null ? 1.0 : Math.max(1.0, b.getBbWidth() / 0.8);
+    }
+
     public static void faceBoss(LocalPlayer lp) {
         if (!active()) return;
         Entity b = S.boss();

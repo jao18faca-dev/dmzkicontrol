@@ -23,6 +23,7 @@ public final class EncCamera {
     private static Method setPosition;
     private static boolean reflectionFailed;
     private static float lastFov = 1f;
+    private static Vec3 lastEye, lastAt;
 
     private EncCamera() {}
 
@@ -115,6 +116,29 @@ public final class EncCamera {
             double len = Math.max(0.4, hit.getLocation().distanceTo(at) - 0.25);
             eye = at.add(dir.normalize().scale(len));
         }
+        // cena de transformacao por cima da camera da luta (mistura na saida)
+        Object[] cine = EncTransformCine.camera(s, partial);
+        if (cine != null) {
+            float mix = (float) cine[4];
+            eye = eye.lerp((Vec3) cine[0], mix);
+            at = at.lerp((Vec3) cine[1], mix);
+            fov = Mth.lerp(mix, fov, (float) cine[2]);
+            roll = Mth.lerp(mix, roll, (float) cine[3]);
+            BlockHitResult h2 = mc.level.clip(new ClipContext(at, eye, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, mc.player));
+            if (h2.getType() != HitResult.Type.MISS) {
+                Vec3 dir = eye.subtract(at);
+                eye = at.add(dir.normalize().scale(Math.max(0.4, h2.getLocation().distanceTo(at) - 0.25)));
+            }
+        }
+        // hitstop: nos impactos fortes a camera congela um instante (o golpe "pesa")
+        if (EncHud.hitstop(partial) && lastEye != null) {
+            eye = lastEye;
+            at = lastAt;
+        } else {
+            lastEye = eye;
+            lastAt = at;
+        }
+        roll += EncHud.rollKick(partial);
         if (!movePosition(event.getCamera(), eye)) return;
         Vec3 d = at.subtract(eye);
         double horiz = Math.sqrt(d.x * d.x + d.z * d.z);

@@ -175,8 +175,10 @@ Quando a vida de um chefe final cai abaixo de certos pontos, a luta vira uma cen
 - **Golpe final:** todos apertam juntos. No mesmo instante sai o **GOLPE COMBINADO** (dano cheio); se só parte acertar, sai metade.
 - **Cabo de guerra de energia:** a força de todo mundo soma, e o chefe tem momentos em que empurra mais forte.
 - **Janela de transformação:** a luta pausa em câmera lenta e você se transforma com a tecla normal do DMZ, em qualquer forma que já tenha. Quem transforma fica 50% mais forte no resto da cena. Sem forma, dá para segurar *Carregar Ki* para elevar o ki (+25%).
+- **Cena de transformação:** a primeira pessoa que se transforma na luta ganha uma cena no estilo do FighterZ: clarão, câmera baixa girando em volta dela, close no rosto gritando, explosão de poder com quadro de impacto e plano aberto. Ninguém fica preso nem invulnerável, é só câmera e efeito.
 - **Erros:** errar tira vida, mas nunca mata. A cena continua.
-- **Efeitos:** a cena tem impact frames (tela invertida, quadro preto com linhas de impacto, clarão), tela tremendo, onomatopeias, faixas de cinema, falas e sons do próprio DMZ.
+- **Golpes que encostam:** cada soco e chute coloca você na distância medida no Blockbench para o punho ou o pé tocar o chefe, e a reação dele sai no instante do contato.
+- **Efeitos:** impact frames (tela invertida, quadro preto com linhas de impacto, clarão), câmera que congela um instante nos golpes fortes (hitstop) e entorta de leve, tela tremendo, faixas de cinema e sons do próprio DMZ.
 
 Cenas:
 

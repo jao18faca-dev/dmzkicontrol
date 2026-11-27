@@ -162,6 +162,21 @@ public final class EncHud implements IGuiOverlay {
         return new float[]{(float) (Math.sin(t * 9.7) * k), (float) (Math.cos(t * 8.3) * k * 0.8), (float) (Math.sin(t * 6.1) * k * 0.6)};
     }
 
+    /** Congela a camera por ~2 ticks logo depois de um impacto forte (nivel 2+). */
+    public static boolean hitstop(float partial) {
+        double since = now(partial) - impactAt;
+        return impactLevel >= 2 && since >= 0 && since < (impactLevel >= 3 ? 3.0 : 2.0);
+    }
+
+    /** Tranco de inclinacao (camera "torta" estilo FighterZ) que volta sozinho depois do impacto. */
+    public static float rollKick(float partial) {
+        double since = now(partial) - punchAt;
+        if (since < 0 || since > 10) return 0f;
+        double u = since / 10.0;
+        float side = ((int) punchAt & 1) == 0 ? 1f : -1f;
+        return (float) (side * (2.0 + 2.0 * impactLevel) * Math.pow(1 - u, 2));
+    }
+
     public static float fovPunch(float partial) {
         double since = now(partial) - punchAt;
         if (since < 0 || since > 8) return 1f;

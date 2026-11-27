@@ -54,8 +54,21 @@ public final class EncScripts {
     /** Reacoes do chefe (animacoes de dano do proprio DMZ). */
     private static final String[] HURTS = {"hurt_left", "hurt_right", "hurt_top", "hurt_right", "hurt_left", "hurt_top2"};
     private static final String[] PUNCH = {d("punch1"), d("punch2"), d("punch3"), d("punch4"), d("punch5"), d("punch6")};
-    private static final String[] COMBO_POSES = {"base.jab_right", "base.jab_left", "combat.gutkick_right", "combat.one_handed_uppercut_left",
-            "base.jab_right", "combat.gutkick_left", "base.jab_left", "combat.one_handed_uppercut_right"};
+    /**
+     * Golpes do combo, medidos no Blockbench com o Cell (DMZ) na frente do jogador:
+     * distancia centro-a-centro (blocos) em que o punho/pe encosta no peito dele, e o tick
+     * do contato (2 de transicao do GeckoLib + pico da animacao).
+     */
+    private record Strike(String pose, double reach, int contact) {}
+    private static final Strike[] COMBO = {
+            new Strike("base.jab_right", 1.38, 5),
+            new Strike("base.jab_left", 1.38, 5),
+            new Strike("combat.gutkick_right", 1.36, 6),
+            new Strike("combat.one_handed_uppercut_left", 0.95, 4),
+            new Strike("combat.one_handed_punch_right", 1.40, 5),
+            new Strike("combat.gutkick_left", 1.36, 6),
+            new Strike("base.jab_left", 1.38, 5),
+            new Strike("combat.one_handed_uppercut_right", 0.95, 4)};
 
     /** Esquiva de zanzoken (padrao de todas as deixas de desvio). */
     private static void dodge(Cue c, MoveKind kind) {
@@ -66,11 +79,14 @@ public final class EncScripts {
     /** Golpe do combo em rodizio. */
     private static Cue comboHit(Beat b, int i, int t, Key key, int win, float dmg) {
         Cue c = b.cue(t, Mode.TURN, key, win).lead(12).dmg(dmg).hurt(0.03f);
-        c.onHit(0, SELF).pose(COMBO_POSES[i % COMBO_POSES.length], 9).snd(PUNCH[i % PUNCH.length], 1f, 0.9f + (i % 4) * 0.06f)
-                .move(MoveKind.LUNGE, 0.5, 0, 0, 0.7f);
-        c.onHit(2, BOSS).fx("hit_spark", 6).impact(i % 3 == 2 ? 2 : 1).shake(i % 3 == 2 ? 1.6f : 0.7f)
-                .sfx(i % 3 == 2 ? "バキッ" : null).boss(HURTS[i % HURTS.length]).shove(i % 3 == 2 ? 0.8f : 0.35f);
-        c.onHit(7, SELF).move(MoveKind.CLOSE, 0, 0, 0, 0.35f);
+        Strike st = COMBO[i % COMBO.length];
+        boolean heavy = i % 3 == 2;
+        // entra ja na distancia exata do golpe: o punho encosta no chefe em vez de parar no ar
+        c.onHit(0, SELF).pose(st.pose(), 9).move(MoveKind.CLOSE, st.reach(), 0, 0, 0.75f);
+        // reacao no instante do contato (nao antes: empurrar o chefe antes do soco chegar fazia errar)
+        c.onHit(st.contact(), BOSS).fx("hit_spark", 6).impact(heavy ? 2 : 1).shake(heavy ? 1.6f : 0.7f)
+                .snd(PUNCH[i % PUNCH.length], 1f, 0.9f + (i % 4) * 0.06f)
+                .boss(HURTS[i % HURTS.length]).shove(heavy ? 0.55f : 0.25f);
         // errou: o chefe defende e devolve
         c.onMiss(0, BOSS).boss("attack").snd(d("block2"));
         c.onMiss(2, SELF).pose("hit_recoil", 10).impact(1).shake(1f).snd(PUNCH[(i + 3) % PUNCH.length], 1f, 0.7f);

@@ -416,7 +416,10 @@ public final class EncounterDirector {
                 boolean allDone = true;
                 for (byte b : run.charged) if (b == 0) allDone = false;
                 if (allDone && run.allDoneAt < 0) run.allDoneAt = now;
-                if (run.allDoneAt >= 0 && now - run.allDoneAt > 30) over = true;
+                // quem se transformou ganha a cena de transformacao (cerca de 2,7 s): a janela espera ela acabar
+                boolean transformed = false;
+                for (byte b : run.charged) if (b == 1) transformed = true;
+                if (run.allDoneAt >= 0 && now - run.allDoneAt > (transformed ? 56 : 30)) over = true;
             }
             default -> {}
         }
