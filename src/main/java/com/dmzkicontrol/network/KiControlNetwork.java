@@ -58,6 +58,11 @@ public final class KiControlNetwork {
                 .decoder(FormSceneSkipC2S::decode)
                 .consumerMainThread(FormSceneSkipC2S::handle)
                 .add();
+        CHANNEL.messageBuilder(CombatFxS2C.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(CombatFxS2C::encode)
+                .decoder(CombatFxS2C::decode)
+                .consumerMainThread(CombatFxS2C::handle)
+                .add();
         CHANNEL.messageBuilder(PrepHudS2C.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(PrepHudS2C::encode)
                 .decoder(PrepHudS2C::decode)

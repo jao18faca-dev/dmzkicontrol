@@ -497,6 +497,30 @@ public class KiControlConfig {
 
     public Story story = new Story();
 
+    /** Combate mais dinamico (estilo Sparking Zero / Xenoverse 2). */
+    public static class Combat {
+        /** Dash na hora certa (logo antes do golpe chegar) = zanzoken: some e aparece nas costas de quem atacou. */
+        public boolean vanishDodge = true;
+        /** Ticks antes do golpe em que o dash ainda conta como esquiva (20 = 1 s). */
+        public int vanishWindowTicks = 5;
+        /** Segundos entre duas esquivas zanzoken. */
+        public double vanishCooldownSeconds = 1.5;
+        /** Golpes seguidos (sem parar mais de 1,5 s) que viram um golpe pesado que arremessa o inimigo. */
+        public int hitsForSmash = 6;
+        /** Depois do arremesso, dar dash persegue o inimigo (aparece na frente dele) e o proximo golpe tira mais. */
+        public boolean vanishingChase = true;
+        /** Bonus de dano do golpe depois do zanzoken ou da perseguicao. */
+        public double counterDamageBonus = 0.30;
+        /** Os chefes da historia tambem somem e contra-atacam as vezes. */
+        public boolean bossVanish = true;
+        /** Chance (0 a 1) de um chefe sumir de um golpe corpo a corpo. */
+        public double bossVanishChance = 0.10;
+        /** Tremida de camera e "congelada" no golpe pesado. */
+        public boolean impactFeel = true;
+    }
+
+    public Combat combat = new Combat();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -633,6 +657,7 @@ public class KiControlConfig {
         if (auraLevelStoryRequirements == null) auraLevelStoryRequirements = new LinkedHashMap<>();
         if (integrations == null) integrations = new Integrations();
         if (story == null) story = new Story();
+        if (combat == null) combat = new Combat();
         if (kiVision == null) kiVision = new KiVision();
         if (bubbles == null) bubbles = new Bubbles();
         if (movement == null) movement = new Movement();

@@ -202,6 +202,25 @@ Configuração em `config/dmzkicontrol.json` → `encounters`:
 - `missDamageMultiplier`, `bossDamageMultiplier`, `cooldownSeconds`;
 - `disabled`: ids `frieza_base`, `frieza_fp`, `cell_perfect`.
 
+## História mais desafiadora (4.7)
+
+- **Prazo para treinar:** depois de certos chefes, o próximo inimigo só chega quando o tempo acaba. São eles: 1 ano até os Saiyajins (depois do Raditz), a viagem a Namekusei, 3 anos até os Androides, 10 dias até os Jogos do Cell, 7 anos até o Torneio (Babidi) e o despertar do Beerus. O relógio aparece no canto da tela, em tempo da história e em tempo de jogo. Enquanto o prazo corre o inimigo não aparece; quando acaba, ele chega, pronto ou não. Na Sala do Tempo o relógio de fora quase para. Para lutar antes, use `/dmzpronto`. Para ajustar a duração: `story.deadlineScale`.
+- **Chefes mais fortes:** os inimigos de missão têm 1,8× a vida e 1,5× o dano, por cima da dificuldade do DMZ (`story.bossHealthMultiplier`, `story.bossDamageMultiplier`).
+- **Lutas no lugar certo:** o grupo é levado até o lugar da luta e o chefe aparece lá. Cell vai para a Arena do Cell; Freeza e as Forças Especiais Ginyu, para a nave do Freeza em Namekusei; os capangas do Babidi e o Vegeta Majin, para a nave do Babidi; Super Boo, para o Palácio de Kami; Kid Boo, para o Planeta Sagrado dos Kaioshins; Nappa e os Saibamen, para a cratera do pouso; Dr. Gero, para o laboratório dele. Desligar: `story.battleStages = false`.
+- **Com o DMZ Sparking:** as páginas de missões dele (Agora, História, Episódios, Missões extras) abrem a árvore de missões do DragonMineZ (`story.keepDmzQuestMenu`). As cidades (West City, Central City, East City, Satan City) já vêm no Sparking e aparecem em terreno novo; para achar uma, use `/locate structure dmzsparking:west_city`.
+
+## Treino dos drones na sala de gravidade (4.7)
+
+Agache e clique com o botão direito no Aparelho de Gravidade. São 6 ondas de drones da Capsule Corp que voam em volta, miram (o olho vermelho pulsa e aparece a linha da mira) e disparam lasers. Saia da mira na hora certa e destrua todos os drones antes do tempo acabar. A partir da segunda onda, eles desviam de alguns golpes. Quanto maior a gravidade da sala, mais difícil o treino e maior o TP. Seu recorde fica salvo. Para parar, agache e clique no aparelho de novo.
+
+## Combate dinâmico (4.7)
+
+- **Zanzoken:** dê dash logo antes do golpe chegar. Você some e aparece nas costas de quem atacou, e o próximo golpe nele tira 30% a mais.
+- **Golpe pesado:** 6 golpes seguidos sem parar terminam num soco que arremessa o inimigo longe, com tremida e zoom de câmera.
+- **Perseguição:** dê dash enquanto o inimigo voa para aparecer na frente dele e continuar o combo. Dá para repetir, como o *Vanishing Assault* do Sparking Zero.
+- **Chefes:** os chefes da história também somem às vezes e contra-atacam pelas costas.
+- Tudo isso fica em `combat.*` no arquivo de configuração.
+
 ## Grupo (party) do DMZ
 
 - **TP dividido:** o DMZ 2.2.1 só dividia o TP com o grupo se quem ganhou tivesse a Transmissão Instantânea. Agora divide com quem está no mesmo mundo e dentro do alcance do grupo (`partyQuestShareRange` do DMZ), na proporção do DMZ (`partyTpShareRatio`). Desligar: `party.fixTpShare = false`.
@@ -213,6 +232,9 @@ Configuração em `config/dmzkicontrol.json` → `encounters`:
 |---|---|
 | `/auracontrol` | Mostra a forma atual (id `grupo:forma`), o selo, o domínio, o ki poupado, o poder, o crítico e a tolerância |
 | `/auracontrol toggle` | Igual à tecla N |
+| `/dmzpronto` | Termina o prazo de treino e chama o inimigo agora |
+| `/dmzprazo <id>` | Começa um prazo de treino (teste, op): saiyans, namek, androids, cell_games, buu, beerus |
+| `/dmzluta <chefe>` | Testa a luta cinematográfica: freeza2, freeza, freeza100, cell, cellsuper, vegetamajin, superbuu, kidbuu, beerus (op) |
 | `/auracontrol list` | Domínio em todas as formas treinadas |
 | `/auracontrol reload` | Recarrega `config/dmzkicontrol.json` (op) |
 | `/auracontrol mastery set <alvos> <0-100>` | Define o domínio na forma atual (op) |
