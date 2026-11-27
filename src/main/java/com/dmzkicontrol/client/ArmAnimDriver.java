@@ -114,8 +114,12 @@ public final class ArmAnimDriver {
                 }
                 int ser = currentSerial(p);
                 boolean dmzAnim = !want.startsWith("dmzkicontrol.");
-                boolean looping = DMZ_LOOPS.contains(want) || (want.startsWith("dmzkicontrol.cs.") && !ONE_SHOT.contains(want));
-                boolean strike = ONE_SHOT.contains(want) || (dmzAnim && !looping);
+                // golpes "dbz_" (feitos no Blockbench) entram como golpe; a guarda e a defesa ficam paradas
+                boolean dbz = want.startsWith("dmzkicontrol.cs.dbz_");
+                boolean dbzStrike = dbz && !want.endsWith("_guard") && !want.endsWith("_block");
+                boolean looping = DMZ_LOOPS.contains(want) || want.equals("dmzkicontrol.cs.dbz_guard")
+                        || (want.startsWith("dmzkicontrol.cs.") && !dbz && !ONE_SHOT.contains(want));
+                boolean strike = ONE_SHOT.contains(want) || dbzStrike || (dmzAnim && !looping);
                 if (!want.equals(last[0]) || (strike && ser != lastSerial[0])) {
                     lastSerial[0] = ser;
                     // golpe entra rapido; pose de cena entra mesclando devagar (mais fluido)

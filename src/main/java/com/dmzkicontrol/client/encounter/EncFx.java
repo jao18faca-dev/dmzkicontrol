@@ -118,6 +118,10 @@ public final class EncFx {
                 level.addParticle(f.size > 1 ? ParticleTypes.EXPLOSION_EMITTER : ParticleTypes.EXPLOSION, c.x, c.y, c.z, 0, 0, 0);
                 for (int i = 0; i < 16; i++) level.addParticle(ParticleTypes.ELECTRIC_SPARK, c.x, c.y, c.z, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5);
             }
+            case "impact_star" -> {
+                for (int i = 0; i < 18; i++) level.addParticle(ParticleTypes.CRIT, c.x, c.y, c.z, r.nextGaussian() * 0.8, r.nextGaussian() * 0.8, r.nextGaussian() * 0.8);
+                for (int i = 0; i < 6; i++) level.addParticle(ParticleTypes.CLOUD, c.x, c.y, c.z, r.nextGaussian() * 0.25, r.nextGaussian() * 0.25, r.nextGaussian() * 0.25);
+            }
             case "hit_spark", "deflect_spark" -> {
                 for (int i = 0; i < 14; i++) level.addParticle(ParticleTypes.CRIT, c.x, c.y, c.z, r.nextGaussian() * 0.6, r.nextGaussian() * 0.6, r.nextGaussian() * 0.6);
                 level.addParticle(ParticleTypes.SWEEP_ATTACK, c.x, c.y, c.z, 0, 0, 0);
@@ -303,6 +307,15 @@ public final class EncFx {
                     Vec3 p = c.add(forward(f.src).scale(-3.5));
                     double rad = (0.4 + 1.4 * easeOut(u)) * sz;
                     glow(r, p, rad, new float[]{1f, 0.8f, 0.4f}, (float) (1 - u));
+                }
+                case "impact_star" -> {
+                    // estrela de impacto de manga: estoura grande em 2 ticks, segura e some
+                    double pop = u < 0.25 ? 0.55 + 0.75 * easeOut(u / 0.25) : 1.3 - 0.15 * (u - 0.25);
+                    float a = (float) (u < 0.6 ? 1 : 1 - (u - 0.6) / 0.4);
+                    Vec3 p = c.add(forward(f.src).scale(0.45));
+                    spiky(r, p, 0.95 * pop * sz, new float[]{1f, 0.25f, 0.1f}, a, f.seed, 11);
+                    spiky(r, p, 0.6 * pop * sz, new float[]{1f, 0.75f, 0.2f}, a, f.seed + 7, 9);
+                    glow(r, p, 0.3 * pop * sz, new float[]{1f, 1f, 0.95f}, a);
                 }
                 case "hit_spark", "deflect_spark" -> {
                     float[] col = f.kind.equals("hit_spark") ? new float[]{1f, 0.95f, 0.7f} : new float[]{1f, 0.5f, 0.95f};
@@ -543,6 +556,21 @@ public final class EncFx {
         if (side.lengthSqr() < 1e-8) return;
         side = side.normalize().scale(w);
         quad(r, a.add(side), a.subtract(side), b.subtract(side), b.add(side), col, a0, a0, a1, a1);
+    }
+
+    /** Estrela cheia de pontas irregulares, virada para a camera. */
+    private static void spiky(R r, Vec3 c, double rad, float[] col, float a, long seed, int spikes) {
+        if (a <= 0.01) return;
+        RandomSource rand = RandomSource.create(seed);
+        int n = spikes * 2;
+        double rot = rand.nextDouble() * Math.PI;
+        Vec3[] pts = new Vec3[n];
+        for (int i = 0; i < n; i++) {
+            double ang = rot + i * Math.PI * 2 / n + (rand.nextDouble() - 0.5) * 0.25;
+            double rr = i % 2 == 0 ? rad * (0.7 + rand.nextDouble() * 0.6) : rad * 0.38;
+            pts[i] = c.add(r.L.scale(Math.cos(ang) * rr)).add(r.U.scale(Math.sin(ang) * rr));
+        }
+        for (int i = 0; i < n; i++) quad(r, c, c, pts[(i + 1) % n], pts[i], col, a, a, a * 0.9f, a * 0.9f);
     }
 
     private static void star(R r, Vec3 c, double rad, float[] col, float a, long seed) {

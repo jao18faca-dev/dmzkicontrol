@@ -55,20 +55,24 @@ public final class EncScripts {
     private static final String[] HURTS = {"hurt_left", "hurt_right", "hurt_top", "hurt_right", "hurt_left", "hurt_top2"};
     private static final String[] PUNCH = {d("punch1"), d("punch2"), d("punch3"), d("punch4"), d("punch5"), d("punch6")};
     /**
-     * Golpes do combo, medidos no Blockbench com o Cell (DMZ) na frente do jogador:
-     * distancia centro-a-centro (blocos) em que o punho/pe encosta no peito dele, e o tick
-     * do contato (2 de transicao do GeckoLib + pico da animacao).
+     * Golpes do combo, montados e medidos no Blockbench com o Cell (DMZ) na frente do jogador, no estilo da luta
+     * Goku/Gohan x Cell: arrancada voando, soco no estomago com o corpo todo, chute voador, gancho que lanca.
+     * reach = distancia centro-a-centro (blocos) em que o punho/pe encosta; contact = tick do contato
+     * (2 de transicao do GeckoLib + o quadro do golpe). Cada golpe segura a pose no contato (o "congelamento").
      */
     private record Strike(String pose, double reach, int contact) {}
     private static final Strike[] COMBO = {
-            new Strike("base.jab_right", 1.38, 5),
+            new Strike("dbz_dash_punch", 1.48, 5),
+            new Strike("dbz_gut_punch", 1.74, 6),
+            new Strike("dbz_flying_kick", 1.34, 5),
+            new Strike("dbz_rising_uppercut", 1.24, 6),
             new Strike("base.jab_left", 1.38, 5),
+            new Strike("dbz_dash_punch", 1.48, 5),
             new Strike("combat.gutkick_right", 1.36, 6),
-            new Strike("combat.one_handed_uppercut_left", 0.95, 4),
-            new Strike("combat.one_handed_punch_right", 1.40, 5),
-            new Strike("combat.gutkick_left", 1.36, 6),
-            new Strike("base.jab_left", 1.38, 5),
-            new Strike("combat.one_handed_uppercut_right", 0.95, 4)};
+            new Strike("dbz_gut_punch", 1.74, 6)};
+    /** Martelo duplo do golpe final: mergulha ate ficar 1,44 bloco na frente e 1,38 acima do chefe. */
+    private static final double HAMMER_REACH = 1.44, HAMMER_UP = 1.38;
+    private static final int HAMMER_CONTACT = 6;
 
     /** Esquiva de zanzoken (padrao de todas as deixas de desvio). */
     private static void dodge(Cue c, MoveKind kind) {
@@ -84,9 +88,9 @@ public final class EncScripts {
         // entra ja na distancia exata do golpe: o punho encosta no chefe em vez de parar no ar
         c.onHit(0, SELF).pose(st.pose(), 9).move(MoveKind.CLOSE, st.reach(), 0, 0, 0.75f);
         // reacao no instante do contato (nao antes: empurrar o chefe antes do soco chegar fazia errar)
-        c.onHit(st.contact(), BOSS).fx("hit_spark", 6).impact(heavy ? 2 : 1).shake(heavy ? 1.6f : 0.7f)
+        c.onHit(st.contact(), BOSS).fx("impact_star", heavy ? 9 : 7).size(heavy ? 1.3f : 1f).impact(heavy ? 2 : 1).shake(heavy ? 1.6f : 0.7f)
                 .snd(PUNCH[i % PUNCH.length], 1f, 0.9f + (i % 4) * 0.06f)
-                .boss(HURTS[i % HURTS.length]).shove(heavy ? 0.55f : 0.25f);
+                .boss(HURTS[i % HURTS.length]).shove(heavy ? 1.0f : 0.3f);
         // errou: o chefe defende e devolve
         c.onMiss(0, BOSS).boss("attack").snd(d("block2"));
         c.onMiss(2, SELF).pose("hit_recoil", 10).impact(1).shake(1f).snd(PUNCH[(i + 3) % PUNCH.length], 1f, 0.7f);
@@ -204,15 +208,19 @@ public final class EncScripts {
         q = p.beat(Kind.PROMPT, 150).caption("enc.dmzkicontrol.cap.combo");
         q.shot(0, 0, "mid", 3.6, 1.6, 0.4, "mid", 0, 1.4, 0, 0.95f)
                 .shot(50, 8, "mid", -3.4, 2.4, 1.2, "boss", 0, 1.5, 0, 0.9f)
-                .shot(96, 8, "boss", 1.4, 1.0, -2.0, "mid", 0, 1.6, 0, 0.85f);
+                .shot(96, 8, "boss", 1.4, 1.0, -2.0, "mid", 0, 1.6, 0, 0.85f)
+                // close nos olhos antes do golpe final, depois camera baixa e torta para o martelo
+                .shot(110, 0, "me", 0.22, 1.66, -0.8, "me", 0, 1.62, 0, 0.5f, -6f)
+                .shot(118, 0, "mid", 4.2, 0.2, 1.2, "boss", 0, 2.0, 0, 1.05f, 9f);
         Key[] combo = {Key.ATTACK, Key.JUMP, Key.ATTACK, Key.LEFT, Key.ATTACK, Key.RIGHT, Key.JUMP, Key.ATTACK, Key.DOWN};
         for (int i = 0; i < combo.length; i++) comboHit(q, i, 14 + 11 * i, combo[i], 4, 0.012f);
         Cue fin = q.cue(126, Mode.ALL, Key.ATTACK, 5).lead(20).syncDmg(0.09f).hurt(0.04f);
-        fin.tell(-18, SELF).move(MoveKind.OFFSET, 0, 2.6, -0.9, 0.35f).pose("double_axe", 2);
-        fin.onHit(0, SELF).pose("double_axe", 12).snd(d("critic_punch2"), 1f, 0.8f);
-        fin.onSync(2, BOSS).impact(3).sfx("ドゴォッ!!").shake(4f).move(MoveKind.ABS, 0, 0, 5.0, 0.55f).snd(d("ki_explosion_impact")).boss("hurt_down");
-        fin.onSync(8, BOSS).fx("crater", 30).size(1.4f);
-        fin.onPartial(2, BOSS).impact(2).sfx("ドッ").shake(2.5f).move(MoveKind.ABS, 0, 0.5, 5.0, 0.4f).boss("hurt_top");
+        fin.tell(-18, SELF).move(MoveKind.OFFSET, 0, 2.4, -0.6, 0.35f).pose("base.fly_idle", 18);
+        fin.onHit(0, SELF).pose("dbz_hammer", 14).move(MoveKind.CLOSE, HAMMER_REACH, HAMMER_UP, 0, 0.8f).fx("afterimage", 8).snd(ZANZOKEN, 0.8f, 1.3f);
+        fin.onHit(HAMMER_CONTACT, SELF).snd(d("critic_punch2"), 1f, 0.8f);
+        fin.onSync(HAMMER_CONTACT, BOSS).fx("impact_star", 12).size(1.8f).impact(3).sfx("ドゴォッ!!").shake(4f).move(MoveKind.ABS, 0, 0, -4.0, 0.55f).snd(d("ki_explosion_impact")).boss("hurt_down");
+        fin.onSync(HAMMER_CONTACT + 6, BOSS).fx("crater", 30).size(1.4f);
+        fin.onPartial(HAMMER_CONTACT, BOSS).fx("impact_star", 9).size(1.3f).impact(2).sfx("ドッ").shake(2.5f).move(MoveKind.ABS, 0, 0.5, -2.5, 0.4f).boss("hurt_top");
         fin.onHit(14, SELF).move(MoveKind.LANE, 0, 0, 0, 0.3f);
         fin.onMiss(0, SELF).pose("hit_recoil", 14).impact(1).snd(d("block3"));
         fin.onMiss(14, SELF).move(MoveKind.LANE, 0, 0, 0, 0.3f);
@@ -294,17 +302,20 @@ public final class EncScripts {
         q = p.beat(Kind.PROMPT, 156).caption("enc.dmzkicontrol.cap.combo");
         q.shot(0, 0, "mid", 4, 1.6, 0.6, "mid", 0, 1.5, 0, 0.95f)
                 .shot(52, 8, "mid", -4, 2.4, 1.4, "boss", 0, 1.6, 0, 0.9f)
-                .shot(104, 8, "boss", 1.5, 1.0, -2.5, "mid", 0, 1.6, 0, 0.85f);
+                .shot(104, 8, "boss", 1.5, 1.0, -2.5, "mid", 0, 1.6, 0, 0.85f)
+                .shot(110, 0, "me", 0.22, 1.66, -0.8, "me", 0, 1.62, 0, 0.5f, -6f)
+                .shot(122, 0, "mid", 4.4, 0.2, 1.2, "boss", 0, 2.0, 0, 1.05f, 9f);
         Key[] combo = {Key.ATTACK, Key.JUMP, Key.LEFT, Key.RIGHT, Key.ATTACK, Key.DOWN, Key.ATTACK, Key.JUMP, Key.RIGHT, Key.ATTACK};
         for (int i = 0; i < combo.length; i++) {
             comboHit(q, i, 12 + 10 * i, combo[i], 4, 0.012f);
         }
         Cue fin = q.cue(132, Mode.ALL, Key.ATTACK, 6).lead(20).syncDmg(0.09f).hurt(0.04f);
-        fin.tell(-18, SELF).move(MoveKind.OFFSET, 0, 3.0, -0.9, 0.35f).pose("double_axe", 2);
-        fin.onHit(0, SELF).pose("double_axe", 12).snd(d("critic_punch2"), 1f, 0.8f);
-        fin.onSync(2, BOSS).impact(3).sfx("ドゴォン!!").shake(4.5f).move(MoveKind.ABS, 0, 0, 0, 0.55f).snd(d("ki_explosion_impact")).boss("hurt_down");
-        fin.onSync(8, BOSS).fx("crater", 34).size(1.5f);
-        fin.onPartial(2, BOSS).impact(2).sfx("ドッ").shake(2.5f).move(MoveKind.ABS, 0, 0.6, 0, 0.4f).boss("hurt_top");
+        fin.tell(-18, SELF).move(MoveKind.OFFSET, 0, 2.4, -0.6, 0.35f).pose("base.fly_idle", 18);
+        fin.onHit(0, SELF).pose("dbz_hammer", 14).move(MoveKind.CLOSE, HAMMER_REACH, HAMMER_UP, 0, 0.8f).fx("afterimage", 8).snd(ZANZOKEN, 0.8f, 1.3f);
+        fin.onHit(HAMMER_CONTACT, SELF).snd(d("critic_punch2"), 1f, 0.8f);
+        fin.onSync(HAMMER_CONTACT, BOSS).fx("impact_star", 12).size(1.8f).impact(3).sfx("ドゴォン!!").shake(4.5f).move(MoveKind.ABS, 0, 0, 0, 0.55f).snd(d("ki_explosion_impact")).boss("hurt_down");
+        fin.onSync(HAMMER_CONTACT + 6, BOSS).fx("crater", 34).size(1.5f);
+        fin.onPartial(HAMMER_CONTACT, BOSS).fx("impact_star", 9).size(1.3f).impact(2).sfx("ドッ").shake(2.5f).move(MoveKind.ABS, 0, 0.6, 0, 0.4f).boss("hurt_top");
         fin.onHit(14, SELF).move(MoveKind.LANE, 0, 0, -20, 0.3f);
         fin.onMiss(0, SELF).pose("hit_recoil", 14).impact(1).snd(d("block3"));
         fin.onMiss(14, SELF).move(MoveKind.LANE, 0, 0, -20, 0.3f);

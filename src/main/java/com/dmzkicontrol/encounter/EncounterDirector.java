@@ -95,6 +95,9 @@ public final class EncounterDirector {
         Vec3 bossTarget;
         float bossSpeed = 0.3f;
         float shove;
+        /** empurrao: alvo, ticks parado la, atraso (o chefe so voa depois do congelamento do impacto) */
+        float shoveGoal;
+        int shoveHold, shoveDelay;
         // deixas
         byte[][] res;
         float[][] off;
@@ -522,7 +525,11 @@ public final class EncounterDirector {
                 if (ev.move != null) bossMove(run, ev.move, self);
                 if (ev.dmg > 0) damageBoss(run, ev.dmg);
                 if (ev.bossAnim != null) bossAnim(run, ev.bossAnim);
-                if (ev.shove > 0) run.shove = Math.max(run.shove, ev.shove);
+                if (ev.shove > 0) {
+                    run.shoveGoal = Math.max(run.shoveGoal, ev.shove);
+                    run.shoveDelay = ev.impact >= 2 ? 3 : 1;
+                    run.shoveHold = ev.shove >= 2f ? 12 : 1;
+                }
             } else if (ev.hurt > 0) {
                 hurt(run, role, ev.hurt);
             }
@@ -548,8 +555,15 @@ public final class EncounterDirector {
     private static void moveBoss(Run run) {
         LivingEntity boss = run.boss;
         Vec3 want = run.world(run.bossTarget.x, run.bossTarget.y, run.bossTarget.z - run.shove);
-        run.shove *= 0.72f;
-        if (run.shove < 0.01f) run.shove = 0;
+        // empurrao/lancamento: espera o congelamento, voa ate o alvo, fica la um pouco e volta
+        if (run.shoveDelay > 0) run.shoveDelay--;
+        else if (run.shoveGoal > 0 || run.shove > 0) {
+            run.shove += (run.shoveGoal - run.shove) * (run.shoveGoal >= 2f ? 0.45f : 0.7f);
+            if (run.shoveHold > 0) run.shoveHold--;
+            else run.shoveGoal *= run.shoveGoal >= 2f ? 0.82f : 0.45f;
+            if (run.shoveGoal < 0.01f) run.shoveGoal = 0;
+            if (run.shoveGoal == 0 && run.shove < 0.01f) run.shove = 0;
+        }
         Vec3 pos = boss.position();
         Vec3 d = want.subtract(pos);
         Vec3 next;
