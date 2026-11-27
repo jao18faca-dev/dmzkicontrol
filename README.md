@@ -221,6 +221,10 @@ Agache e clique com o botão direito no Aparelho de Gravidade. São 6 ondas de d
 - **Chefes:** os chefes da história também somem às vezes e contra-atacam pelas costas.
 - Tudo isso fica em `combat.*` no arquivo de configuração.
 
+## Texturas HD (4.8)
+
+O pacote **DMZ HD Texturepack 2.1, do ZoneMC**, vem dentro do mod, já ligado e por cima dos outros pacotes (aparece como "DMZ HD (ZoneMC)"). O drone de treino e o Bubbles ganharam texturas novas em HD no mesmo estilo de anime (`tools/textures/hd_boxuv.py`).
+
 ## Grupo (party) do DMZ
 
 - **TP dividido:** o DMZ 2.2.1 só dividia o TP com o grupo se quem ganhou tivesse a Transmissão Instantânea. Agora divide com quem está no mesmo mundo e dentro do alcance do grupo (`partyQuestShareRange` do DMZ), na proporção do DMZ (`partyTpShareRatio`). Desligar: `party.fixTpShare = false`.
@@ -314,4 +318,5 @@ Licença: GPL-3.0-or-later, a mesma família do DragonMineZ.
 - Com os dois instalados, o Instinto Superior usa so o desvio do Sparking (o desvio automatico do Noea e
   desligado por um mixin opcional; volta com `integrations.noeaUltraInstinctDodge: true` em
   `config/dmzkicontrol.json`). A raiva crescente do Ultra Ego do Noea continua igual.
+- **DMZ HD Texturepack 2.1**, de **ZoneMC**: as texturas HD dos personagens, raças, sagas, mestres, roupas e telas vêm embutidas no mod como um pacote de recursos que já fica ligado. Incluído com permissão do autor. Os arquivos que não servem mais no DragonMineZ 2.2.1 (5ª forma dos Demônios do Gelo e Janemba, cujos modelos mudaram) ficaram de fora. Para desligar: `textures.hdPack = false` (reinicie o jogo).
 - **DragonMineZ**, base de tudo.

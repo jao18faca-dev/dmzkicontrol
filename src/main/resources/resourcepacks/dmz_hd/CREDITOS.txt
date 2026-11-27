@@ -1,0 +1,3 @@
+DMZ HD Texturepack 2.1 - feito por ZoneMC.
+Incluido no DragonMineZ Evolution (dmzkicontrol) com permissao do autor, com os devidos creditos.
+Arquivos que nao servem mais no DragonMineZ 2.2.1 (modelos que mudaram: 5a forma dos Demonios do Gelo e Janemba) ficaram de fora.

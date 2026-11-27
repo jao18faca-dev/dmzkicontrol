@@ -70,6 +70,27 @@ public final class ClientSetup {
 
     @Mod.EventBusSubscriber(modid = KiControlMod.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class ModBus {
+        /** Pacote de texturas HD do ZoneMC, embutido no mod (resourcepacks/dmz_hd), sempre por cima. */
+        @SubscribeEvent
+        public static void addPacks(net.minecraftforge.event.AddPackFindersEvent event) {
+            if (event.getPackType() != net.minecraft.server.packs.PackType.CLIENT_RESOURCES) return;
+            try {
+                if (!com.dmzkicontrol.config.KiControlConfig.get().textures.hdPack) return;
+            } catch (Throwable ignored) {
+            }
+            try {
+                java.nio.file.Path path = net.minecraftforge.fml.ModList.get().getModFileById(KiControlMod.MODID).getFile().findResource("resourcepacks/dmz_hd");
+                net.minecraft.server.packs.repository.Pack pack = net.minecraft.server.packs.repository.Pack.readMetaAndCreate(
+                        "builtin/dmzkicontrol_hd", net.minecraft.network.chat.Component.literal("DMZ HD (ZoneMC)"), true,
+                        id -> new net.minecraft.server.packs.PathPackResources(id, path, true),
+                        net.minecraft.server.packs.PackType.CLIENT_RESOURCES, net.minecraft.server.packs.repository.Pack.Position.TOP,
+                        net.minecraft.server.packs.repository.PackSource.BUILT_IN);
+                if (pack != null) event.addRepositorySource(consumer -> consumer.accept(pack));
+            } catch (Throwable t) {
+                KiControlMod.LOGGER.warn("Pacote HD nao carregou: {}", t.toString());
+            }
+        }
+
         private ModBus() {}
 
         @SubscribeEvent

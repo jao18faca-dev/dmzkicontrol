@@ -521,6 +521,14 @@ public class KiControlConfig {
 
     public Combat combat = new Combat();
 
+    /** Texturas HD (pacote do ZoneMC, incluido com permissao). Mudar pede reiniciar o jogo. */
+    public static class Textures {
+        /** true = o pacote "DMZ HD Texturepack" (ZoneMC) fica sempre ligado, em cima dos outros. */
+        public boolean hdPack = true;
+    }
+
+    public Textures textures = new Textures();
+
     private static List<Rule> defaultRules() {
         List<Rule> r = new ArrayList<>();
         // A ordem importa: a primeira regra que casar vence.
@@ -658,6 +666,7 @@ public class KiControlConfig {
         if (integrations == null) integrations = new Integrations();
         if (story == null) story = new Story();
         if (combat == null) combat = new Combat();
+        if (textures == null) textures = new Textures();
         if (kiVision == null) kiVision = new KiVision();
         if (bubbles == null) bubbles = new Bubbles();
         if (movement == null) movement = new Movement();
