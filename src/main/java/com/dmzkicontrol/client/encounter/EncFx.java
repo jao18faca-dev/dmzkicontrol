@@ -436,15 +436,15 @@ public final class EncFx {
                     Vec3 ft = feet(f.src, f.srcSnap, partial).subtract(r.cam);
                     double h = height(f.src);
                     float[] col = auraOf(f.src, new float[]{1f, 0.85f, 0.3f});
-                    AuraFx.flames(r.vc, r.m, ft, h, 1.2 * sz, col, fade * 0.7f, now, f.seed);
-                    AuraFx.sparks(r.vc, r.m, ft, h, 1.0 * sz, col, fade, now, f.seed, 8);
+                    // a aura do proprio DMZ no lutador
+                    com.dmzkicontrol.client.DmzAura.hold(Minecraft.getInstance().level.getEntity(f.src), 3);
                 }
                 case "charge" -> {
                     // carregando ki: aura calma subindo e um anel leve no chao
                     Vec3 ft = feet(f.src, f.srcSnap, partial);
                     double h = height(f.src);
                     float[] col = auraOf(f.src, new float[]{0.85f, 0.93f, 1f});
-                    AuraFx.flames(r.vc, r.m, ft.subtract(r.cam), h, 1.05, col, fade * 0.5f * (float) (0.85 + 0.15 * Math.sin(now * 0.9)), now, f.seed);
+                    com.dmzkicontrol.client.DmzAura.hold(Minecraft.getInstance().level.getEntity(f.src), 3);
                     double rr = (now * 0.06) % 1;
                     ring(r, ft.add(0, 0.05, 0), 0.8 + 1.6 * rr, 0.05, col, fade * 0.45f * (float) (1 - rr), new Vec3(0, 1, 0));
                 }
@@ -496,8 +496,7 @@ public final class EncFx {
                     double h = height(f.src);
                     float[] col = auraOf(f.src, f.kind.equals("aura_burst") ? new float[]{1f, 0.88f, 0.35f} : new float[]{0.6f, 0.85f, 1f});
                     float k = (float) (1 - u);
-                    AuraFx.column(r.vc, r.m, ft.subtract(r.cam), h * (1.6 + 5 * easeOut(Math.min(1, u * 2))), 0.9 * sz, col, k * 0.6f, now);
-                    AuraFx.flames(r.vc, r.m, ft.subtract(r.cam), h, (1.7 - 0.6 * easeOut(u)) * sz, col, k * 0.85f, now, f.seed);
+                    com.dmzkicontrol.client.DmzAura.hold(Minecraft.getInstance().level.getEntity(f.src), 3);
                     ring(r, ft.add(0, 0.08, 0), 0.5 + 5.5 * easeOut(u), 0.18 * (1 - u) + 0.04, col, k * 0.8f, new Vec3(0, 1, 0));
                     ring(r, ft.add(0, 0.08, 0), 0.3 + 4 * easeOut(u), 0.03, new float[]{1f, 1f, 1f}, k, new Vec3(0, 1, 0));
                     if (u < 0.3) glow(r, c, 0.8 + 2 * u, new float[]{1f, 1f, 1f}, (float) (1 - u / 0.3));

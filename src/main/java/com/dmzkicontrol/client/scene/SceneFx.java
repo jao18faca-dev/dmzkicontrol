@@ -227,15 +227,11 @@ public final class SceneFx {
                         double w = Scene.num(q, "w", 0.35) * unit;
                         ring(vc, m, feet.add(0, h * Scene.num(q, "y", 0.05), 0), rad, w, c, a * (float) (1.0 - u * 0.6), Scene.num(q, "tilt", 0));
                     }
-                    case "pillar" -> {
-                        // coluna de luz macia (sem tubo solido) + as chamas da aura em volta do corpo
-                        double grow = Math.min(1.0, u / 0.2);
-                        double rad = Scene.num(q, "r", 0.9) * unit;
-                        double hh = Scene.num(q, "h", 10) * unit * grow;
-                        com.dmzkicontrol.client.AuraFx.column(vc, m, feet, hh, rad * 1.1, c, a * 0.55f, t);
-                        com.dmzkicontrol.client.AuraFx.flames(vc, m, feet, h, unit * (1.15 + 0.25 * (1 - grow)), c, a * 0.75f, t, p.seed + i);
+                    case "pillar", "aura" -> {
+                        // a aura do proprio DragonMineZ (nada de aura desenhada por nos)
+                        Entity who = mc.level.getEntity(p.entityId);
+                        if (who != null) com.dmzkicontrol.client.DmzAura.hold(who, 3);
                     }
-                    case "aura" -> com.dmzkicontrol.client.AuraFx.flames(vc, m, feet, h, unit * Scene.num(q, "s", 1.1), c, a, t, p.seed + i);
                     case "beam" -> {
                         double grow = Math.min(1.0, u / 0.15);
                         cylinder(vc, m, feet.add(0, h * 0.9, 0), Scene.num(q, "r", 0.12) * unit, Scene.num(q, "h", 60) * unit * grow, c, a);
@@ -244,7 +240,9 @@ public final class SceneFx {
                         double rad = Scene.num(q, "r", 1.2) * unit * (1.0 + Scene.num(q, "pulse", 0.08) * Math.sin(t * 0.9));
                         disc(vc, m, feet.add(0, h * Scene.num(q, "y", 0.55), 0), L, U, rad, c, a * 0.6f);
                     }
-                    case "bolts" -> com.dmzkicontrol.client.AuraFx.sparks(vc, m, feet, h, unit, c, a, t, p.seed + i, (int) Scene.num(q, "n", 5) * 2);
+                    case "bolts" -> {
+                        // os raios do Super Saiyajin 2 vem da aura do DMZ (a forma ja tem os raios dele)
+                    }
                     case "halo" -> ring(vc, m, feet.add(0, h + 0.18 * unit, 0), 0.3 * unit, 0.05 * unit, c, a, 0);
                     case "orbs" -> {
                         int n = (int) Scene.num(q, "n", 6);
