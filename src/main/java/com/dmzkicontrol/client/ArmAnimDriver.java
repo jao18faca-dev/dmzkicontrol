@@ -97,6 +97,17 @@ public final class ArmAnimDriver {
 
     private static final String ENC_IDLE = "dmzkicontrol.cs.dbz_guard";
 
+    /** O jogador esta numa cena de luta (mesmo na janela de transformacao). */
+    private static boolean encPose(AbstractClientPlayer p) {
+        try {
+            com.dmzkicontrol.client.encounter.EncClient.State s = com.dmzkicontrol.client.encounter.EncClient.state();
+            if (s == null || s.players == null) return false;
+            for (int id : s.players) if (id == p.getId()) return true;
+        } catch (Throwable ignored) {
+        }
+        return false;
+    }
+
     private static boolean inEncounter(AbstractClientPlayer p) {
         try {
             com.dmzkicontrol.client.encounter.EncClient.State s = com.dmzkicontrol.client.encounter.EncClient.state();
@@ -131,6 +142,8 @@ public final class ArmAnimDriver {
                     return PlayState.STOP;
                 }
                 int ser = currentSerial(p);
+                // nas lutas tudo roda mais devagar (mesmo fator do roteiro): o golpe acompanha o tempo da cena
+                state.getController().setAnimationSpeed(inEncounter(p) || encPose(p) ? 1.0 / com.dmzkicontrol.encounter.EncScripts.tempo() : 1.0);
                 boolean dmzAnim = !want.startsWith("dmzkicontrol.");
                 // golpes "dbz_" (feitos no Blockbench) entram como golpe; a guarda e a defesa ficam paradas
                 boolean dbz = want.startsWith("dmzkicontrol.cs.dbz_");

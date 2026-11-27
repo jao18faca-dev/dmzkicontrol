@@ -178,7 +178,7 @@ public final class EncScript {
     public record Shot(int t, int blend, String from, double[] off, String at, double[] atOff, float fov, float roll) {}
 
     public static final class Ev {
-        public final int t;
+        public int t;
         public final int who;
         public String pose;
         public int poseTicks = 20;
@@ -243,14 +243,72 @@ public final class EncScript {
         public Ev n(int min, int max) { this.minN = min; this.maxN = max; return this; }
     }
 
-    public record Move(MoveKind kind, double x, double y, double z, float speed, int ref) {}
+    public record Move(MoveKind kind, double x, double y, double z, float speed, int ref) {
+        /** Mesmo movimento, mais lento por {@code k}: a fracao por tick vira 1-(1-s)^(1/k); passo fixo divide. */
+        Move slow(double k) {
+            float sp = speed;
+            if (sp < 0) sp = (float) (sp / k);
+            else if (sp > 0 && sp < 1) sp = (float) (1 - Math.pow(1 - sp, 1 / k));
+            return new Move(kind, x, y, z, sp, ref);
+        }
+    }
+
+    // ------------------------------------------------------------ ritmo
+
+    private boolean slowed;
+
+    /**
+     * Deixa a cena inteira mais lenta (mais facil de acompanhar): todos os tempos do roteiro multiplicam por
+     * {@code k} (batidas, cortes de camera, eventos, poses, efeitos, deixas e janelas), os movimentos ficam mais
+     * lentos na mesma medida e o chefe empurra o cabo de guerra mais devagar. As animacoes dos golpes tocam mais
+     * lentas pelo mesmo fator (ArmAnimDriver), entao o contato continua batendo no tempo certo.
+     */
+    public void slow(double k) {
+        if (slowed || k <= 1.001) return;
+        slowed = true;
+        for (Phase ph : phases) for (Beat b : ph.beats) slowBeat(b, k);
+    }
+
+    private static int sc(int t, double k) {
+        return (int) Math.round(t * k);
+    }
+
+    private static void slowBeat(Beat b, double k) {
+        if (b == null) return;
+        b.len = sc(b.len, k);
+        b.push = (float) (b.push / k);
+        for (int i = 0; i < b.shots.size(); i++) {
+            Shot s = b.shots.get(i);
+            b.shots.set(i, new Shot(sc(s.t(), k), sc(s.blend(), k), s.from(), s.off(), s.at(), s.atOff(), s.fov(), s.roll()));
+        }
+        for (Ev e : b.evs) slowEv(e, k);
+        for (int[] s : b.surges) {
+            s[0] = sc(s[0], k);
+            s[1] = sc(s[1], k);
+        }
+        for (Cue c : b.cues) {
+            c.t = sc(c.t, k);
+            c.win = sc(c.win, k);
+            c.lead = sc(c.lead, k);
+            for (List<Ev> l : List.of(c.hit, c.miss, c.sync, c.partial, c.tell)) for (Ev e : l) slowEv(e, k);
+        }
+        slowBeat(b.win, k);
+        slowBeat(b.lose, k);
+    }
+
+    private static void slowEv(Ev e, double k) {
+        e.t = sc(e.t, k);
+        e.poseTicks = sc(e.poseTicks, k);
+        e.fxDur = sc(e.fxDur, k);
+        if (e.move != null) e.move = e.move.slow(k);
+    }
 
     public static final class Cue {
         public final int index;
-        public final int t;
+        public int t;
         public final Mode mode;
         public final Key key;
-        public final int win;
+        public int win;
         public int turn;
         public int lead = 20;
         public float dmg, syncDmg, hurt;

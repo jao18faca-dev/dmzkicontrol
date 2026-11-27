@@ -43,13 +43,14 @@ public final class PrepHud {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.options.hideGui) return;
         float frac = Mth.clamp(left / (float) total, 0f, 1f);
-        float x = w - 8f, y = 8f;
+        // lado esquerdo, no meio da altura: em cima a direita ficam o minimapa e a missao acompanhada
+        float x = 8f, y = Math.round(h * 0.34f);
         int col = frac < 0.25f ? DmzStyle.mix(WHITE, RED, 0.5f + 0.5f * Mth.sin((mc.player.tickCount + partial) * 0.3f)) : WHITE;
-        DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.prep.title." + id), x, y, 0.8f, 1f, GOLD, 0.95f);
-        DmzStyle.text(g, story(storyDays * (double) frac), x, y + 11, 1.3f, 1f, col, 1f);
+        DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.prep.title." + id), x, y, 0.8f, 0f, GOLD, 0.95f);
+        DmzStyle.text(g, story(storyDays * (double) frac), x, y + 11, 1.3f, 0f, col, 1f);
         int secs = left / 20;
-        DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.prep.real", secs / 60, String.format("%02d", secs % 60)), x, y + 27, 0.7f, 1f, 0xBFBFBF, 0.85f);
-        int bw = 96, bx = (int) x - bw, by = (int) y + 37;
+        DmzStyle.text(g, Component.translatable("hud.dmzkicontrol.prep.real", secs / 60, String.format("%02d", secs % 60)), x, y + 27, 0.7f, 0f, 0xBFBFBF, 0.85f);
+        int bw = 96, bx = (int) x, by = (int) y + 37;
         g.fill(bx - 1, by - 1, bx + bw + 1, by + 3, 0xAA000000);
         g.fill(bx + Math.round(bw * (1 - frac)), by, bx + bw, by + 2, DmzStyle.argb(1f, frac < 0.25f ? RED : GOLD));
     };

@@ -471,6 +471,8 @@ public class KiControlConfig {
         /** Cenas desligadas, pelo id (ex.: "frieza_fp", "frieza_base", "cell_perfect"). */
         public java.util.List<String> disabled = new java.util.ArrayList<>();
         /** true = com a historia do DMZ Sparking ligada, a cena "A Furia" (Freeza forma final) nao toca: o Sparking ja conta a morte do Kuririn. */
+        /** Ritmo das lutas cinematograficas: 1.0 = original, 1.6 = 60% mais lentas (mais facil de ver tudo). Max 3. */
+        public double slowMotion = 1.6;
         public boolean yieldToSparkingStory = true;
     }
 

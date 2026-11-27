@@ -27,7 +27,17 @@ public final class EncScripts {
 
     private EncScripts() {}
 
+    /** Ritmo das cenas (1 = original; 1.6 = 60% mais lentas). O mesmo valor no servidor e no cliente. */
+    public static double tempo() {
+        try {
+            return Math.max(1.0, Math.min(3.0, com.dmzkicontrol.config.KiControlConfig.get().encounters.slowMotion));
+        } catch (Throwable t) {
+            return 1.6;
+        }
+    }
+
     private static void add(EncScript s) {
+        s.slow(tempo());
         BY_ID.put(s.id, s);
         BY_BOSS.put(s.bossType, s);
     }
